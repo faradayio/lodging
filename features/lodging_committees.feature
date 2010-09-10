@@ -5,13 +5,13 @@ Feature: Lodging Committee Calculations
     Given a lodging emitter
     When the "magnitude" committee is calculated
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be ""
+    And the conclusion of the committee should be "1"
 
   Scenario: Emission factor committee from default
     Given a lodging emitter
     When the "emission_factor" committee is calculated
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be ""
+    And the conclusion of the committee should be "1"
 
   Scenario: Emission committee from nothing
     Given a lodging emitter
@@ -19,4 +19,4 @@ Feature: Lodging Committee Calculations
     And the "emission_factor" committee is calculated
     And the "emission" committee is calculated
     Then the committee should have used quorum "from magnitude and emission factor"
-    And the conclusion of the committee should be ""
+    And the conclusion of the committee should be "1"
