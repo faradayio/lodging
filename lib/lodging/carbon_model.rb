@@ -25,7 +25,7 @@ module BrighterPlanet
           
           committee :magnitude do # return room-nights - couldn't think of anything to call it except 'magnitude'
             quorum 'default' do
-              Lodging.fallback.magnitude
+              base.fallback.magnitude
             end
           end
         end
