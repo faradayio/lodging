@@ -10,3 +10,14 @@ Feature: Lodging Emissions Calculations
     Given a lodging has "magnitude" of "5"
     When emissions are calculated
     Then the emission value should be within "0.1" kgs of "47.6"
+
+  Scenario: Calculations starting from lodging class
+    Given a lodging has "lodging_class.name" of "Luxury Hotel"
+    When emissions are calculated
+    Then the emission value should be within "0.00001" kgs of "2.0"
+
+  Scenario: Calculations starting from lodging class and magnitude
+    Given a lodging has "lodging_class.name" of "Luxury Hotel"
+    And it has "magnitude" of "5"
+    When emissions are calculated
+    Then the emission value should be within "0.00001" kgs of "10"

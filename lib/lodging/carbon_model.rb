@@ -18,8 +18,14 @@ module BrighterPlanet
           end
           
           committee :emission_factor do # returns kg CO2e per room night
+            quorum 'from lodging class', :needs => :lodging_class do |characteristics|
+              characteristics[:lodging_class].emission_factor
+            end
+          end
+          
+          committee :lodging_class do # returns the type of lodging
             quorum 'default' do
-              LodgingClass.fallback.emission_factor
+              LodgingClass.find_by_name 'Average'
             end
           end
           
