@@ -33,7 +33,7 @@ unless ENV['NOBUNDLE']
     require 'sniff'
     require 'sniff/rake_task'
     Sniff::RakeTask.new(:console) do |t|
-      t.earth_domains = :industry
+      t.earth_domains = :hospitality
     end
   rescue LoadError
     puts 'Sniff gem not found, sniff tasks unavailable'
