@@ -44,7 +44,11 @@ unless ENV['NOBUNDLE']
   
   desc 'Run all cucumber tests'
   Cucumber::Rake::Task.new(:features) do |t|
-    t.cucumber_opts = "features --format pretty"
+    if ENV['CUCUMBER_FORMAT']
+      t.cucumber_opts = "features --format #{ENV['CUCUMBER_FORMAT']}"
+    else
+      t.cucumber_opts = 'features --format pretty'
+    end
   end
   
   desc "Run all tests with RCov"
