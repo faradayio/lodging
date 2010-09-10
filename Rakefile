@@ -10,12 +10,47 @@ begin
     gem.email = "andy@rossmeissl.net"
     gem.homepage = "http://github.com/brighterplanet/lodging"
     gem.authors = ["Andy Rossmeissl"]
+    gem.test_files = Dir.glob(File.join('features', '**', '*.rb')) +
+      Dir.glob(File.join('features', '**', '*.feature')) +
+      Dir.glob(File.join('lib', 'test_support', '**/*.rb'))
     gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
-    # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
+    gem.add_development_dependency 'cucumber', '~>0.8.3'
+    gem.add_development_dependency 'sniff', '~>0.1.12' unless ENV['LOCAL_SNIFF']
+    gem.add_dependency 'emitter', '~>0.0.6' unless ENV['LOCAL_EMITTER']
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
+end
+
+unless ENV['NOBUNDLE']
+  begin
+    require 'sniff'
+    require 'sniff/rake_task'
+    Sniff::RakeTask.new(:console) do |t|
+      t.earth_domains = :industry
+    end
+  rescue LoadError
+    puts 'Sniff gem not found, sniff tasks unavailable'
+  end
+
+  require 'cucumber'
+  require 'cucumber/rake/task'
+  
+  desc 'Run all cucumber tests'
+  Cucumber::Rake::Task.new(:features) do |t|
+    t.cucumber_opts = "features --format pretty"
+  end
+  
+  desc "Run all tests with RCov"
+  Cucumber::Rake::Task.new(:features_with_coverage) do |t|
+    t.cucumber_opts = "features --format pretty"
+    t.rcov = true
+    t.rcov_opts = ['--exclude', 'features']
+  end
+  
+  task :test => :features
+  task :default => :features
 end
 
 require 'rake/testtask'
