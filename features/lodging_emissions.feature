@@ -4,4 +4,4 @@ Feature: Lodging Emissions Calculations
   Scenario: Calculations starting from nothing
     Given a lodging has nothing
     When emissions are calculated
-    Then the emission value should be within "0.001" kgs of "1.000"
+    Then the emission value should be within "0.01" kgs of "9.51"

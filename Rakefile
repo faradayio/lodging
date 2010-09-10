@@ -17,6 +17,7 @@ begin
     gem.add_development_dependency 'cucumber', '~>0.8.3'
     gem.add_development_dependency 'sniff', '~>0.1.12' unless ENV['LOCAL_SNIFF']
     gem.add_dependency 'emitter', '~>0.0.6' unless ENV['LOCAL_EMITTER']
+    gem.add_dependency 'earth', '~>0.0.37' unless ENV['LOCAL_EARTH']
   end
   Jeweler::GemcutterTasks.new
 rescue LoadError
