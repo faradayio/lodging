@@ -5,3 +5,8 @@ Feature: Lodging Emissions Calculations
     Given a lodging has nothing
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "9.51"
+
+  Scenario: Calculations starting from magnitude
+    Given a lodging has "magnitude" of "5"
+    When emissions are calculated
+    Then the emission value should be within "0.1" kgs of "47.6"
