@@ -1,3 +1,3 @@
-"name","emission_factor","emission_factor_units"
-"Luxury Hotel","2.0","kilograms_per_room_night"
-"Average","1.5","kilograms_per_room_night"
+"name","natural_gas_intensity","natural_gas_intensity_units","fuel_oil_intensity","fuel_oil_intensity_units","electricity_intensity","electricity_intensity_units","district_heat_intensity","district_heat_intensity_units"
+"Luxury Hotel","2","cubic_metres_per_room_night","1","litres_per_room_night","10","kilowatt_hours_per_room_night","20000000","joules_per_room_night"
+"Average","1","cubic_metres_per_room_night","0.5","litres_per_room_night","5","kilowatt_hours_per_room_night","10000000","joules_per_room_night"
