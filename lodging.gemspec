@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andy Rossmeissl"]
-  s.date = %q{2010-09-10}
+  s.date = %q{2010-09-13}
   s.description = %q{A software model in Ruby for the greenhouse gas emissions of a lodging}
   s.email = %q{andy@rossmeissl.net}
   s.extra_rdoc_files = [
@@ -20,7 +20,6 @@ Gem::Specification.new do |s|
     ".document",
      ".gitignore",
      "Gemfile",
-     "Gemfile.lock",
      "LICENSE",
      "README.rdoc",
      "Rakefile",
@@ -34,6 +33,9 @@ Gem::Specification.new do |s|
      "lib/lodging/characterization.rb",
      "lib/lodging/data.rb",
      "lib/lodging/summarization.rb",
+     "lib/test_support/db/fixtures/fuel_types.csv",
+     "lib/test_support/db/fixtures/lodging_classes.csv",
+     "lib/test_support/db/fixtures/residence_fuel_types.csv",
      "lib/test_support/db/schema.rb",
      "lib/test_support/lodging_record.rb",
      "lodging.gemspec"
@@ -65,7 +67,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, ["~> 2.0.0.beta.17"])
       s.add_development_dependency(%q<sniff>, ["~> 0.1.12"])
       s.add_runtime_dependency(%q<emitter>, ["~> 0.0.6"])
-      s.add_runtime_dependency(%q<earth>, ["~> 0.0.37"])
+      s.add_runtime_dependency(%q<earth>, ["~> 0.0.38"])
     else
       s.add_dependency(%q<activerecord>, ["~> 3.0.0.beta4"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0.beta.2"])
@@ -76,7 +78,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.17"])
       s.add_dependency(%q<sniff>, ["~> 0.1.12"])
       s.add_dependency(%q<emitter>, ["~> 0.0.6"])
-      s.add_dependency(%q<earth>, ["~> 0.0.37"])
+      s.add_dependency(%q<earth>, ["~> 0.0.38"])
     end
   else
     s.add_dependency(%q<activerecord>, ["~> 3.0.0.beta4"])
@@ -88,7 +90,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rspec>, ["~> 2.0.0.beta.17"])
     s.add_dependency(%q<sniff>, ["~> 0.1.12"])
     s.add_dependency(%q<emitter>, ["~> 0.0.6"])
-    s.add_dependency(%q<earth>, ["~> 0.0.37"])
+    s.add_dependency(%q<earth>, ["~> 0.0.38"])
   end
 end
 
