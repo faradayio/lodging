@@ -9,5 +9,6 @@ class LodgingRecord < ActiveRecord::Base
 
   belongs_to :lodging_class
 
-  falls_back_on :magnitude => 1
+  falls_back_on :rooms  => 1,
+                :nights => 1
 end

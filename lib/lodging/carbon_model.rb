@@ -8,8 +8,8 @@ module BrighterPlanet
         base.extend ::Leap::Subject
         base.decide :emission, :with => :characteristics do
           committee :emission do # returns kg CO2e
-            quorum 'from magnitude and emission factor', :needs => [:magnitude, :emission_factor] do |characteristics|
-              characteristics[:magnitude] * characteristics[:emission_factor]
+            quorum 'from rooms, nights, and emission factor', :needs => [:rooms, :nights, :emission_factor] do |characteristics|
+              characteristics[:rooms] * characteristics[:nights] * characteristics[:emission_factor]
             end
             
             quorum 'default' do
@@ -74,9 +74,15 @@ module BrighterPlanet
             end
           end
           
-          committee :magnitude do # return room-nights - couldn't think of anything to call it except 'magnitude'
+          committee :nights do # returns nights
             quorum 'default' do
-              base.fallback.magnitude
+              base.fallback.nights
+            end
+          end
+          
+          committee :rooms do # return rooms
+            quorum 'default' do
+              base.fallback.rooms
             end
           end
         end

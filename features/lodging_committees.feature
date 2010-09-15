@@ -1,9 +1,15 @@
 Feature: Lodging Committee Calculations
   The lodging model should generate correct committee calculations
 
-  Scenario: Magnitude committee from default
+  Scenario: Rooms committee from default
     Given a lodging emitter
-    When the "magnitude" committee is calculated
+    When the "rooms" committee is calculated
+    Then the committee should have used quorum "default"
+    And the conclusion of the committee should be "1"
+
+  Scenario: Nights committee from default
+    Given a lodging emitter
+    When the "nights" committee is calculated
     Then the committee should have used quorum "default"
     And the conclusion of the committee should be "1"
 
