@@ -21,9 +21,21 @@ Feature: Lodging Emissions Calculations
     When emissions are calculated
     Then the emission value should be within "0.00001" kgs of "22.48991"
 
+  Scenario: Calculations starting from state
+    Given a lodging has "state.postal_abbreviation" of "CA"
+    When emissions are calculated
+    Then the emission value should be within "0.00001" kgs of "8.50002"
+
   Scenario: Calculations starting from rooms, nights, and lodging class
     Given a lodging has "rooms" of "2"
     And it has "nights" of "2"
     And it has "lodging_class.name" of "Luxury Hotel"
     When emissions are calculated
     Then the emission value should be within "0.00001" kgs of "89.95965"
+
+  Scenario: Calculations starting from rooms, nights, and state
+    Given a lodging has "rooms" of "2"
+    And it has "nights" of "2"
+    And it has "state.postal_abbreviation" of "CA"
+    When emissions are calculated
+    Then the emission value should be within "0.00001" kgs of "34.00010"

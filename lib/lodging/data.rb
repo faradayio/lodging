@@ -7,6 +7,8 @@ module BrighterPlanet
         base.data_miner do
           schema do
             string  'lodging_class_name'
+            string  'zip_code_name'
+            string  'state_postal_abbreviation'
             integer 'rooms'
             integer 'nights'
           end

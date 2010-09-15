@@ -7,6 +7,8 @@ module BrighterPlanet
         base.send :include, Characterizable
         base.characterize do
           has :lodging_class
+          has :zip_code
+          has :state
           has :rooms
           has :nights
         end

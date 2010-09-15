@@ -45,24 +45,40 @@ module BrighterPlanet
           end
           
           committee :natural_gas_intensity do # returns cubic metres per room-night
+            quorum 'from census division', :needs => :census_division do |characteristics|
+              characteristics[:census_division].lodging_building_natural_gas_intensity
+            end
+            
             quorum 'from lodging class', :needs => :lodging_class do |characteristics|
               characteristics[:lodging_class].natural_gas_intensity
             end
           end
           
           committee :fuel_oil_intensity do # returns litres per room-night
+            quorum 'from census division', :needs => :census_division do |characteristics|
+              characteristics[:census_division].lodging_building_fuel_oil_intensity
+            end
+            
             quorum 'from lodging class', :needs => :lodging_class do |characteristics|
               characteristics[:lodging_class].fuel_oil_intensity
             end
           end
           
           committee :electricity_intensity do # returns kilowatt hours per room-night
+            quorum 'from census division', :needs => :census_division do |characteristics|
+              characteristics[:census_division].lodging_building_electricity_intensity
+            end
+            
             quorum 'from lodging class', :needs => :lodging_class do |characteristics|
               characteristics[:lodging_class].electricity_intensity
             end
           end
           
           committee :district_heat_intensity do # returns joules per room-night
+            quorum 'from census division', :needs => :census_division do |characteristics|
+              characteristics[:census_division].lodging_building_district_heat_intensity
+            end
+            
             quorum 'from lodging class', :needs => :lodging_class do |characteristics|
               characteristics[:lodging_class].district_heat_intensity
             end
@@ -71,6 +87,18 @@ module BrighterPlanet
           committee :lodging_class do # returns the type of lodging
             quorum 'default' do
               LodgingClass.find_by_name 'Average'
+            end
+          end
+          
+          committee :census_division do # returns census division
+            quorum 'from state', :needs => :state do |characteristics|
+              characteristics[:state].census_division
+            end
+          end
+          
+          committee :state do # returns state
+            quorum 'from zip code', :needs => :zip_code do |characteristics|
+              characteristics[:zip_code].state
             end
           end
           
