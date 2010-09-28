@@ -15,10 +15,9 @@ module BrighterPlanet
           end
           
           committee :emission_factor do # returns kg CO2e per room night
-            quorum 'from fuel intensities', :needs => [:natural_gas_intensity, :fuel_oil_intensity, :electricity_intensity, :district_heat_intensity] do |characteristics|
+            quorum 'from fuel intensities and eGRID', :needs => [:natural_gas_intensity, :fuel_oil_intensity, :electricity_intensity, :district_heat_intensity, :egrid_subregion, :egrid_region] do |characteristics|
               natural_gas = FuelType.find_by_name "Commercial Natural Gas"
               fuel_oil = FuelType.find_by_name "Distillate Fuel Oil 2"
-              electricity = ResidenceFuelType.find_by_name "electricity"
               
               # FIXME TODO won't need this once we convert emission factors to co2 / unit energy
               #   kg / J                           kg / cubic m     J / cubic m
@@ -36,7 +35,7 @@ module BrighterPlanet
               
               (characteristics[:natural_gas_intensity] * natural_gas.emission_factor) +
                 (characteristics[:fuel_oil_intensity] * fuel_oil.emission_factor) +
-                (characteristics[:electricity_intensity] * electricity.emission_factor) +
+                (characteristics[:electricity_intensity] / (1 - characteristics[:egrid_region].loss_factor) * characteristics[:egrid_subregion].electricity_emission_factor) +
                 (characteristics[:district_heat_intensity] * district_heat_emission_factor)
             end
           end
@@ -84,6 +83,22 @@ module BrighterPlanet
           committee :lodging_class do # returns the type of lodging
             quorum 'default' do
               LodgingClass.find_by_name 'Average'
+            end
+          end
+          
+          committee :egrid_region do # returns eGRID region
+            quorum 'from eGRID subregion', :needs => :egrid_subregion do |characteristics|
+              characteristics[:egrid_subregion].egrid_region
+            end
+          end
+          
+          committee :egrid_subregion do # returns eGRID subregion
+            quorum 'from zip code', :needs => :zip_code do |characteristics|
+              characteristics[:zip_code].egrid_subregion
+            end
+            
+            quorum 'default' do
+              EgridSubregion.find_by_abbreviation 'US'
             end
           end
           
