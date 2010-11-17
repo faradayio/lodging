@@ -10,7 +10,4 @@ class LodgingRecord < ActiveRecord::Base
   belongs_to :lodging_class, :foreign_key => 'lodging_class_name'
   belongs_to :zip_code,      :foreign_key => 'zip_code_name'
   belongs_to :state,         :foreign_key => 'state_postal_abbreviation'
-
-  falls_back_on :rooms  => 1,
-                :nights => 1
 end

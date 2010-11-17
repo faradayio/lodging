@@ -7,9 +7,9 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "default"
     And the conclusion of the committee should be "1"
 
-  Scenario: Nights committee from default
+  Scenario: Duration committee from default
     Given a lodging emitter
-    When the "nights" committee is calculated
+    When the "duration" committee is calculated
     Then the committee should have used quorum "default"
     And the conclusion of the committee should be "1"
 

@@ -7,7 +7,7 @@ module BrighterPlanet
           has :zip_code
           has :state
           has :rooms
-          has :nights
+          has :duration
         end
       end
     end

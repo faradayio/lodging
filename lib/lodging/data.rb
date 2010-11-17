@@ -8,7 +8,7 @@ module BrighterPlanet
             string  'zip_code_name'
             string  'state_postal_abbreviation'
             integer 'rooms'
-            integer 'nights'
+            integer 'duration'
           end
 
           process :run_data_miner_on_belongs_to_associations
