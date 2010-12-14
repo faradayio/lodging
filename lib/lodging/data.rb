@@ -10,6 +10,10 @@ module BrighterPlanet
             integer 'rooms'
             integer 'duration'
           end
+          
+          process 'pull orphans' do
+            FuelType.run_data_miner!
+          end
 
           process :run_data_miner_on_belongs_to_associations
         end
