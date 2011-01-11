@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Andy Rossmeissl", "Seamus Abshere", "Ian Hough", "Matt Kling", "Derek Kastner"]
-  s.date = %q{2010-12-07}
+  s.date = %q{2010-12-08}
   s.description = %q{A software model in Ruby for the greenhouse gas emissions of a lodging}
   s.email = %q{andy@rossmeissl.net}
   s.extra_rdoc_files = [
@@ -54,6 +54,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rspec>, ["~> 2"])
       s.add_development_dependency(%q<sniff>, [">= 0"])
       s.add_runtime_dependency(%q<emitter>, ["~> 0.3"])
+      s.add_runtime_dependency(%q<earth>, ["= 0.3.6"])
     else
       s.add_dependency(%q<activerecord>, ["~> 3"])
       s.add_dependency(%q<bundler>, ["~> 1.0.0"])
@@ -64,6 +65,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rspec>, ["~> 2"])
       s.add_dependency(%q<sniff>, [">= 0"])
       s.add_dependency(%q<emitter>, ["~> 0.3"])
+      s.add_dependency(%q<earth>, ["= 0.3.6"])
     end
   else
     s.add_dependency(%q<activerecord>, ["~> 3"])
@@ -75,6 +77,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rspec>, ["~> 2"])
     s.add_dependency(%q<sniff>, [">= 0"])
     s.add_dependency(%q<emitter>, ["~> 0.3"])
+    s.add_dependency(%q<earth>, ["= 0.3.6"])
   end
 end
 
