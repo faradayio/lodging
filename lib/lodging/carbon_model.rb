@@ -236,10 +236,10 @@ module BrighterPlanet
             # Uses the client-input `duration` (*nights*).
             
             #### Default duration
-            # **Complies:** GHG Protocol, ISO 14064-1, Climate Registry Protocol
+            # **Complies:**
             #
             # Uses 1 *night*.
-            quorum 'default', :complies => [:ghg_protocol, :iso, :tcr] do
+            quorum 'default' do
               1
             end
           end
@@ -253,10 +253,10 @@ module BrighterPlanet
             # Uses the client-input number of `rooms`.
             
             #### Default rooms
-            # **Complies:** GHG Protocol, ISO 14064-1, Climate Registry Protocol
+            # **Complies:**
             #
             # Uses 1 room.
-            quorum 'default', :complies => [:ghg_protocol, :iso, :tcr] do
+            quorum 'default' do
               1
             end
           end
