@@ -12,9 +12,9 @@ module BrighterPlanet
           end
           
           process 'pull orphans' do
-            FuelType.run_data_miner!
+            Fuel.run_data_miner!
           end
-
+          
           process :run_data_miner_on_belongs_to_associations
         end
       end

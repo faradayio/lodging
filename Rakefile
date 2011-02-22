@@ -2,7 +2,7 @@ require 'rubygems'
 
 def require_or_fail(gems, message, failure_results_in_death = false)
   gems = [gems] unless gems.is_a?(Array)
-
+  
   begin
     gems.each { |gem| require gem }
     yield
@@ -43,9 +43,9 @@ require_or_fail('jeweler', 'Jeweler (or a dependency) not available. Install it 
     gem.add_development_dependency 'rake'
     gem.add_development_dependency 'rdoc'
     gem.add_development_dependency 'rspec', '~>2'
-    gem.add_development_dependency 'sniff' unless ENV['LOCAL_SNIFF']
-    gem.add_dependency 'emitter', '~>0.3' unless ENV['LOCAL_EMITTER']
-    gem.add_dependency 'earth', '~>0.3.6' unless ENV['LOCAL_EARTH']
+    gem.add_development_dependency 'sniff', '~>0.6' unless ENV['LOCAL_SNIFF']
+    gem.add_dependency 'emitter', '~>0.4' unless ENV['LOCAL_EMITTER']
+    gem.add_dependency 'earth', '~>0.4.1' unless ENV['LOCAL_EARTH']
   end
   Jeweler::GemcutterTasks.new
 end
@@ -56,39 +56,16 @@ require_or_fail 'emitter', 'Emitter gem not found, emitter tasks unavailable' do
 end
 
 require_or_fail('sniff', 'Sniff gem not found, sniff tasks unavailable') do
-  require 'sniff/rake_task'
-  Sniff::RakeTask.new(:console) do |t|
-    t.earth_domains = :hospitality
+  require 'sniff/rake_tasks'
+  Sniff::RakeTasks.define_tasks do |t|
+    t.earth_domains = [:hospitality, :fuel, :locality]
   end
-end
-
-require_or_fail('cucumber', 'Cucumber gem not found, cucumber tasks unavailable') do
-  require 'cucumber/rake/task'
-
-  desc 'Run all cucumber tests'
-  Cucumber::Rake::Task.new(:features) do |t|
-    if ENV['CUCUMBER_FORMAT']
-      t.cucumber_opts = "features --format #{ENV['CUCUMBER_FORMAT']}"
-    else
-      t.cucumber_opts = 'features --format pretty'
-    end
-  end
-
-  desc "Run all tests with RCov"
-  Cucumber::Rake::Task.new(:features_with_coverage) do |t|
-    t.cucumber_opts = "features --format pretty"
-    t.rcov = true
-    t.rcov_opts = ['--exclude', 'features']
-  end
-
-  task :test => :features
-  task :default => :test
 end
 
 require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
+  
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "lodging #{version}"
   rdoc.rdoc_files.include('README*')

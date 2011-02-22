@@ -4,50 +4,50 @@ Feature: Lodging Emissions Calculations
   Scenario: Calculations starting from nothing
     Given a lodging has nothing
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "13.7"
+    Then the emission value should be within "0.01" kgs of "27.87"
 
   Scenario: Calculations starting from rooms
     Given a lodging has "rooms" of "5"
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "68.7"
+    Then the emission value should be within "0.01" kgs of "139.36"
 
   Scenario: Calculations starting from duration
     Given a lodging has "duration" of "5"
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "68.7"
+    Then the emission value should be within "0.01" kgs of "139.36"
 
   Scenario: Calculations starting from lodging class
-    Given a lodging has "lodging_class.name" of "Luxury Hotel"
+    Given a lodging has "lodging_class.name" of "Hotel"
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "27.5"
+    Then the emission value should be within "0.01" kgs of "42.75"
 
   Scenario: Calculations starting from state
     Given a lodging has "state.postal_abbreviation" of "CA"
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "10.0"
+    Then the emission value should be within "0.01" kgs of "22.23"
 
   Scenario: Calculations starting from zip code
     Given a lodging has "zip_code.name" of "94122"
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "5.8"
+    Then the emission value should be within "0.01" kgs of "12.55"
 
   Scenario: Calculations starting from rooms, duration, and lodging class
     Given a lodging has "rooms" of "2"
     And it has "duration" of "2"
-    And it has "lodging_class.name" of "Luxury Hotel"
+    And it has "lodging_class.name" of "Hotel"
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "110.0"
+    Then the emission value should be within "0.01" kgs of "170.99"
 
   Scenario: Calculations starting from rooms, duration, and state
     Given a lodging has "rooms" of "2"
     And it has "duration" of "2"
     And it has "state.postal_abbreviation" of "CA"
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "40.0"
+    Then the emission value should be within "0.01" kgs of "88.91"
 
   Scenario: Calculations starting from rooms, duration, and zip code
     Given a lodging has "rooms" of "2"
     And it has "duration" of "2"
     And it has "zip_code.name" of "94122"
     When emissions are calculated
-    Then the emission value should be within "0.1" kgs of "23.3"
+    Then the emission value should be within "0.01" kgs of "50.21"

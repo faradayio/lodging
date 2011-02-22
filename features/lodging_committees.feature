@@ -5,13 +5,13 @@ Feature: Lodging Committee Calculations
     Given a lodging emitter
     When the "rooms" committee is calculated
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "1"
+    And the conclusion of the committee should be "1.0"
 
   Scenario: Duration committee from default
     Given a lodging emitter
     When the "duration" committee is calculated
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "1"
+    And the conclusion of the committee should be "1.0"
 
   Scenario: State committee from zip code
     Given a lodging emitter
@@ -66,42 +66,42 @@ Feature: Lodging Committee Calculations
     When the "lodging_class" committee is calculated
     And the "district_heat_intensity" committee is calculated
     Then the committee should have used quorum "from lodging class"
-    And the conclusion of the committee should be "10000000"
+    And the conclusion of the committee should be "4.0"
 
   Scenario: District heat intensity committee from lodging class
     Given a lodging emitter
-    And a characteristic "lodging_class.name" of "Luxury Hotel"
+    And a characteristic "lodging_class.name" of "Hotel"
     When the "district_heat_intensity" committee is calculated
     Then the committee should have used quorum "from lodging class"
-    And the conclusion of the committee should be "20000000"
+    And the conclusion of the committee should be "2.0"
 
   Scenario: District heat intensity committee from census division
     Given a lodging emitter
     And a characteristic "census_division.number" of "9"
     When the "district_heat_intensity" committee is calculated
     Then the committee should have used quorum "from census division"
-    And the conclusion of the committee should be "1000"
+    And the conclusion of the committee should be "2.0"
 
   Scenario: Electricity intensity committee from nothing
     Given a lodging emitter
     When the "lodging_class" committee is calculated
     And the "electricity_intensity" committee is calculated
     Then the committee should have used quorum "from lodging class"
-    And the conclusion of the committee should be "5"
+    And the conclusion of the committee should be "35.0"
 
   Scenario: Electricity intensity committee from lodging class
     Given a lodging emitter
-    And a characteristic "lodging_class.name" of "Luxury Hotel"
+    And a characteristic "lodging_class.name" of "Hotel"
     When the "electricity_intensity" committee is calculated
     Then the committee should have used quorum "from lodging class"
-    And the conclusion of the committee should be "10"
+    And the conclusion of the committee should be "55.0"
 
   Scenario: Electricity intensity committee from census division
     Given a lodging emitter
     And a characteristic "census_division.number" of "9"
     When the "electricity_intensity" committee is calculated
     Then the committee should have used quorum "from census division"
-    And the conclusion of the committee should be "3"
+    And the conclusion of the committee should be "30.0"
 
   Scenario: Fuel oil intensity committee from nothing
     Given a lodging emitter
@@ -112,38 +112,38 @@ Feature: Lodging Committee Calculations
 
   Scenario: Fuel oil intensity committee from lodging class
     Given a lodging emitter
-    And a characteristic "lodging_class.name" of "Luxury Hotel"
+    And a characteristic "lodging_class.name" of "Hotel"
     When the "fuel_oil_intensity" committee is calculated
     Then the committee should have used quorum "from lodging class"
-    And the conclusion of the committee should be "1"
+    And the conclusion of the committee should be "0.25"
 
   Scenario: Fuel oil intensity committee from census division
     Given a lodging emitter
     And a characteristic "census_division.number" of "9"
     When the "fuel_oil_intensity" committee is calculated
     Then the committee should have used quorum "from census division"
-    And the conclusion of the committee should be "2"
+    And the conclusion of the committee should be "0.0"
 
   Scenario: Natural gas intensity committee from nothing
     Given a lodging emitter
     When the "lodging_class" committee is calculated
     And the "natural_gas_intensity" committee is calculated
     Then the committee should have used quorum "from lodging class"
-    And the conclusion of the committee should be "1"
+    And the conclusion of the committee should be "2.0"
 
   Scenario: Natural gas intensity committee from lodging class
     Given a lodging emitter
-    And a characteristic "lodging_class.name" of "Luxury Hotel"
+    And a characteristic "lodging_class.name" of "Hotel"
     When the "natural_gas_intensity" committee is calculated
     Then the committee should have used quorum "from lodging class"
-    And the conclusion of the committee should be "2"
+    And the conclusion of the committee should be "3.5"
 
   Scenario: Natural gas intensity committee from census division
     Given a lodging emitter
     And a characteristic "census_division.number" of "9"
     When the "natural_gas_intensity" committee is calculated
     Then the committee should have used quorum "from census division"
-    And the conclusion of the committee should be "1"
+    And the conclusion of the committee should be "1.5"
 
   Scenario: Emission factor committee from nothing
     Given a lodging emitter
@@ -156,11 +156,11 @@ Feature: Lodging Committee Calculations
     And the "natural_gas_intensity" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel intensities and eGRID"
-    And the conclusion of the committee should be "13.74496"
+    And the conclusion of the committee should be "27.87107"
 
   Scenario: Emission factor committee from lodging class
     Given a lodging emitter
-    And a characteristic "lodging_class.name" of "Luxury Hotel"
+    And a characteristic "lodging_class.name" of "Hotel"
     When the "egrid_subregion" committee is calculated
     And the "egrid_region" committee is calculated
     And the "district_heat_intensity" committee is calculated
@@ -169,7 +169,7 @@ Feature: Lodging Committee Calculations
     And the "natural_gas_intensity" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel intensities and eGRID"
-    And the conclusion of the committee should be "27.48991"
+    And the conclusion of the committee should be "42.74837"
 
   Scenario: Emission factor committee from census division
     Given a lodging emitter
@@ -182,7 +182,7 @@ Feature: Lodging Committee Calculations
     And the "natural_gas_intensity" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel intensities and eGRID"
-    And the conclusion of the committee should be "10.00002"
+    And the conclusion of the committee should be "22.22776"
 
   Scenario: Emission factor committee from zip code
     Given a lodging emitter
@@ -197,4 +197,4 @@ Feature: Lodging Committee Calculations
     And the "natural_gas_intensity" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel intensities and eGRID"
-    And the conclusion of the committee should be "5.83336"
+    And the conclusion of the committee should be "12.55251"
