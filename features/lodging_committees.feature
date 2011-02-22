@@ -156,7 +156,7 @@ Feature: Lodging Committee Calculations
     And the "natural_gas_intensity" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel intensities and eGRID"
-    And the conclusion of the committee should be "27.87107"
+    And the conclusion of the committee should be "27.79608"
 
   Scenario: Emission factor committee from lodging class
     Given a lodging emitter
@@ -169,7 +169,7 @@ Feature: Lodging Committee Calculations
     And the "natural_gas_intensity" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel intensities and eGRID"
-    And the conclusion of the committee should be "42.74837"
+    And the conclusion of the committee should be "42.58421"
 
   Scenario: Emission factor committee from census division
     Given a lodging emitter
@@ -182,7 +182,7 @@ Feature: Lodging Committee Calculations
     And the "natural_gas_intensity" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel intensities and eGRID"
-    And the conclusion of the committee should be "22.22776"
+    And the conclusion of the committee should be "22.15176"
 
   Scenario: Emission factor committee from zip code
     Given a lodging emitter
@@ -197,4 +197,4 @@ Feature: Lodging Committee Calculations
     And the "natural_gas_intensity" committee is calculated
     And the "emission_factor" committee is calculated
     Then the committee should have used quorum "from fuel intensities and eGRID"
-    And the conclusion of the committee should be "12.55251"
+    And the conclusion of the committee should be "12.47651"

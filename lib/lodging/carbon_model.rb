@@ -37,31 +37,28 @@ module BrighterPlanet
           # Returns the `emission factor` (*kg CO<sub>2</sub>e / room-night*)
           committee :emission_factor do
             #### Emission factor from fuel intensities and eGRID
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # - Calculates an energy-based emission factor for [natural gas](http://data.brighterplanet.com/fuels) and [fuel oil](http://data.brighterplanet.com/fuels) by multiplying their `carbon content` (*g carbon / MJ*) by 1/1000 (*kg / g*) by 44/12 (*CO<sub>2</sub> / carbon*) to give *kg CO<sub>2</sub> / MJ*
-            # - Calculates a volume-based emission factor for [natural gas](http://data.brighterplanet.com/fuels) and [fuel oil](http://data.brighterplanet.com/fuels) by multiplying their energy-based emission factor (*kg CO<sub>2</sub> / MJ*) by their `energy content` (*MJ / l or cubic m*) to give *kg CO<sub>2</sub> / litre or cubic m*
-            # - Calculates an energy-based emission factor for district heat by dividing the energy-based natural gas emission factor by 0.817 and the energy-based fuel oil emission factor by 0.846 (to account for boiler inefficiencies), averaging the two, and dividing by 0.95 (to account for transmission losses) to give *kg CO<sub>2</sub> / MJ*
-            # - Calculates an electricity emission factor by dividing the [eGRID subregion](http://data.brighterplanet.com/egrid_subregions) electricity emission factor by 1 - the [eGRID region](http://data.brighterplanet.com/egrid_regions) loss factor (to account for transmission and distribution losses) to give **kg CO<sub>2</sub> / kWh*
-            # - Multiplies `natural gas intensity` by the volume-based natural gas emission factor, `fuel oil intensity` by the volume-based fuel oil emission factor, `electricity intensity` by the electricity emission factor, and `district heat intensity` by the energy-based district heat emission factor
-            # - Adds these together
-            quorum 'from fuel intensities and eGRID', :needs => [:natural_gas_intensity, :fuel_oil_intensity, :electricity_intensity, :district_heat_intensity, :egrid_subregion, :egrid_region], :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              natural_gas = Fuel.find_by_name "Pipeline Natural Gas"
-              natural_gas_energy_ef = natural_gas.carbon_content.grams.to(:kilograms).carbon.to(:co2) # kg co2 / MJ
-              natural_gas_ef = natural_gas_energy_ef * natural_gas.energy_content
-              
-              fuel_oil = Fuel.find_by_name "Distillate Fuel Oil No. 2"
-              fuel_oil_energy_ef = fuel_oil.carbon_content.grams.to(:kilograms).carbon.to(:co2) # kg co2 / MJ
-              fuel_oil_ef = fuel_oil_energy_ef * fuel_oil.energy_content
-              
-              district_heat_ef = (((natural_gas_energy_ef / 0.817) + (fuel_oil_energy_ef / 0.846)) / 2) / 0.95 # kg / MJ
-              
-              electricity_ef = characteristics[:egrid_subregion].electricity_emission_factor / (1 - characteristics[:egrid_region].loss_factor)
-              
-              (characteristics[:natural_gas_intensity] * natural_gas_ef) +
-              (characteristics[:fuel_oil_intensity] * fuel_oil_ef) +
-              (characteristics[:electricity_intensity] * electricity_ef) +
-              (characteristics[:district_heat_intensity] * district_heat_ef)
+            quorum 'from fuel intensities and eGRID', :needs => [:natural_gas_intensity, :fuel_oil_intensity, :electricity_intensity, :district_heat_intensity, :egrid_subregion, :egrid_region],
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Calculates an energy-based emission factor for [natural gas](http://data.brighterplanet.com/fuels) and [fuel oil](http://data.brighterplanet.com/fuels) by multiplying their `carbon content` (*g carbon / MJ*) by 1/1000 (*kg / g*) by 44/12 (*CO<sub>2</sub> / carbon*) to give *kg CO<sub>2</sub> / MJ*
+                natural_gas = Fuel.find_by_name "Pipeline Natural Gas"
+                natural_gas_energy_ef = natural_gas.co2_emission_factor / natural_gas.energy_content
+                
+                # Calculates a volume-based emission factor for [natural gas](http://data.brighterplanet.com/fuels) and [fuel oil](http://data.brighterplanet.com/fuels) by multiplying their energy-based emission factor (*kg CO<sub>2</sub> / MJ*) by their `energy content` (*MJ / l or cubic m*) to give *kg CO<sub>2</sub> / litre or cubic m*
+                fuel_oil = Fuel.find_by_name "Distillate Fuel Oil No. 2"
+                fuel_oil_energy_ef = fuel_oil.co2_emission_factor / fuel_oil.energy_content
+                
+                # Calculates an energy-based emission factor for district heat by dividing the energy-based natural gas emission factor by 0.817 and the energy-based fuel oil emission factor by 0.846 (to account for boiler inefficiencies), averaging the two, and dividing by 0.95 (to account for transmission losses) to give *kg CO<sub>2</sub> / MJ*
+                district_heat_ef = (((natural_gas_energy_ef / 0.817) + (fuel_oil_energy_ef / 0.846)) / 2) / 0.95 # kg / MJ
+                
+                # Calculates an electricity emission factor by dividing the [eGRID subregion](http://data.brighterplanet.com/egrid_subregions) electricity emission factor by 1 - the [eGRID region](http://data.brighterplanet.com/egrid_regions) loss factor (to account for transmission and distribution losses) to give *kg CO<sub>2</sub> / kWh*
+                electricity_ef = characteristics[:egrid_subregion].electricity_emission_factor / (1 - characteristics[:egrid_region].loss_factor)
+                
+                # Multiplies `natural gas intensity` (*cubic m / room-night*) by the volume-based natural gas emission factor (*kg CO<sub>2</sub> / room-night*), `fuel oil intensity` (*l / room-night*) by the volume-based fuel oil emission factor (*kg CO<sub>2</sub> / l*), `electricity intensity` (*kWh / room-night*) by the electricity emission factor (*kg CO<sub>2</sub> / kWh*), and `district heat intensity` (*MJ / room-night*) by the energy-based district heat emission factor (*kg CO<sub>2</sub> / MJ*), and adds these together to give *kg CO<sub>2</sub> / room-night*.
+                (characteristics[:natural_gas_intensity] * natural_gas.co2_emission_factor) +
+                (characteristics[:fuel_oil_intensity] * fuel_oil.co2_emission_factor) +
+                (characteristics[:district_heat_intensity] * district_heat_ef) +
+                (characteristics[:electricity_intensity] * electricity_ef)
             end
           end
           
