@@ -25,11 +25,11 @@ module BrighterPlanet
           # Returns the `emission` estimate (*kg CO<sub>2</sub>e*).
           committee :emission do
             #### Emission from rooms, duration, and emission factor
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Multiplies `rooms` by `duration` and the `emission factor` (*kg CO<sub>2</sub>e / room-night*) to give (*kg CO<sub>2</sub>e).
-            quorum 'from rooms, duration, and emission factor', :needs => [:rooms, :duration, :emission_factor], :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:rooms] * characteristics[:duration] * characteristics[:emission_factor]
+            quorum 'from rooms, duration, and emission factor', :needs => [:rooms, :duration, :emission_factor], 
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Multiplies `rooms` by `duration` and the `emission factor` (*kg CO<sub>2</sub>e / room-night*) to give (*kg CO<sub>2</sub>e).
+                characteristics[:rooms] * characteristics[:duration] * characteristics[:emission_factor]
             end
           end
           
@@ -66,19 +66,19 @@ module BrighterPlanet
           # Returns the `natural gas intensity` (*cubic m / room-night*).
           committee :natural_gas_intensity do
             #### Natural gas intensity from census division
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [census division](http://data.brighterplanet.com/census_divisions) `natural gas intensity` (*cubic m / room-night*).
-            quorum 'from census division', :needs => :census_division, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:census_division].lodging_building_natural_gas_intensity
+            quorum 'from census division', :needs => :census_division, 
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [census division](http://data.brighterplanet.com/census_divisions) `natural gas intensity` (*cubic m / room-night*).
+                characteristics[:census_division].lodging_building_natural_gas_intensity
             end
             
             #### Natural gas intensity from lodging class
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [lodging class](http://data.brighterplanet.com/lodging_class) `natural gas intensity` (*cubic m / room-night*).
-            quorum 'from lodging class', :needs => :lodging_class, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:lodging_class].natural_gas_intensity
+            quorum 'from lodging class', :needs => :lodging_class,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [lodging class](http://data.brighterplanet.com/lodging_class) `natural gas intensity` (*cubic m / room-night*).
+                characteristics[:lodging_class].natural_gas_intensity
             end
           end
           
@@ -86,19 +86,19 @@ module BrighterPlanet
           # Returns the `fuel oil intensity` (*l / room-night*).
           committee :fuel_oil_intensity do
             #### Fuel oil intensity from census division
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [census division](http://data.brighterplanet.com/census_divisions) `fuel oil intensity` (*l / room-night*).
-            quorum 'from census division', :needs => :census_division, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:census_division].lodging_building_fuel_oil_intensity
+            quorum 'from census division', :needs => :census_division,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [census division](http://data.brighterplanet.com/census_divisions) `fuel oil intensity` (*l / room-night*).
+                characteristics[:census_division].lodging_building_fuel_oil_intensity
             end
             
             #### Fuel oil intensity from lodging class
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [lodging class](http://data.brighterplanet.com/lodging_class) `fuel oil intensity` (*l / room-night*).
-            quorum 'from lodging class', :needs => :lodging_class, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:lodging_class].fuel_oil_intensity
+            quorum 'from lodging class', :needs => :lodging_class,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [lodging class](http://data.brighterplanet.com/lodging_class) `fuel oil intensity` (*l / room-night*).
+                characteristics[:lodging_class].fuel_oil_intensity
             end
           end
           
@@ -106,19 +106,19 @@ module BrighterPlanet
           # Returns the `electricity intensity` (*kWh / room-night*).
           committee :electricity_intensity do
             #### Electricity intensity from census division
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [census division](http://data.brighterplanet.com/census_divisions) `electricity intensity` (*kWh / room-night*).
-            quorum 'from census division', :needs => :census_division, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:census_division].lodging_building_electricity_intensity
+            quorum 'from census division', :needs => :census_division,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [census division](http://data.brighterplanet.com/census_divisions) `electricity intensity` (*kWh / room-night*).
+                characteristics[:census_division].lodging_building_electricity_intensity
             end
             
             #### Electricity intensity from lodging class
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [lodging class](http://data.brighterplanet.com/lodging classes) `electricity intensity` (*kWh / room-night*).
-            quorum 'from lodging class', :needs => :lodging_class, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:lodging_class].electricity_intensity
+            quorum 'from lodging class', :needs => :lodging_class,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [lodging class](http://data.brighterplanet.com/lodging classes) `electricity intensity` (*kWh / room-night*).
+                characteristics[:lodging_class].electricity_intensity
             end
           end
           
@@ -126,19 +126,19 @@ module BrighterPlanet
           # Returns the `district heat intensity` (*MJ / room-night*).
           committee :district_heat_intensity do
             #### District heat intensity from census division
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [census division](http://data.brighterplanet.com/census_divisions) `district heat intensity` (*MJ / room-night*).
-            quorum 'from census division', :needs => :census_division, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:census_division].lodging_building_district_heat_intensity
+            quorum 'from census division', :needs => :census_division,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [census division](http://data.brighterplanet.com/census_divisions) `district heat intensity` (*MJ / room-night*).
+                characteristics[:census_division].lodging_building_district_heat_intensity
             end
             
             #### District heat intensity from lodging class
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [lodging class](http://data.brighterplanet.com/lodging_classes) `district heat intensity` (*MJ / room-night*).
-            quorum 'from lodging class', :needs => :lodging_class, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:lodging_class].district_heat_intensity
+            quorum 'from lodging class', :needs => :lodging_class,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [lodging class](http://data.brighterplanet.com/lodging_classes) `district heat intensity` (*MJ / room-night*).
+                characteristics[:lodging_class].district_heat_intensity
             end
           end
           
@@ -151,11 +151,11 @@ module BrighterPlanet
             # Uses the client-input [loding class](http://data.brighterplanet.com/lodging_classes).
             
             #### Default lodging class
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Uses an artificial [lodging class](http://data.brighterplanet.com/lodging_classes) that represents the U.S. average.
-            quorum 'default', :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
-              LodgingClass.find_by_name 'Average'
+            quorum 'default',
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
+                # Uses an artificial [lodging class](http://data.brighterplanet.com/lodging_classes) that represents the U.S. average.
+                LodgingClass.find_by_name 'Average'
             end
           end
           
@@ -163,11 +163,11 @@ module BrighterPlanet
           # Returns the lodging's [eGRID region](http://data.brighterplanet.com/egrid_regions).
           committee :egrid_region do
             #### eGRID region from eGRID subregion
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [eGRID subregion](http://data.brighterplanet.com/egrid_subregions) `eGRID region`.
-            quorum 'from eGRID subregion', :needs => :egrid_subregion, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:egrid_subregion].egrid_region
+            quorum 'from eGRID subregion', :needs => :egrid_subregion,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [eGRID subregion](http://data.brighterplanet.com/egrid_subregions) `eGRID region`.
+                characteristics[:egrid_subregion].egrid_region
             end
           end
           
@@ -175,11 +175,11 @@ module BrighterPlanet
           # Returns the lodging's [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).
           committee :egrid_subregion do
             #### eGRID subregion from zip code
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [zip code](http://data.brighterplanet.com/zip_codes) `eGRID subregion`.
-            quorum 'from zip code', :needs => :zip_code, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:zip_code].egrid_subregion
+            quorum 'from zip code', :needs => :zip_code,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [zip code](http://data.brighterplanet.com/zip_codes) `eGRID subregion`.
+                characteristics[:zip_code].egrid_subregion
             end
             
             #### Default eGRID subregion
@@ -195,11 +195,11 @@ module BrighterPlanet
           # Returns the lodging's [census division](http://data.brighterplanet.com/census_divisions).
           committee :census_division do
             #### Census division from state
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [state](http://data.brighterplanet.com/states) `census division`.
-            quorum 'from state', :needs => :state, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:state].census_division
+            quorum 'from state', :needs => :state,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [state](http://data.brighterplanet.com/states) `census division`.
+                characteristics[:state].census_division
             end
           end
           
@@ -207,11 +207,11 @@ module BrighterPlanet
           # Returns the lodging's [state](http://data.brighterplanet.com/states).
           committee :state do
             #### State from zip code
-            # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
-            #
-            # Looks up the [zip code](http://data.brighterplanet.com/zip_codes) `state`.
-            quorum 'from zip code', :needs => :zip_code, :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-              characteristics[:zip_code].state
+            quorum 'from zip code', :needs => :zip_code,
+              # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                # Looks up the [zip code](http://data.brighterplanet.com/zip_codes) `state`.
+                characteristics[:zip_code].state
             end
           end
           
@@ -227,10 +227,8 @@ module BrighterPlanet
             # Uses the client-input `duration` (*nights*).
             
             #### Default duration
-            # **Complies:**
-            #
-            # Uses 1 *night*.
             quorum 'default' do
+              # Uses 1 *night*.
               1
             end
           end
@@ -244,10 +242,8 @@ module BrighterPlanet
             # Uses the client-input number of `rooms`.
             
             #### Default rooms
-            # **Complies:**
-            #
-            # Uses 1 room.
             quorum 'default' do
+              # Uses 1 room.
               1
             end
           end
