@@ -40,11 +40,11 @@ module BrighterPlanet
             quorum 'from fuel intensities and eGRID', :needs => [:natural_gas_intensity, :fuel_oil_intensity, :electricity_intensity, :district_heat_intensity, :egrid_subregion, :egrid_region],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                # Calculates an energy-based emission factor for [natural gas](http://data.brighterplanet.com/fuels) and [fuel oil](http://data.brighterplanet.com/fuels) by multiplying their `carbon content` (*g carbon / MJ*) by 1/1000 (*kg / g*) by 44/12 (*CO<sub>2</sub> / carbon*) to give *kg CO<sub>2</sub> / MJ*
+                # Calculates an energy-based emission factor for [natural gas](http://data.brighterplanet.com/fuels) by dividing its `co2 emission factor` (*kg / cubic m*) by its `energy content` (*MJ / cubic m*) to give *kg CO<sub>2</sub> / MJ*
                 natural_gas = Fuel.find_by_name "Pipeline Natural Gas"
                 natural_gas_energy_ef = natural_gas.co2_emission_factor / natural_gas.energy_content
                 
-                # Calculates a volume-based emission factor for [natural gas](http://data.brighterplanet.com/fuels) and [fuel oil](http://data.brighterplanet.com/fuels) by multiplying their energy-based emission factor (*kg CO<sub>2</sub> / MJ*) by their `energy content` (*MJ / l or cubic m*) to give *kg CO<sub>2</sub> / litre or cubic m*
+                # Calculates an energy-based emission factor for [fuel oil](http://data.brighterplanet.com/fuels) by dividing its `co2 emission factor` (*kg / l*) by its `energy content` (*MJ / l*) to give *kg CO<sub>2</sub> / MJ*
                 fuel_oil = Fuel.find_by_name "Distillate Fuel Oil No. 2"
                 fuel_oil_energy_ef = fuel_oil.co2_emission_factor / fuel_oil.energy_content
                 
