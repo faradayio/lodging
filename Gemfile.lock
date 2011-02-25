@@ -65,7 +65,7 @@ GEM
       geokit-rails
       loose_tight_dictionary (>= 0.0.8)
       weighted_average (>= 0.0.4)
-    emitter (0.4.1)
+    emitter (0.4.2)
       activesupport (>= 2.3.4)
       characterizable
       cohort_scope
@@ -210,5 +210,6 @@ DEPENDENCIES
   lodging!
   rake
   rdoc
+  roo (~> 1.9.3)
   rspec (~> 2)
   sniff (~> 0.6)
