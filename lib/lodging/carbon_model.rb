@@ -29,7 +29,7 @@ module BrighterPlanet
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 # Multiplies `rooms` by `duration` (*seconds*) (converted to nights) and the `emission factor` (*kg CO<sub>2</sub>e / room-night*) to give (*kg CO<sub>2</sub>e).
-                characteristics[:rooms] * characteristics[:duration] / 3600.0 * characteristics[:emission_factor]
+                characteristics[:rooms] * characteristics[:duration] / 86400.0 * characteristics[:emission_factor]
             end
           end
           
