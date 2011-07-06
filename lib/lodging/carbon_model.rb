@@ -28,8 +28,8 @@ module BrighterPlanet
             quorum 'from rooms, duration, and emission factor', :needs => [:rooms, :duration, :emission_factor], 
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                # Multiplies `rooms` by `duration` and the `emission factor` (*kg CO<sub>2</sub>e / room-night*) to give (*kg CO<sub>2</sub>e).
-                characteristics[:rooms] * characteristics[:duration] * characteristics[:emission_factor]
+                # Multiplies `rooms` by `duration` (*seconds*) (converted to nights) and the `emission factor` (*kg CO<sub>2</sub>e / room-night*) to give (*kg CO<sub>2</sub>e).
+                characteristics[:rooms] * characteristics[:duration] / 3600.0 * characteristics[:emission_factor]
             end
           end
           
@@ -219,17 +219,17 @@ module BrighterPlanet
           # Returns the client-input [zip code](http://data.brighterplanet.com/zip_codes).
           
           ### Duration calculation
-          # Returns the stay's `duration` (*nights*).
+          # Returns the stay's `duration` (*seconds*).
           committee :duration do
             #### Duration from client input
             # **Complies:** All
             #
-            # Uses the client-input `duration` (*nights*).
+            # Uses the client-input `duration` (*seconds*).
             
             #### Default duration
             quorum 'default' do
-              # Uses 1 *night*.
-              1
+              # Uses 86400 *seconds* (1 night).
+              86400.0
             end
           end
           

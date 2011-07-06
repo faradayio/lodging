@@ -11,7 +11,7 @@ Feature: Lodging Committee Calculations
     Given a lodging emitter
     When the "duration" committee is calculated
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "1.0"
+    And the conclusion of the committee should be "86400"
 
   Scenario: State committee from zip code
     Given a lodging emitter

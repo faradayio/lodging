@@ -12,7 +12,7 @@ Feature: Lodging Emissions Calculations
     Then the emission value should be within "0.01" kgs of "138.98"
 
   Scenario: Calculations starting from duration
-    Given a lodging has "duration" of "5"
+    Given a lodging has "duration" of "432000"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "138.98"
 
@@ -33,21 +33,21 @@ Feature: Lodging Emissions Calculations
 
   Scenario: Calculations starting from rooms, duration, and lodging class
     Given a lodging has "rooms" of "2"
-    And it has "duration" of "2"
+    And it has "duration" of "172800"
     And it has "lodging_class.name" of "Hotel"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "170.34"
 
   Scenario: Calculations starting from rooms, duration, and state
     Given a lodging has "rooms" of "2"
-    And it has "duration" of "2"
+    And it has "duration" of "172800"
     And it has "state.postal_abbreviation" of "CA"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "88.61"
 
   Scenario: Calculations starting from rooms, duration, and zip code
     Given a lodging has "rooms" of "2"
-    And it has "duration" of "2"
+    And it has "duration" of "172800"
     And it has "zip_code.name" of "94122"
     When emissions are calculated
     Then the emission value should be within "0.01" kgs of "49.91"
