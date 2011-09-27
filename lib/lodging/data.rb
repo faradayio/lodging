@@ -2,13 +2,11 @@ module BrighterPlanet
   module Lodging
     module Data
       def self.included(base)
-        base.force_schema do
-          string  'lodging_class_name'
-          string  'zip_code_name'
-          string  'state_postal_abbreviation'
-          integer 'rooms'
-          integer 'duration'
-        end
+        base.col :lodging_class_name
+        base.col :zip_code_name
+        base.col :state_postal_abbreviation
+        base.col :rooms, :type => :integer
+        base.col :duration, :type => :integer
 
         base.data_miner do
           process 'pull orphans' do

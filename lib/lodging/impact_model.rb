@@ -18,12 +18,12 @@
 # Contributions to this carbon model are actively encouraged and warmly welcomed. This library includes a comprehensive test suite to ensure that your changes do not cause regressions. All changes should include test coverage for new functionality. Please see [sniff](https://github.com/brighterplanet/sniff#readme), our emitter testing framework, for more information.
 module BrighterPlanet
   module Lodging
-    module CarbonModel
+    module ImpactModel
       def self.included(base)
-        base.decide :emission, :with => :characteristics do
+        base.decide :impact, :with => :characteristics do
           ### Emission calculation
           # Returns the `emission` estimate (*kg CO<sub>2</sub>e*).
-          committee :emission do
+          committee :carbon do
             #### Emission from rooms, duration, and emission factor
             quorum 'from rooms, duration, and emission factor', :needs => [:rooms, :duration, :emission_factor], 
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
@@ -35,7 +35,7 @@ module BrighterPlanet
           
           ### Emission factor calculation
           # Returns the `emission factor` (*kg CO<sub>2</sub>e / room-night*)
-          committee :emission_factor do
+          committee :carbon_factor do
             #### Emission factor from fuel intensities and eGRID
             quorum 'from fuel intensities and eGRID', :needs => [:natural_gas_intensity, :fuel_oil_intensity, :electricity_intensity, :district_heat_intensity, :egrid_subregion, :egrid_region],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
