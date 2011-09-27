@@ -35,7 +35,7 @@ module BrighterPlanet
           
           ### Emission factor calculation
           # Returns the `emission factor` (*kg CO<sub>2</sub>e / room-night*)
-          committee :carbon_factor do
+          committee :emission_factor do
             #### Emission factor from fuel intensities and eGRID
             quorum 'from fuel intensities and eGRID', :needs => [:natural_gas_intensity, :fuel_oil_intensity, :electricity_intensity, :district_heat_intensity, :egrid_subregion, :egrid_region],
               # **Complies:** GHG Protocol Scope 3, ISO 14064-1, Climate Registry Protocol
