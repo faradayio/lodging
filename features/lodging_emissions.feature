@@ -1,53 +1,56 @@
 Feature: Lodging Emissions Calculations
   The lodging model should generate correct emission calculations
 
+  Background:
+    Given a Lodging
+
   Scenario: Calculations starting from nothing
     Given a lodging has nothing
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "27.80"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "27.80"
 
   Scenario: Calculations starting from rooms
-    Given a lodging has "rooms" of "5"
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "138.98"
+    Given it has "rooms" of "5"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "138.98"
 
   Scenario: Calculations starting from duration
-    Given a lodging has "duration" of "432000"
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "138.98"
+    Given it has "duration" of "432000"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "138.98"
 
   Scenario: Calculations starting from lodging class
-    Given a lodging has "lodging_class.name" of "Hotel"
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "42.58"
+    Given it has "lodging_class.name" of "Hotel"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "42.58"
 
   Scenario: Calculations starting from state
-    Given a lodging has "state.postal_abbreviation" of "CA"
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "22.15"
+    Given it has "state.postal_abbreviation" of "CA"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "22.15"
 
   Scenario: Calculations starting from zip code
-    Given a lodging has "zip_code.name" of "94122"
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "12.48"
+    Given it has "zip_code.name" of "94122"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "12.48"
 
   Scenario: Calculations starting from rooms, duration, and lodging class
-    Given a lodging has "rooms" of "2"
+    Given it has "rooms" of "2"
     And it has "duration" of "172800"
     And it has "lodging_class.name" of "Hotel"
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "170.34"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "170.34"
 
   Scenario: Calculations starting from rooms, duration, and state
-    Given a lodging has "rooms" of "2"
+    Given it has "rooms" of "2"
     And it has "duration" of "172800"
     And it has "state.postal_abbreviation" of "CA"
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "88.61"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "88.61"
 
   Scenario: Calculations starting from rooms, duration, and zip code
-    Given a lodging has "rooms" of "2"
+    Given it has "rooms" of "2"
     And it has "duration" of "172800"
     And it has "zip_code.name" of "94122"
-    When emissions are calculated
-    Then the emission value should be within "0.01" kgs of "49.91"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" kgs of "49.91"
