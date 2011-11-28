@@ -7,50 +7,39 @@ Feature: Lodging Emissions Calculations
   Scenario: Calculations starting from nothing
     Given a lodging has nothing
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "27.80"
+    Then the amount of "carbon" should be within "0.01" of "31.00"
 
-  Scenario: Calculations starting from rooms
-    Given it has "rooms" of "5"
+  Scenario: Calculations starting from rooms and duration
+    Given it has "rooms" of "2"
+    And it has "duration" of "172800"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "138.98"
+    Then the amount of "carbon" should be within "0.01" of "124.00"
 
-  Scenario: Calculations starting from duration
-    Given it has "duration" of "432000"
+  Scenario Outline: Calculations from rooms, duration, and location
+    Given it has "rooms" of "2"
+    And it has "duration" of "172800"
+    And it has "location_description" of "location"
+    And the geocoder will encode the location_description as "" with zip code "<zip>", state "<state>", and country "<country>"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "138.98"
+    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Examples:
+      | location          | zip   | state | country | carbon |
+      | London, UK        |       |       | GB      | 124.00 |
+      | USA               |       |       | US      | 124.00 |
+      | San Francisco, CA |       | CA    | US      |  93.08 |
+      | 94122             | 94122 | CA    | US      |  54.38 |
 
-  Scenario: Calculations starting from lodging class
-    Given it has "lodging_class.name" of "Hotel"
-    When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "42.58"
-
-  Scenario: Calculations starting from state
-    Given it has "state.postal_abbreviation" of "CA"
-    When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "22.15"
-
-  Scenario: Calculations starting from zip code
-    Given it has "zip_code.name" of "94122"
-    When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "12.48"
-
-  Scenario: Calculations starting from rooms, duration, and lodging class
+  Scenario Outline: Calculations from rooms, duration, and country lodging class
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
     And it has "lodging_class.name" of "Hotel"
+    And it has "location_description" of "location"
+    And the geocoder will encode the location_description as "" with zip code "<zip>", state "<state>", and country "<country>"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "170.34"
-
-  Scenario: Calculations starting from rooms, duration, and state
-    Given it has "rooms" of "2"
-    And it has "duration" of "172800"
-    And it has "state.postal_abbreviation" of "CA"
-    When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "88.61"
-
-  Scenario: Calculations starting from rooms, duration, and zip code
-    Given it has "rooms" of "2"
-    And it has "duration" of "172800"
-    And it has "zip_code.name" of "94122"
-    When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "49.91"
+    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Examples:
+      | location          | zip   | state | country | carbon |
+      | London, UK        |       |       | GB      | 124.00 |
+      | USA               |       |       | US      | 185.80 |
+      | San Francisco, CA |       | CA    | US      |  93.08 |
+      | 94122             | 94122 | CA    | US      |  54.38 |

@@ -3,11 +3,12 @@ module BrighterPlanet
     module Characterization
       def self.included(base)
         base.characterize do
-          has :lodging_class
-          has :zip_code
-          has :state
           has :rooms
           has :duration, :measures => :time
+          has :location_description
+          has :zip_code
+          has :state
+          has :lodging_class
         end
       end
     end

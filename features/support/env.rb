@@ -3,6 +3,9 @@ Bundler.setup
 
 require 'cucumber'
 require 'cucumber/formatter/unicode'
+require 'rspec'
+require 'rspec/expectations'
+require 'cucumber/rspec/doubles'
 
 require 'data_miner'
 DataMiner.logger = Logger.new(nil)

@@ -1,4 +1,5 @@
 require 'emitter'
+require 'geokit'
 
 module BrighterPlanet
   module Lodging
