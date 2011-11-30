@@ -7,5 +7,3 @@ end
 source :rubygems
 
 gemspec :path => '.'
-
-gem 'earth', :require => false, :git => 'https://github.com/brighterplanet/earth.git', :branch => 'lodging_updates'
