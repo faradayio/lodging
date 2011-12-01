@@ -7,13 +7,13 @@ Feature: Lodging Emissions Calculations
   Scenario: Calculations starting from nothing
     Given a lodging has nothing
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "31.00"
+    Then the amount of "carbon" should be within "0.01" of "42.03"
 
   Scenario: Calculations starting from rooms and duration
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "124.00"
+    Then the amount of "carbon" should be within "0.01" of "168.12"
 
   Scenario Outline: Calculations from rooms, duration, and location
     Given it has "rooms" of "2"
@@ -24,10 +24,10 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | location          | zip   | state | country | carbon |
-      | London, UK        |       |       | GB      | 124.00 |
-      | USA               |       |       | US      | 124.00 |
-      | San Francisco, CA |       | CA    | US      |  93.08 |
-      | 94122             | 94122 | CA    | US      |  54.38 |
+      | London, UK        |       |       | GB      | 168.12 |
+      | USA               |       |       | US      | 168.12 |
+      | San Francisco, CA |       | CA    | US      |  85.69 |
+      | 94122             | 94122 | CA    | US      |  50.72 |
 
   Scenario Outline: Calculations from rooms, duration, and country lodging class
     Given it has "rooms" of "2"
@@ -39,7 +39,7 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | location          | zip   | state | country | carbon |
-      | London, UK        |       |       | GB      | 124.00 |
-      | USA               |       |       | US      | 185.80 |
-      | San Francisco, CA |       | CA    | US      |  93.08 |
-      | 94122             | 94122 | CA    | US      |  54.38 |
+      | London, UK        |       |       | GB      | 168.12 |
+      | USA               |       |       | US      | 168.12 |
+      | San Francisco, CA |       | CA    | US      |  85.69 |
+      | 94122             | 94122 | CA    | US      |  50.72 |

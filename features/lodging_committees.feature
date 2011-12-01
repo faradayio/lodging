@@ -123,12 +123,6 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from zip code"
     And the conclusion of the committee should have "abbreviation" of "CAMX"
 
-  Scenario: eGRID region from eGRID subregion
-    Given a characteristic "egrid_subregion.abbreviation" of "CAMX"
-    When the "egrid_region" committee reports
-    Then the committee should have used quorum "from eGRID subregion"
-    And the conclusion of the committee should have "name" of "W"
-
   Scenario: Country lodging class committee from valid country and lodging class
     Given a characteristic "lodging_class.name" of "Hotel"
     And a characteristic "country.iso_3166_code" of "US"
@@ -144,19 +138,19 @@ Feature: Lodging Committee Calculations
   Scenario: District heat intensity committee from default
     When the "district_heat_intensity" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "4.0"
+    And the conclusion of the committee should be "2.3"
 
   Scenario: District heat intensity committee from country without intensity
     Given a characteristic "country.iso_3166_code" of "GB"
     When the "district_heat_intensity" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "4.0"
+    And the conclusion of the committee should be "2.3"
 
   Scenario: District heat intensity committee from country with intensity
-    Given a characteristic "country.iso_3166_code" of "US"
+    Given a characteristic "country.iso_3166_code" of "VI"
     When the "district_heat_intensity" committee reports
     Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "4.0"
+    And the conclusion of the committee should be "2.5"
 
   Scenario: District heat intensity committee from country lodging class
     Given a characteristic "country.iso_3166_code" of "US"
@@ -164,7 +158,7 @@ Feature: Lodging Committee Calculations
     When the "country_lodging_class" committee reports
     And the "district_heat_intensity" committee reports
     Then the committee should have used quorum "from country lodging class"
-    And the conclusion of the committee should be "2.4"
+    And the conclusion of the committee should be "2.3"
 
   Scenario: District heat intensity committee from census division
     Given a characteristic "census_division.number" of "9"
@@ -175,19 +169,19 @@ Feature: Lodging Committee Calculations
   Scenario: Electricity intensity committee from default
     When the "electricity_intensity" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "36.0"
+    And the conclusion of the committee should be "55.0"
 
   Scenario: Electricity intensity committee from country without intensity
     Given a characteristic "country.iso_3166_code" of "GB"
     When the "electricity_intensity" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "36.0"
+    And the conclusion of the committee should be "55.0"
 
   Scenario: Electricity intensity committee from country with intensity
-    Given a characteristic "country.iso_3166_code" of "US"
+    Given a characteristic "country.iso_3166_code" of "VI"
     When the "electricity_intensity" committee reports
     Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "36.0"
+    And the conclusion of the committee should be "60.0"
 
   Scenario: Electricity intensity committee from country lodging class
     Given a characteristic "country.iso_3166_code" of "US"
@@ -195,7 +189,7 @@ Feature: Lodging Committee Calculations
     When the "country_lodging_class" committee reports
     And the "electricity_intensity" committee reports
     Then the committee should have used quorum "from country lodging class"
-    And the conclusion of the committee should be "56.0"
+    And the conclusion of the committee should be "55.0"
 
   Scenario: Electricity intensity committee from census division
     Given a characteristic "census_division.number" of "9"
@@ -206,19 +200,19 @@ Feature: Lodging Committee Calculations
   Scenario: Fuel oil intensity committee from default
     When the "fuel_oil_intensity" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "0.6"
+    And the conclusion of the committee should be "0.3"
 
   Scenario: Fuel oil intensity committee from country without intensity
     Given a characteristic "country.iso_3166_code" of "GB"
     When the "fuel_oil_intensity" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "0.6"
+    And the conclusion of the committee should be "0.3"
 
   Scenario: Fuel oil intensity committee from country with intensity
-    Given a characteristic "country.iso_3166_code" of "US"
+    Given a characteristic "country.iso_3166_code" of "VI"
     When the "fuel_oil_intensity" committee reports
     Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "0.6"
+    And the conclusion of the committee should be "0.5"
 
   Scenario: Fuel oil intensity committee from country lodging class
     Given a characteristic "country.iso_3166_code" of "US"
@@ -226,7 +220,7 @@ Feature: Lodging Committee Calculations
     When the "country_lodging_class" committee reports
     And the "fuel_oil_intensity" committee reports
     Then the committee should have used quorum "from country lodging class"
-    And the conclusion of the committee should be "0.26"
+    And the conclusion of the committee should be "0.3"
 
   Scenario: Fuel oil intensity committee from census division
     Given a characteristic "census_division.number" of "9"
@@ -237,19 +231,19 @@ Feature: Lodging Committee Calculations
   Scenario: Natural gas intensity committee from default
     When the "natural_gas_intensity" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "2.2"
+    And the conclusion of the committee should be "3.5"
 
   Scenario: Natural gas intensity committee from country without intensity
     Given a characteristic "country.iso_3166_code" of "GB"
     When the "natural_gas_intensity" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "2.2"
+    And the conclusion of the committee should be "3.5"
 
   Scenario: Natural gas intensity committee from country with intensity
-    Given a characteristic "country.iso_3166_code" of "US"
+    Given a characteristic "country.iso_3166_code" of "VI"
     When the "natural_gas_intensity" committee reports
     Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "2.2"
+    And the conclusion of the committee should be "4.0"
 
   Scenario: Natural gas intensity committee from country lodging class
     Given a characteristic "country.iso_3166_code" of "US"
@@ -257,7 +251,7 @@ Feature: Lodging Committee Calculations
     When the "country_lodging_class" committee reports
     And the "natural_gas_intensity" committee reports
     Then the committee should have used quorum "from country lodging class"
-    And the conclusion of the committee should be "3.6"
+    And the conclusion of the committee should be "3.5"
 
   Scenario: Natural gas intensity committee from census division
     Given a characteristic "census_division.number" of "9"
@@ -270,28 +264,28 @@ Feature: Lodging Committee Calculations
     When the "district_heat_intensity" committee reports
     And the "district_heat_use" committee reports
     Then the committee should have used quorum "from district heat intensity and room nights"
-    And the conclusion of the committee should be "16.0"
+    And the conclusion of the committee should be "9.2"
     
   Scenario: Electricity use committee
     Given a characteristic "room_nights" of "4"
     When the "electricity_intensity" committee reports
     And the "electricity_use" committee reports
     Then the committee should have used quorum "from electricity intensity and room nights"
-    And the conclusion of the committee should be "144.0"
+    And the conclusion of the committee should be "220.0"
     
   Scenario: Fuel oil use committee
     Given a characteristic "room_nights" of "4"
     When the "fuel_oil_intensity" committee reports
     And the "fuel_oil_use" committee reports
     Then the committee should have used quorum "from fuel oil intensity and room nights"
-    And the conclusion of the committee should be "2.4"
+    And the conclusion of the committee should be "1.0"
     
   Scenario: Natural gas use committee
     Given a characteristic "room_nights" of "4"
     When the "natural_gas_intensity" committee reports
     And the "natural_gas_use" committee reports
     Then the committee should have used quorum "from natural gas intensity and room nights"
-    And the conclusion of the committee should be "8.8"
+    And the conclusion of the committee should be "14.0"
 
   Scenario: District heat emission factor committee
     When the "district_heat_emission_factor" committee reports
@@ -301,23 +295,22 @@ Feature: Lodging Committee Calculations
   Scenario: Electricity emission factor committee from default
     When the "electricity_emission_factor" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "0.63830"
+    And the conclusion of the committee should be "0.62783"
 
   Scenario: Electricity emission factor committee from country missing emission factor
     Given a characteristic "country.iso_3166_code" of "GB"
     When the "electricity_emission_factor" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "0.63830"
+    And the conclusion of the committee should be "0.62783"
 
   Scenario: Electricity emission factor committee from country with emission factor
     Given a characteristic "country.iso_3166_code" of "US"
     When the "electricity_emission_factor" committee reports
     Then the committee should have used quorum "from country"
-    And the conclusion of the committee should be "0.63830"
+    And the conclusion of the committee should be "0.62783"
 
-  Scenario: Electricity emission factor committee from eGRID subregion and eGRID region
+  Scenario: Electricity emission factor committee from eGRID subregion
     Given a characteristic "egrid_subregion.abbreviation" of "CAMX"
-    When the "egrid_region" committee reports
-    And the "electricity_emission_factor" committee reports
-    Then the committee should have used quorum "from eGRID subregion and eGRID region"
-    And the conclusion of the committee should be "0.31579"
+    When the "electricity_emission_factor" committee reports
+    Then the committee should have used quorum "from eGRID subregion"
+    And the conclusion of the committee should be "0.32632"

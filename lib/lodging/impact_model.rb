@@ -55,15 +55,10 @@ module BrighterPlanet
           #### Electricity emission factor (*kg CO<sub>2</sub>e / kWh*)
           # *A greenhouse gas emission factor for electricity used by the lodging.*
           committee :electricity_emission_factor do
-            # Sum the `eGRID subregion` electricity CO<sub>2</sub>, CH<sub>4</sub>, and N<sub>2</sub>O emission factors (*kg CO<sub>2</sub>e / kWh*) and divide by 1 minus the `eGRID region` loss factor (account for transmission and distribution losses) to give *kg CO<sub>2</sub>e / kWh*.
-            quorum 'from eGRID subregion and eGRID region', :needs => [:egrid_subregion, :egrid_region],
+            # Multiply the `eGRID subregion` electricity emission factors by 1 minus the the subregion's eGRID region loss factor (to account for transmission and distribution losses) to give *kg CO<sub>2</sub>e / kWh*.
+            quorum 'from eGRID subregion', :needs => :egrid_subregion,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                (
-                  characteristics[:egrid_subregion].electricity_co2_emission_factor +
-                  characteristics[:egrid_subregion].electricity_ch4_emission_factor +
-                  characteristics[:egrid_subregion].electricity_n2o_emission_factor
-                ) /
-                (1 - characteristics[:egrid_region].loss_factor)
+                characteristics[:egrid_subregion].electricity_emission_factor / (1 - characteristics[:egrid_subregion].egrid_region.loss_factor)
             end
             
             # Otherwise look up the `country` electricity emission factor (*kg CO<sub>2</sub>e / kWh*).
@@ -263,16 +258,6 @@ module BrighterPlanet
           # *The [lodging's class](http://data.brighterplanet.com/lodging_classes).*
           #
           # Use client input, if available.
-          
-          #### eGRID region
-          # *The lodging's [eGRID region](http://data.brighterplanet.com/egrid_regions).*
-          committee :egrid_region do
-            # Look up the `eGRID subregion` eGRID region.
-            quorum 'from eGRID subregion', :needs => :egrid_subregion,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:egrid_subregion].egrid_region
-            end
-          end
           
           #### eGRID subregion
           # *The lodging's [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
