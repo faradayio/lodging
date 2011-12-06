@@ -95,152 +95,126 @@ module BrighterPlanet
           #### Natural gas use (*m<sup>3</sup>*)
           # The lodging's natural gas use during `timeframe`.
           committee :natural_gas_use do
-            # Multiply `room nights` (*occupied room-nights*) by `natural gas intensity` (*m<sup>3</sup> / occupied room-night*) to give *m<sup>3</sup>*.
-            quorum 'from natural gas intensity and room nights', :needs => [:natural_gas_intensity, :room_nights],
+            # Multiply `room nights` (*room-nights*) by `natural gas intensity` (*m<sup>3</sup> / room-night*) to give *m<sup>3</sup>*.
+            quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:natural_gas_intensity]
+                characteristics[:room_nights] * characteristics[:fuel_intensities][:natural_gas]
             end
           end
           
           #### Fuel oil use (*l*)
           # The lodging's fuel oil use during `timeframe`.
           committee :fuel_oil_use do
-            # Multiply `room nights` (*occupied room-nights*) by `fuel oil intensity` (*l / occupied room-night*) to give *l*.
-            quorum 'from fuel oil intensity and room nights', :needs => [:fuel_oil_intensity, :room_nights],
+            # Multiply `room nights` (*room-nights*) by `fuel oil intensity` (*l / room-night*) to give *l*.
+            quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:fuel_oil_intensity]
+                characteristics[:room_nights] * characteristics[:fuel_intensities][:fuel_oil]
             end
           end
           
           #### Electricity use (*kWh*)
           # The lodging's electricity use during `timeframe`.
           committee :electricity_use do
-            # Multiply `room nights` (*occupied room-nights*) by `electricity intensity` (*kWh / occupied room-night*) to give *kWh*.
-            quorum 'from electricity intensity and room nights', :needs => [:electricity_intensity, :room_nights],
+            # Multiply `room nights` (*room-nights*) by `electricity intensity` (*kWh / room-night*) to give *kWh*.
+            quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:electricity_intensity]
+                characteristics[:room_nights] * characteristics[:fuel_intensities][:electricity]
             end
           end
           
           #### District heat use (*MJ*)
           # The lodging's district heat use during `timeframe`.
           committee :district_heat_use do
-            # Multiply `room nights` (*occupied room-nights*) by `district heat intensity` (*MJ / occupied room-night*) to give *MJ*.
-            quorum 'from district heat intensity and room nights', :needs => [:district_heat_intensity, :room_nights],
+            # Multiply `room nights` (*room-nights*) by `district heat intensity` (*MJ / room-night*) to give *MJ*.
+            quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:district_heat_intensity]
+                characteristics[:room_nights] * characteristics[:fuel_intensities][:district_heat]
             end
           end
           
-          #### Natural gas intensity (*m<sup>3</sup> / room-night*)
-          # *The lodging's natural gas use per occupied room night.*
-          committee :natural_gas_intensity do
-            # Look up the `census division` natural gas intensity (*m<sup>3</sup> / occupied room-night*).
+          #### Fuel intensities (*various*)
+          # *The lodging's use per occupied room night of a variety of fuels.*
+          committee :fuel_intensities do
+            # Look up the `census region lodging class` fuel intensities:
+            #
+            # - Natural gas: *m<sup>3</sup> / room-night*
+            # - Fuel oil: *l / room-night*
+            # - Electricity: *kWh / room-night*
+            # - District heat: *MJ / room-night*
+            quorum 'from census region lodging class', :needs => :census_region_lodging_class,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                {
+                  :natural_gas   => characteristics[:census_region_lodging_class].natural_gas_intensity,
+                  :fuel_oil      => characteristics[:census_region_lodging_class].fuel_oil_intensity,
+                  :electricity   => characteristics[:census_region_lodging_class].electricity_intensity,
+                  :district_heat => characteristics[:census_region_lodging_class].district_heat_intensity,
+                }
+            end
+            
+            # Otherwise look up the `census division` fuel intensities:
+            #
+            # - Natural gas: *m<sup>3</sup> / room-night*
+            # - Fuel oil: *l / room-night*
+            # - Electricity: *kWh / room-night*
+            # - District heat: *MJ / room-night*
             quorum 'from census division', :needs => :census_division,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:census_division].lodging_building_natural_gas_intensity
+                {
+                  :natural_gas   => characteristics[:census_division].lodging_building_natural_gas_intensity,
+                  :fuel_oil      => characteristics[:census_division].lodging_building_fuel_oil_intensity,
+                  :electricity   => characteristics[:census_division].lodging_building_electricity_intensity,
+                  :district_heat => characteristics[:census_division].lodging_building_district_heat_intensity,
+                }
             end
             
-            # Otherwise look up the `country lodging class` natural gas intensity (*m<sup>3</sup> / occupied room-night*).
+            # Otherwise look up the `country lodging class` fuel intensities:
+            #
+            # - Natural gas: *m<sup>3</sup> / room-night*
+            # - Fuel oil: *l / room-night*
+            # - Electricity: *kWh / room-night*
+            # - District heat: *MJ / room-night*
             quorum 'from country lodging class', :needs => :country_lodging_class,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country_lodging_class].natural_gas_intensity
+                {
+                  :natural_gas   => characteristics[:country_lodging_class].natural_gas_intensity,
+                  :fuel_oil      => characteristics[:country_lodging_class].fuel_oil_intensity,
+                  :electricity   => characteristics[:country_lodging_class].electricity_intensity,
+                  :district_heat => characteristics[:country_lodging_class].district_heat_intensity,
+                }
             end
             
-            # Otherwise look up the `country` lodging natural gas intensity (*m<sup>3</sup> / occupied room-night*).
+            # Otherwise look up the `country` lodging fuel intensities:
+            #
+            # - Natural gas: *m<sup>3</sup> / room-night*
+            # - Fuel oil: *l / room-night*
+            # - Electricity: *kWh / room-night*
+            # - District heat: *MJ / room-night*
             quorum 'from country', :needs => :country,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country].lodging_natural_gas_intensity
+                intensities = {
+                  :natural_gas   => characteristics[:country].lodging_natural_gas_intensity,
+                  :fuel_oil      => characteristics[:country].lodging_fuel_oil_intensity,
+                  :electricity   => characteristics[:country].lodging_electricity_intensity,
+                  :district_heat => characteristics[:country].lodging_district_heat_intensity,
+                }
+                # Ignore the `country` fuel intensities if they're all blank.
+                intensities.values.compact.empty? ? nil : intensities
             end
             
-            # Otherwise look up the global average lodging natural gas intensity (*m<sup>3</sup> / occupied room-night*)
+            # Otherwise look up global average lodging fuel intensities:
+            #
+            # - Natural gas: *m<sup>3</sup> / room-night*
+            # - Fuel oil: *l / room-night*
+            # - Electricity: *kWh / room-night*
+            # - District heat: *MJ / room-night*
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
-                Country.fallback.lodging_natural_gas_intensity
-            end
-          end
-          
-          #### Fuel oil intensity (*l / room-night*)
-          # *The lodging's fuel oil use per occupied room night.*
-          committee :fuel_oil_intensity do
-            # Look up the `census division` fuel oil intensity (*l / occupied room-night*).
-            quorum 'from census division', :needs => :census_division,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:census_division].lodging_building_fuel_oil_intensity
-            end
-            
-            # Otherwise look up the `country lodging class` fuel oil intensity (*l / occupied room-night*).
-            quorum 'from country lodging class', :needs => :country_lodging_class,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country_lodging_class].fuel_oil_intensity
-            end
-            
-            # Otherwise look up the `country` lodging fuel oil intensity (*l / occupied room-night*).
-            quorum 'from country', :needs => :country,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country].lodging_fuel_oil_intensity
-            end
-            
-            # Otherwise look up the global average lodging fuel oil intensity (*l / occupied room-night*)
-            quorum 'default',
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
-                Country.fallback.lodging_fuel_oil_intensity
-            end
-          end
-          
-          #### Electricity intensity (*kWh / occupied room-night*)
-          # *The lodging's electricity use per occupied room night.*
-          committee :electricity_intensity do
-            # Look up the `census division` electricity intensity (*kWh / occupied room-night*).
-            quorum 'from census division', :needs => :census_division,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:census_division].lodging_building_electricity_intensity
-            end
-            
-            # Otherwise look up the `country lodging class` electricity intensity (*kWh / occupied room-night*).
-            quorum 'from country lodging class', :needs => :country_lodging_class,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country_lodging_class].electricity_intensity
-            end
-            
-            # Otherwise look up the `country` lodging electricity intensity (*kWh / occupied room-night*).
-            quorum 'from country', :needs => :country,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country].lodging_electricity_intensity
-            end
-            
-            # Otherwise look up the global average lodging electricity intensity (*kWh / occupied room-night*)
-            quorum 'default',
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
-                Country.fallback.lodging_electricity_intensity
-            end
-          end
-          
-          #### District heat intensity (*MJ / occupied room-night*)
-          # *The lodging's district heat use per occupied room night.*
-          committee :district_heat_intensity do
-            # Look up the `census division` district heat intensity (*MJ / occupied room-night*).
-            quorum 'from census division', :needs => :census_division,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:census_division].lodging_building_district_heat_intensity
-            end
-            
-            # Otherwise look up the `country lodging class` district heat intensity (*MJ / occupied room-night*).
-            quorum 'from country lodging class', :needs => :country_lodging_class,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country_lodging_class].district_heat_intensity
-            end
-            
-            # Otherwise look up the `country` lodging district heat intensity (*MJ / occupied room-night*).
-            quorum 'from country', :needs => :country,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country].lodging_district_heat_intensity
-            end
-            
-            # Otherwise look up the global average lodging district heat intensity (*MJ / occupied room-night*)
-            quorum 'default',
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
-                Country.fallback.lodging_district_heat_intensity
+                {
+                  :natural_gas   => Country.fallback.lodging_natural_gas_intensity,
+                  :fuel_oil      => Country.fallback.lodging_fuel_oil_intensity,
+                  :electricity   => Country.fallback.lodging_electricity_intensity,
+                  :district_heat => Country.fallback.lodging_district_heat_intensity,
+                }
             end
           end
           
