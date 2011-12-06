@@ -244,6 +244,16 @@ module BrighterPlanet
             end
           end
           
+          #### Census region lodging class
+          # *The lodging's [census region-specific lodging class](http://data.brighterplanet.com/census_region_lodging_classes).*
+          committee :census_region_lodging_class do
+            # Check whether the combination of `census division` and `lodging class` matches a record in our database.
+            quorum 'from census region and lodging class', :needs => [:census_region, :lodging_class],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                CensusRegionLodgingClass.find_by_census_region_number_and_lodging_class_name(characteristics[:census_region].number, characteristics[:lodging_class].name)
+            end
+          end
+          
           #### Country lodging class
           # *The lodging's [country-specific lodging class](http://data.brighterplanet.com/country_lodging_classes).*
           committee :country_lodging_class do
@@ -276,6 +286,22 @@ module BrighterPlanet
             quorum 'from location', :needs => :location,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 Country.find_by_iso_3166_code characteristics[:location].country_code
+            end
+            
+            # Otherwise if state is defined then the country is the United States.
+            quorum 'from state', :needs => :state,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                Country.united_states
+            end
+          end
+          
+          #### Census region
+          # *The lodging's [census region](http://data.brighterplanet.com/census_regions).*
+          committee :census_region do
+            # Look up the `census division` census region.
+            quorum 'from census division', :needs => :census_division,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:census_division].census_region
             end
           end
           

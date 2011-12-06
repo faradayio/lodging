@@ -105,6 +105,18 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should have "number" of "9"
 
+  Scenario: Census region committee from census division
+    Given a characteristic "census_division.number" of "9"
+    When the "census_region" committee reports
+    Then the committee should have used quorum "from census division"
+    And the conclusion of the committee should have "name" of "West Region"
+
+  Scenario: Country committee from state
+    Given a characteristic "state.postal_abbreviation" of "CA"
+    When the "country" committee reports
+    Then the committee should have used quorum "from state"
+    And the conclusion of the committee should have "iso_3166_code" of "US"
+
   Scenario Outline: Country committee from location
     Given a characteristic "location_description" of address value "<address>"
     And the geocoder will encode the location_description as "" with zip code "", state "", and country "<country>"
@@ -191,11 +203,23 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from country lodging class"
     And the conclusion of the committee should be "55.0"
 
+  Scenario: Census region lodging class committee from valid census region and lodging class
+    Given a characteristic "lodging_class.name" of "Hotel"
+    And a characteristic "census_region.number" of "4"
+    When the "census_region_lodging_class" committee reports
+    Then the conclusion of the committee should have "name" of "West Hotel"
+
   Scenario: Electricity intensity committee from census division
     Given a characteristic "census_division.number" of "9"
     When the "electricity_intensity" committee reports
     Then the committee should have used quorum "from census division"
     And the conclusion of the committee should be "29.0"
+
+  Scenario: Census region lodging class committee from invalid census region and lodging class
+    Given a characteristic "lodging_class.name" of "Auberge"
+    And a characteristic "census_region.number" of "4"
+    When the "census_region_lodging_class" committee reports
+    Then the conclusion of the committee should be nil
 
   Scenario: Fuel oil intensity committee from default
     When the "fuel_oil_intensity" committee reports
