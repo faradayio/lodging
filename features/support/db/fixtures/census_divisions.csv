@@ -1,2 +1,2 @@
-number,census_region_number,lodging_building_natural_gas_intensity,lodging_building_fuel_oil_intensity,lodging_building_electricity_intensity,lodging_building_district_heat_intensity
-9,4,1.6,0,29,2.3
+number,census_region_number
+9,4

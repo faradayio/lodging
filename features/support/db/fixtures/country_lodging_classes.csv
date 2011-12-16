@@ -1,3 +1,4 @@
-name,country_iso_3166_code,lodging_class_name,natural_gas_intensity,fuel_oil_intensity,electricity_intensity,district_heat_intensity
-US Hotel,US,Hotel,3.5,0.25,55,2.3
-VI Hotel,VI,Hotel,4,0.5,60,2.5
+name,country_iso_3166_code,lodging_class_name,natural_gas_intensity,fuel_oil_intensity,electricity_intensity,district_heat_intensity,weighting
+US Hotel,US,Hotel,3.55,0.25,56.20,2.30,19600
+US Motel or inn,US,Motel or inn,1.57,0.47,27.70,1.62,70000
+VI Hotel,VI,Hotel,4.0,1.0,65.0,0.0
