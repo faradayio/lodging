@@ -75,7 +75,7 @@ module BrighterPlanet
           end
           
           #### District heat emission factor (*kg CO<sub>2</sub> / MJ*)
-          # *A greenhous gas emission factor for district heat used by the lodging.*
+          # *A greenhouse gas emission factor for district heat used by the lodging.*
           committee :district_heat_emission_factor do
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
@@ -135,44 +135,35 @@ module BrighterPlanet
           #### Fuel intensities (*various*)
           # *The lodging's use per occupied room night of a variety of fuels.*
           committee :fuel_intensities do
-            # Look up the `census region lodging class` fuel intensities:
+            # For each record in the cohort, multiply months used (*months*) by 365 (*days / year*) and divide by 7 (*days / week*) and by 12 (*months / year*) to give *weeks* the surveyed building was used.
+            # Divide weekly hours (*hours / week*) by 24 (*hours / day*) and multiply by *weeks* to give *days* the survey building was used.
+            # Multiply by the number of rooms in the building and 0.59 (average occupancy after PriceWaterhouseCoopers) to give *occupied room nights*.
+            # Divide total use of each fuel by *occupied room nights* to give *fuel / room-night*.
+            # Calculate the weighted average of each intensity across all records in the `cohort` to give:
             #
-            # - Natural gas: *m<sup>3</sup> / room-night*
-            # - Fuel oil: *l / room-night*
-            # - Electricity: *kWh / room-night*
-            # - District heat: *MJ / room-night*
-            quorum 'from census region lodging class', :needs => :census_region_lodging_class,
+            # - Natural gas intensity: *m<sup>3</sup> / room-night*
+            # - Fuel oil intensity: *l / room-night*
+            # - Electricity intensity: *kWh / room-night*
+            # - District heat intensity: *MJ / room-night*
+            quorum 'from cohort', :needs => :cohort,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                {
-                  :natural_gas   => characteristics[:census_region_lodging_class].natural_gas_intensity,
-                  :fuel_oil      => characteristics[:census_region_lodging_class].fuel_oil_intensity,
-                  :electricity   => characteristics[:census_region_lodging_class].electricity_intensity,
-                  :district_heat => characteristics[:census_region_lodging_class].district_heat_intensity,
-                }
-            end
-            
-            # Otherwise look up the `census division` fuel intensities:
-            #
-            # - Natural gas: *m<sup>3</sup> / room-night*
-            # - Fuel oil: *l / room-night*
-            # - Electricity: *kWh / room-night*
-            # - District heat: *MJ / room-night*
-            quorum 'from census division', :needs => :census_division,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                {
-                  :natural_gas   => characteristics[:census_division].lodging_building_natural_gas_intensity,
-                  :fuel_oil      => characteristics[:census_division].lodging_building_fuel_oil_intensity,
-                  :electricity   => characteristics[:census_division].lodging_building_electricity_intensity,
-                  :district_heat => characteristics[:census_division].lodging_building_district_heat_intensity,
-                }
+                intensities = {}
+                [:natural_gas, :fuel_oil, :electricity, :district_heat].each do |fuel|
+                  intensities[fuel] = characteristics[:cohort].inject(0) do |sum, record|
+                    next sum unless record.send("#{fuel}_use").present?
+                    occupied_room_nights = 365.0 / 7.0 / 12.0 * record.months_used * record.weekly_hours / 24.0 * record.lodging_rooms * 0.59
+                    sum + (record.weighting * record.send("#{fuel}_use") / occupied_room_nights)
+                  end / characteristics[:cohort].sum(:weighting)
+                end
+                intensities
             end
             
             # Otherwise look up the `country lodging class` fuel intensities:
             #
-            # - Natural gas: *m<sup>3</sup> / room-night*
-            # - Fuel oil: *l / room-night*
-            # - Electricity: *kWh / room-night*
-            # - District heat: *MJ / room-night*
+            # - Natural gas intensity: *m<sup>3</sup> / room-night*
+            # - Fuel oil intensity: *l / room-night*
+            # - Electricity intensity: *kWh / room-night*
+            # - District heat intensity: *MJ / room-night*
             quorum 'from country lodging class', :needs => :country_lodging_class,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 {
@@ -185,10 +176,10 @@ module BrighterPlanet
             
             # Otherwise look up the `country` lodging fuel intensities:
             #
-            # - Natural gas: *m<sup>3</sup> / room-night*
-            # - Fuel oil: *l / room-night*
-            # - Electricity: *kWh / room-night*
-            # - District heat: *MJ / room-night*
+            # - Natural gas intensity: *m<sup>3</sup> / room-night*
+            # - Fuel oil intensity: *l / room-night*
+            # - Electricity intensity: *kWh / room-night*
+            # - District heat intensity: *MJ / room-night*
             quorum 'from country', :needs => :country,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 intensities = {
@@ -203,10 +194,10 @@ module BrighterPlanet
             
             # Otherwise look up global average lodging fuel intensities:
             #
-            # - Natural gas: *m<sup>3</sup> / room-night*
-            # - Fuel oil: *l / room-night*
-            # - Electricity: *kWh / room-night*
-            # - District heat: *MJ / room-night*
+            # - Natural gas intensity: *m<sup>3</sup> / room-night*
+            # - Fuel oil intensity: *l / room-night*
+            # - Electricity intensity: *kWh / room-night*
+            # - District heat intensity: *MJ / room-night*
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
                 {
@@ -218,13 +209,84 @@ module BrighterPlanet
             end
           end
           
-          #### Census region lodging class
-          # *The lodging's [census region-specific lodging class](http://data.brighterplanet.com/census_region_lodging_classes).*
-          committee :census_region_lodging_class do
-            # Check whether the combination of `census division` and `lodging class` matches a record in our database.
-            quorum 'from census region and lodging class', :needs => [:census_region, :lodging_class],
+          #### Cohort
+          # *A set of responses from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) that represent buildings similar to the lodging building.*
+          committee :cohort do
+            # If the lodging is in the United States, assemble a cohort of CBECS responses:
+            # Start with responses from all lodging buildings, and then select only the responses that match use `lodging class`, `rooms range`, `census region`, and `cenusus division`.
+            # If fewer than 8 responses match all of those characteristics, drop the last characteristic (initially `census division`) and try again.
+            # Continue until we have 8 or more responses or we've dropped all the characteristics.
+            quorum 'from country and input', :needs => :country, :appreciates => [:lodging_class, :rooms_range, :census_region, :census_division],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                CensusRegionLodgingClass.find_by_census_region_number_and_lodging_class_name(characteristics[:census_region].number, characteristics[:lodging_class].name)
+                if characteristics[:country].iso_3166_code == 'US'
+=begin
+                  lodging class is almost always better predictor of electricity or nat gas than census region
+                  lodging class is usually better predictor of electricity or nat gas than census division
+                  rooms is often a better predictor of electricity or nat gas than census region
+=end
+                  provided_characteristics = []
+                  provided_characteristics << [:detailed_activity, characteristics[:lodging_class].name] if characteristics[:lodging_class].present?
+=begin
+                  FIXME TODO shouldn't have to call :value on :rooms_range
+=end
+                  provided_characteristics << [:lodging_rooms, characteristics[:rooms_range].value] if characteristics[:rooms_range].present?
+                  provided_characteristics << [:census_region_number, characteristics[:census_region].number] if characteristics[:census_region].present?
+                  provided_characteristics << [:census_division_number, characteristics[:census_division].number] if characteristics[:census_division].present?
+                  
+                  cohort = CommercialBuildingEnergyConsumptionSurveyResponse.where(:detailed_activity => ['Hotel', 'Motel or inn']).strict_cohort(*provided_characteristics)
+                  cohort.any? ? cohort : nil
+                end
+            end
+          end
+          
+          #### Rooms range
+          # *A range in the number of `building rooms`, used to look up similar buildings from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses).*
+          committee :rooms_range do
+            # Construct a range based on `building rooms` and `lodging class`.
+            quorum 'from building rooms and lodging class', :needs => [:building_rooms, :lodging_class],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                if characteristics[:lodging_class].name == 'Hotel'
+                  case characteristics[:building_rooms]
+                  when 1..200
+                    [1, characteristics[:building_rooms] - 25].max..[35, characteristics[:building_rooms] + 25].max
+                  when 201..350
+                    (characteristics[:building_rooms] - 50)..(characteristics[:building_rooms] + 50)
+                  when 351..425
+                    (characteristics[:building_rooms] - 75)..(characteristics[:building_rooms] + 75)
+                  else
+                    400..9999
+                  end
+                elsif characteristics[:lodging_class].name == 'Motel or inn'
+                  case characteristics[:building_rooms]
+                  when 1..50
+                    [1, characteristics[:building_rooms] - 10].max..(characteristics[:building_rooms] + 10)
+                  when 50..100
+                    (characteristics[:building_rooms] - 20)..(characteristics[:building_rooms] + 20)
+                  when 101..125
+                    (characteristics[:building_rooms] - 40)..(characteristics[:building_rooms] + 40)
+                  else
+                    100..9999
+                  end
+                end
+            end
+            
+            # Otherwise, construct a range based on `building rooms`.
+            quorum 'from building rooms', :needs => :building_rooms,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                case characteristics[:building_rooms]
+                when 1..50
+                  [1, characteristics[:building_rooms] - 10].max..(characteristics[:building_rooms] + 10)
+                when 50..100
+                  (characteristics[:building_rooms] - 20)..(characteristics[:building_rooms] + 20)
+                when 101..200
+                  (characteristics[:building_rooms] - 25)..(characteristics[:building_rooms] + 25)
+                when 201..350
+                  (characteristics[:building_rooms] - 50)..(characteristics[:building_rooms] + 50)
+                when 351..425
+                  (characteristics[:building_rooms] - 75)..(characteristics[:building_rooms] + 75)
+                else
+                  400..9999
+                end
             end
           end
           
@@ -237,6 +299,16 @@ module BrighterPlanet
                 CountryLodgingClass.find_by_country_iso_3166_code_and_lodging_class_name(characteristics[:country].iso_3166_code, characteristics[:lodging_class].name)
             end
           end
+          
+          #### Building rooms
+          # *The number of guest rooms in the building.*
+          #
+          # Use client input, if available.
+          
+          #### Construction year
+          # *The year the lodging was constructed.*
+          #
+          # Use client input, if available.
           
           #### Lodging class
           # *The [lodging's class](http://data.brighterplanet.com/lodging_classes).*
