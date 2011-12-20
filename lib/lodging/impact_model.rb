@@ -213,10 +213,10 @@ module BrighterPlanet
           # *A set of responses from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) that represent buildings similar to the lodging building.*
           committee :cohort do
             # If the lodging is in the United States, assemble a cohort of CBECS responses:
-            # Start with responses from all lodging buildings, and then select only the responses that match use `lodging class`, `rooms range`, `census region`, and `cenusus division`.
+            # Start with all responses, and then select only the responses that match the lodging's `country lodging class`, `rooms range`, `census region`, and `cenusus division`.
             # If fewer than 8 responses match all of those characteristics, drop the last characteristic (initially `census division`) and try again.
             # Continue until we have 8 or more responses or we've dropped all the characteristics.
-            quorum 'from country and input', :needs => :country, :appreciates => [:lodging_class, :rooms_range, :census_region, :census_division],
+            quorum 'from country and input', :needs => :country, :appreciates => [:country_lodging_class, :rooms_range, :census_region, :census_division],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 if characteristics[:country].iso_3166_code == 'US'
 =begin
@@ -225,7 +225,7 @@ module BrighterPlanet
                   rooms is often a better predictor of electricity or nat gas than census region
 =end
                   provided_characteristics = []
-                  provided_characteristics << [:detailed_activity, characteristics[:lodging_class].name] if characteristics[:lodging_class].present?
+                  provided_characteristics << [:detailed_activity, characteristics[:country_lodging_class].cbecs_detailed_activity] if characteristics[:country_lodging_class].present?
 =begin
                   FIXME TODO shouldn't have to call :value on :rooms_range
 =end
@@ -242,10 +242,11 @@ module BrighterPlanet
           #### Rooms range
           # *A range in the number of `building rooms`, used to look up similar buildings from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses).*
           committee :rooms_range do
-            # Construct a range based on `building rooms` and `lodging class`.
-            quorum 'from building rooms and lodging class', :needs => [:building_rooms, :lodging_class],
+            # Construct a range based on `building rooms` and `country lodging class`.
+            quorum 'from building rooms and country lodging class', :needs => [:building_rooms, :country_lodging_class],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                if characteristics[:lodging_class].name == 'Hotel'
+                case characteristics[:country_lodging_class].name
+                when 'US Hotel'
                   case characteristics[:building_rooms]
                   when 1..200
                     [1, characteristics[:building_rooms] - 25].max..[35, characteristics[:building_rooms] + 25].max
@@ -256,7 +257,7 @@ module BrighterPlanet
                   else
                     400..9999
                   end
-                elsif characteristics[:lodging_class].name == 'Motel or inn'
+                when 'US Motel', 'US Inn'
                   case characteristics[:building_rooms]
                   when 1..50
                     [1, characteristics[:building_rooms] - 10].max..(characteristics[:building_rooms] + 10)

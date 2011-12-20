@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
   
   s.add_runtime_dependency 'geokit'
-  s.add_runtime_dependency 'earth',     '~>0.11.5'
+  s.add_runtime_dependency 'earth',     '~>0.11.6'
   s.add_runtime_dependency 'emitter',   '~>0.11.0'
   s.add_development_dependency 'sniff', '~>0.11.6'
 end

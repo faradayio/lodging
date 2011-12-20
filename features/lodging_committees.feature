@@ -136,13 +136,13 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should have "abbreviation" of "CAMX"
 
   Scenario: Country lodging class committee from valid country and lodging class
-    Given a characteristic "lodging_class.name" of "Motel or inn"
+    Given a characteristic "lodging_class.name" of "Hotel"
     And a characteristic "country.iso_3166_code" of "US"
     When the "country_lodging_class" committee reports
-    Then the conclusion of the committee should have "name" of "US Motel or inn"
+    Then the conclusion of the committee should have "name" of "US Hotel"
 
   Scenario: Country lodging class committee from invalid country and lodging class
-    Given a characteristic "lodging_class.name" of "Motel or inn"
+    Given a characteristic "lodging_class.name" of "Hotel"
     And a characteristic "country.iso_3166_code" of "GB"
     When the "country_lodging_class" committee reports
     Then the conclusion of the committee should be nil
@@ -161,24 +161,26 @@ Feature: Lodging Committee Calculations
       | 391   | 316..466  |
       | 502   | 400..9999 |
 
-  Scenario Outline: rooms range committee from building rooms and lodging class
+  Scenario Outline: rooms range committee from building rooms and country lodging class
+    Given a characteristic "country.iso_3166_code" of "US"
     Given a characteristic "lodging_class.name" of "<class>"
     And a characteristic "building_rooms" of "<rooms>"
-    When the "rooms_range" committee reports
-    Then the committee should have used quorum "from building rooms and lodging class"
+    When the "country_lodging_class" committee reports
+    And the "rooms_range" committee reports
+    Then the committee should have used quorum "from building rooms and country lodging class"
     And the conclusion of the committee should be "<range>"
     Examples:
-      | class        | rooms | range     |
-      | Hotel        | 7     | 1..35     |
-      | Hotel        | 50    | 25..75    |
-      | Hotel        | 300   | 250..350  |
-      | Hotel        | 420   | 345..495  |
-      | Hotel        | 720   | 400..9999 |
-      | Motel or inn | 2     | 1..12     |
-      | Motel or inn | 42    | 32..52    |
-      | Motel or inn | 73    | 53..93    |
-      | Motel or inn | 111   | 71..151   |
-      | Motel or inn | 130   | 100..9999 |
+      | class | rooms | range     |
+      | Hotel | 7     | 1..35     |
+      | Hotel | 50    | 25..75    |
+      | Hotel | 300   | 250..350  |
+      | Hotel | 420   | 345..495  |
+      | Hotel | 720   | 400..9999 |
+      | Inn   | 2     | 1..12     |
+      | Inn   | 42    | 32..52    |
+      | Inn   | 73    | 53..93    |
+      | Inn   | 111   | 71..151   |
+      | Inn   | 130   | 100..9999 |
 
   Scenario Outline: cohort committee from various characteristics
     Given a characteristic "country.iso_3166_code" of "US"
@@ -186,14 +188,15 @@ Feature: Lodging Committee Calculations
     And a characteristic "building_rooms" of "<rooms>"
     And a characteristic "census_region.number" of "<region>"
     And a characteristic "census_division.number" of "<division>"
-    When the "rooms_range" committee reports
+    When the "country_lodging_class" committee reports
+    And the "rooms_range" committee reports
     And the "cohort" committee reports
     Then the committee should have used quorum "from country and input"
     And the conclusion of the committee should have a record with "count" equal to "<records>"
     Examples:
-      | class        | rooms | region | division | records | notes |
-      | Hotel        | 50    | 4      | 9        | 8       | class, rooms, and division |
-      | Motel or inn | 20    | 4      | 9        | 8       | class |
+      | class | rooms | region | division | records | notes |
+      | Hotel | 50    | 4      | 9        | 8       | class, rooms, and division |
+      | Inn   | 20    | 4      | 9        | 8       | class |
 
   Scenario: cohort committee from various characteristics
     Given a characteristic "country.iso_3166_code" of "US"
@@ -222,7 +225,7 @@ Feature: Lodging Committee Calculations
     When the "fuel_intensities" committee reports
     Then the committee should have used quorum "default"
     And the conclusion of the committee should include a key of "natural_gas" and value "2.0"
-    And the conclusion of the committee should include a key of "fuel_oil" and value "0.42"
+    And the conclusion of the committee should include a key of "fuel_oil" and value "0.4"
     And the conclusion of the committee should include a key of "electricity" and value "33.9"
     And the conclusion of the committee should include a key of "district_heat" and value "1.8"
 
@@ -231,7 +234,7 @@ Feature: Lodging Committee Calculations
     When the "fuel_intensities" committee reports
     Then the committee should have used quorum "default"
     And the conclusion of the committee should include a key of "natural_gas" and value "2.0"
-    And the conclusion of the committee should include a key of "fuel_oil" and value "0.42"
+    And the conclusion of the committee should include a key of "fuel_oil" and value "0.4"
     And the conclusion of the committee should include a key of "electricity" and value "33.9"
     And the conclusion of the committee should include a key of "district_heat" and value "1.8"
 
@@ -261,7 +264,8 @@ Feature: Lodging Committee Calculations
     And a characteristic "building_rooms" of "<rooms>"
     And a characteristic "census_region.number" of "<region>"
     And a characteristic "census_division.number" of "<division>"
-    When the "rooms_range" committee reports
+    When the "country_lodging_class" committee reports
+    And the "rooms_range" committee reports
     And the "cohort" committee reports
     And the "fuel_intensities" committee reports
     Then the committee should have used quorum "from cohort"
@@ -270,9 +274,9 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "electricity" and value "<electricity>"
     And the conclusion of the committee should include a key of "district_heat" and value "<district_heat>"
     Examples:
-      | class        | rooms | region | division | natural_gas | fuel_oil | electricity | district_heat | notes |
-      | Hotel        | 50    | 4      | 9        | 2.53177     | 0.0      | 29.69253    | 0.0           | class rooms division |
-      | Motel or inn | 20    | 4      | 9        | 1.57069     | 0.46650  | 27.69965    | 1.62346       | class |
+      | class | rooms | region | division | natural_gas | fuel_oil | electricity | district_heat | notes |
+      | Hotel | 50    | 4      | 9        | 2.53177     | 0.0      | 29.69253    | 0.0           | class rooms division |
+      | Inn   | 20    | 4      | 9        | 1.57069     | 0.46650  | 27.69965    | 1.62346       | class |
 
   Scenario: Fuel intensities committee from cohort (based on rooms and region)
     Given a characteristic "country.iso_3166_code" of "US"
@@ -307,7 +311,7 @@ Feature: Lodging Committee Calculations
     When the "fuel_intensities" committee reports
     And the "fuel_oil_use" committee reports
     Then the committee should have used quorum "from fuel intensities and room nights"
-    And the conclusion of the committee should be "1.68"
+    And the conclusion of the committee should be "1.6"
     
   Scenario: Natural gas use committee
     Given a characteristic "room_nights" of "4"
