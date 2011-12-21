@@ -34,13 +34,13 @@ Feature: Lodging Emissions Calculations
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
     And it has "lodging_class.name" of "<class>"
-    And it has "building_rooms" of "<building_rooms>"
+    And it has "property_rooms" of "<property_rooms>"
     And it has "location_description" of "location"
     And the geocoder will encode the location_description as "" with zip code "<zip>", state "<state>", and country "<country>"
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
-      | class | building_rooms | location          | zip   | state | country | carbon | notes |
+      | class | property_rooms | location          | zip   | state | country | carbon | notes |
       | Hotel |                | London, UK        |       |       | GB      | 113.98 | county only |
       | Hotel |                | Virgin Islands    |       |       | VI      | 301.20 | country lodging class |
       | Inn   |                | USA               |       |       | US      |  87.03 | cohort country lodging class |

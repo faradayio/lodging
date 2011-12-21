@@ -147,10 +147,10 @@ Feature: Lodging Committee Calculations
     When the "country_lodging_class" committee reports
     Then the conclusion of the committee should be nil
 
-  Scenario Outline: rooms range committee from building rooms
-    Given a characteristic "building_rooms" of "<rooms>"
+  Scenario Outline: rooms range committee from property rooms
+    Given a characteristic "property_rooms" of "<rooms>"
     When the "rooms_range" committee reports
-    Then the committee should have used quorum "from building rooms"
+    Then the committee should have used quorum "from property rooms"
     And the conclusion of the committee should be "<range>"
     Examples:
       | rooms | range     |
@@ -161,13 +161,13 @@ Feature: Lodging Committee Calculations
       | 391   | 316..466  |
       | 502   | 400..9999 |
 
-  Scenario Outline: rooms range committee from building rooms and country lodging class
+  Scenario Outline: rooms range committee from property rooms and country lodging class
     Given a characteristic "country.iso_3166_code" of "US"
     Given a characteristic "lodging_class.name" of "<class>"
-    And a characteristic "building_rooms" of "<rooms>"
+    And a characteristic "property_rooms" of "<rooms>"
     When the "country_lodging_class" committee reports
     And the "rooms_range" committee reports
-    Then the committee should have used quorum "from building rooms and country lodging class"
+    Then the committee should have used quorum "from property rooms and country lodging class"
     And the conclusion of the committee should be "<range>"
     Examples:
       | class | rooms | range     |
@@ -185,7 +185,7 @@ Feature: Lodging Committee Calculations
   Scenario Outline: cohort committee from various characteristics
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "lodging_class.name" of "<class>"
-    And a characteristic "building_rooms" of "<rooms>"
+    And a characteristic "property_rooms" of "<rooms>"
     And a characteristic "census_region.number" of "<region>"
     And a characteristic "census_division.number" of "<division>"
     When the "country_lodging_class" committee reports
@@ -200,7 +200,7 @@ Feature: Lodging Committee Calculations
 
   Scenario: cohort committee from various characteristics
     Given a characteristic "country.iso_3166_code" of "US"
-    And a characteristic "building_rooms" of "20"
+    And a characteristic "property_rooms" of "20"
     And a characteristic "census_region.number" of "4"
     And a characteristic "census_division.number" of "9"
     When the "rooms_range" committee reports
@@ -210,7 +210,7 @@ Feature: Lodging Committee Calculations
 
   Scenario Outline: cohort committee from insufficient characteristics
     Given a characteristic "country.iso_3166_code" of "<country>"
-    And a characteristic "building_rooms" of "<rooms>"
+    And a characteristic "property_rooms" of "<rooms>"
     And a characteristic "census_region.number" of "<region>"
     And a characteristic "census_division.number" of "<division>"
     When the "rooms_range" committee reports
@@ -261,7 +261,7 @@ Feature: Lodging Committee Calculations
   Scenario Outline: Fuel intensities committee from cohort
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "lodging_class.name" of "<class>"
-    And a characteristic "building_rooms" of "<rooms>"
+    And a characteristic "property_rooms" of "<rooms>"
     And a characteristic "census_region.number" of "<region>"
     And a characteristic "census_division.number" of "<division>"
     When the "country_lodging_class" committee reports
@@ -280,7 +280,7 @@ Feature: Lodging Committee Calculations
 
   Scenario: Fuel intensities committee from cohort (based on rooms and region)
     Given a characteristic "country.iso_3166_code" of "US"
-    And a characteristic "building_rooms" of "20"
+    And a characteristic "property_rooms" of "20"
     And a characteristic "census_region.number" of "4"
     And a characteristic "census_division.number" of "9"
     When the "rooms_range" committee reports

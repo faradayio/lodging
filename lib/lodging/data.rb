@@ -8,7 +8,7 @@ module BrighterPlanet
         base.col :zip_code_name
         base.col :state_postal_abbreviation
         base.col :lodging_class_name
-        base.col :building_rooms,     :type => :integer
+        base.col :property_rooms, :type => :integer
         
         base.data_miner do
           process 'pull orphans' do

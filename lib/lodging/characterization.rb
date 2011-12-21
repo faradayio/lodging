@@ -9,7 +9,7 @@ module BrighterPlanet
           has :zip_code
           has :state
           has :lodging_class
-          has :building_rooms
+          has :property_rooms
         end
       end
     end

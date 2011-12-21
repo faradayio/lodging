@@ -240,51 +240,51 @@ module BrighterPlanet
           end
           
           #### Rooms range
-          # *A range in the number of `building rooms`, used to look up similar buildings from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses).*
+          # *A range in the number of `property rooms`, used to look up similar buildings from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses).*
           committee :rooms_range do
-            # Construct a range based on `building rooms` and `country lodging class`.
-            quorum 'from building rooms and country lodging class', :needs => [:building_rooms, :country_lodging_class],
+            # Construct a range based on `property rooms` and `country lodging class`.
+            quorum 'from property rooms and country lodging class', :needs => [:property_rooms, :country_lodging_class],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 case characteristics[:country_lodging_class].name
                 when 'US Hotel'
-                  case characteristics[:building_rooms]
+                  case characteristics[:property_rooms]
                   when 1..200
-                    [1, characteristics[:building_rooms] - 25].max..[35, characteristics[:building_rooms] + 25].max
+                    [1, characteristics[:property_rooms] - 25].max..[35, characteristics[:property_rooms] + 25].max
                   when 201..350
-                    (characteristics[:building_rooms] - 50)..(characteristics[:building_rooms] + 50)
+                    (characteristics[:property_rooms] - 50)..(characteristics[:property_rooms] + 50)
                   when 351..425
-                    (characteristics[:building_rooms] - 75)..(characteristics[:building_rooms] + 75)
+                    (characteristics[:property_rooms] - 75)..(characteristics[:property_rooms] + 75)
                   else
                     400..9999
                   end
                 when 'US Motel', 'US Inn'
-                  case characteristics[:building_rooms]
+                  case characteristics[:property_rooms]
                   when 1..50
-                    [1, characteristics[:building_rooms] - 10].max..(characteristics[:building_rooms] + 10)
+                    [1, characteristics[:property_rooms] - 10].max..(characteristics[:property_rooms] + 10)
                   when 50..100
-                    (characteristics[:building_rooms] - 20)..(characteristics[:building_rooms] + 20)
+                    (characteristics[:property_rooms] - 20)..(characteristics[:property_rooms] + 20)
                   when 101..125
-                    (characteristics[:building_rooms] - 40)..(characteristics[:building_rooms] + 40)
+                    (characteristics[:property_rooms] - 40)..(characteristics[:property_rooms] + 40)
                   else
                     100..9999
                   end
                 end
             end
             
-            # Otherwise, construct a range based on `building rooms`.
-            quorum 'from building rooms', :needs => :building_rooms,
+            # Otherwise, construct a range based on `property rooms`.
+            quorum 'from property rooms', :needs => :property_rooms,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                case characteristics[:building_rooms]
+                case characteristics[:property_rooms]
                 when 1..50
-                  [1, characteristics[:building_rooms] - 10].max..(characteristics[:building_rooms] + 10)
+                  [1, characteristics[:property_rooms] - 10].max..(characteristics[:property_rooms] + 10)
                 when 50..100
-                  (characteristics[:building_rooms] - 20)..(characteristics[:building_rooms] + 20)
+                  (characteristics[:property_rooms] - 20)..(characteristics[:property_rooms] + 20)
                 when 101..200
-                  (characteristics[:building_rooms] - 25)..(characteristics[:building_rooms] + 25)
+                  (characteristics[:property_rooms] - 25)..(characteristics[:property_rooms] + 25)
                 when 201..350
-                  (characteristics[:building_rooms] - 50)..(characteristics[:building_rooms] + 50)
+                  (characteristics[:property_rooms] - 50)..(characteristics[:property_rooms] + 50)
                 when 351..425
-                  (characteristics[:building_rooms] - 75)..(characteristics[:building_rooms] + 75)
+                  (characteristics[:property_rooms] - 75)..(characteristics[:property_rooms] + 75)
                 else
                   400..9999
                 end
@@ -301,8 +301,8 @@ module BrighterPlanet
             end
           end
           
-          #### Building rooms
-          # *The number of guest rooms in the building.*
+          #### Property rooms
+          # *The number of guest rooms in the lodging property.*
           #
           # Use client input, if available.
           
