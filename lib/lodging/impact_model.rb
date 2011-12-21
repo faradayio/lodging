@@ -331,13 +331,9 @@ module BrighterPlanet
           #### Country
           # *The lodging's [country](http://data.brighterplanet.com/countries).*
           committee :country do
-            # Look up the `location` country.
-            quorum 'from location', :needs => :location,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                Country.find_by_iso_3166_code characteristics[:location].country_code
-            end
+            # Use client input, if available.
             
-            # Otherwise if state is defined then the country is the United States.
+            # If state is defined then the country is the United States.
             quorum 'from state', :needs => :state,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 Country.united_states
@@ -364,39 +360,10 @@ module BrighterPlanet
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:zip_code].state
             end
-            
-            # Otherwise look up the `location` state.
-            quorum 'from location', :needs => :location,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                State.find_by_postal_abbreviation characteristics[:location].state
-            end
           end
           
           #### Zip code
           # *The lodging's [zip code](http://data.brighterplanet.com/zip_codes).*
-          committee :zip_code do
-            # Use client input, if available.
-            
-            # Otherwise look up the `location` zip code.
-            quorum 'from location', :needs => :location,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                ZipCode.find_by_name characteristics[:location].zip
-            end
-          end
-          
-          #### Location (*lat, lng*)
-          # *The lodging's location*.
-          committee :location do
-            # Use the [Geokit](http://geokit.rubyforge.org/) geocoder to look up the `location description` location (*lat, lng*).
-            quorum 'from location description', :needs => :location_description,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                location = ::Geokit::Geocoders::MultiGeocoder.geocode characteristics[:location_description]
-                location.success ? location : nil
-            end
-          end
-          
-          #### Location description
-          # *The client's description of the lodging's location (e.g. New York, NY, USA).*
           #
           # Use client input, if available.
           

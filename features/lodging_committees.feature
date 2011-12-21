@@ -43,56 +43,6 @@ Feature: Lodging Committee Calculations
       | 2009-01-15 | 2009-01-01/2009-02-01 | 2     | 172800   | 4           |
       | 2009-02-15 | 2009-01-01/2009-02-01 | 2     | 172800   | 0           |
 
-  Scenario Outline: Location committee from geocodeable location description
-    Given a characteristic "location_description" of address value "<address>"
-    And the geocoder will encode the location_description as "<geocode>" with zip code "<zip>", state "<state>", and country "<country>"
-    When the "location" committee reports
-    Then the committee should have used quorum "from location description"
-    And the conclusion of the committee should have "ll" of "<location>"
-    And the conclusion should comply with standards "ghg_protocol_scope_3, iso"
-    Examples:
-      | address           | geocode                 | zip   | state | country | location                |
-      | 05753             | 44.0229305,-73.1450146  | 05753 | VT    | US      | 44.0229305,-73.1450146  |
-      | San Francisco, CA | 37.7749295,-122.4194155 |       | CA    | US      | 37.7749295,-122.4194155 |
-      | Los Angeles, CA   | 34.0522342,-118.2436849 |       | CA    | US      | 34.0522342,-118.2436849 |
-      | London, UK        | 51.5001524,-0.1262362   |       |       | GB      | 51.5001524,-0.1262362   |
-
-  Scenario: Location committee from non-geocodeable location description
-    Given a characteristic "location_description" of "Bag End, Hobbiton, Westfarthing, The Shire, Eriador, Middle Earth"
-    And the geocoder will fail to encode the location_description
-    When the "location" committee reports
-    Then the conclusion of the committee should be nil
-
-  Scenario: Zip code committee from location
-    Given a characteristic "location_description" of address value "94122"
-    And the geocoder will encode the location_description as "" with zip code "94122", state "CA", and country "US"
-    When the "location" committee reports
-    And the "zip_code" committee reports
-    Then the committee should have used quorum "from location"
-    And the conclusion of the committee should have "name" of "94122"
-
-  Scenario: Zip code committee from location without zip
-    Given a characteristic "location_description" of address value "San Francisco, CA"
-    And the geocoder will encode the location_description as "" with zip code "", state "CA", and country "US"
-    When the "location" committee reports
-    And the "zip_code" committee reports
-    Then the conclusion of the committee should be nil
-
-  Scenario: State committee from location
-    Given a characteristic "location_description" of address value "San Francisco, CA"
-    And the geocoder will encode the location_description as "" with zip code "", state "CA", and country "US"
-    When the "location" committee reports
-    And the "state" committee reports
-    Then the committee should have used quorum "from location"
-    And the conclusion of the committee should have "postal_abbreviation" of "CA"
-
-  Scenario: State committee from location without state
-    Given a characteristic "location_description" of address value "London, UK"
-    And the geocoder will encode the location_description as "" with zip code "", state "", and country "GB"
-    When the "location" committee reports
-    And the "state" committee reports
-    Then the conclusion of the committee should be nil
-
   Scenario: State committee from zip code
     Given a characteristic "zip_code.name" of "94122"
     When the "state" committee reports
@@ -110,18 +60,6 @@ Feature: Lodging Committee Calculations
     When the "country" committee reports
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should have "iso_3166_code" of "US"
-
-  Scenario Outline: Country committee from location
-    Given a characteristic "location_description" of address value "<address>"
-    And the geocoder will encode the location_description as "" with zip code "", state "", and country "<country>"
-    When the "location" committee reports
-    And the "country" committee reports
-    Then the committee should have used quorum "from location"
-    And the conclusion of the committee should have "iso_3166_code" of "<country>"
-    Examples:
-      | address           | country |
-      | San Francisco, CA | US      |
-      | London, UK        | GB      |
 
   Scenario: eGRID subregion from zip code
     Given a characteristic "zip_code.name" of "94122"
