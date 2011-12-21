@@ -105,12 +105,6 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should have "number" of "9"
 
-  Scenario: Census region committee from census division
-    Given a characteristic "census_division.number" of "9"
-    When the "census_region" committee reports
-    Then the committee should have used quorum "from census division"
-    And the conclusion of the committee should have "name" of "West Region"
-
   Scenario: Country committee from state
     Given a characteristic "state.postal_abbreviation" of "CA"
     When the "country" committee reports
@@ -186,7 +180,6 @@ Feature: Lodging Committee Calculations
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "lodging_class.name" of "<class>"
     And a characteristic "property_rooms" of "<rooms>"
-    And a characteristic "census_region.number" of "<region>"
     And a characteristic "census_division.number" of "<division>"
     When the "country_lodging_class" committee reports
     And the "rooms_range" committee reports
@@ -194,14 +187,13 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from country and input"
     And the conclusion of the committee should have a record with "count" equal to "<records>"
     Examples:
-      | class | rooms | region | division | records | notes |
-      | Hotel | 50    | 4      | 9        | 8       | class, rooms, and division |
-      | Inn   | 20    | 4      | 9        | 8       | class |
+      | class | rooms | division | records | notes |
+      | Hotel | 50    | 9        | 8       | class, rooms, and division |
+      | Inn   | 20    | 9        | 8       | class |
 
   Scenario: cohort committee from various characteristics
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "property_rooms" of "20"
-    And a characteristic "census_region.number" of "4"
     And a characteristic "census_division.number" of "9"
     When the "rooms_range" committee reports
     And the "cohort" committee reports
@@ -211,8 +203,6 @@ Feature: Lodging Committee Calculations
   Scenario Outline: cohort committee from insufficient characteristics
     Given a characteristic "country.iso_3166_code" of "<country>"
     And a characteristic "property_rooms" of "<rooms>"
-    And a characteristic "census_region.number" of "<region>"
-    And a characteristic "census_division.number" of "<division>"
     When the "rooms_range" committee reports
     And the "cohort" committee reports
     Then the conclusion of the committee should be nil
@@ -262,7 +252,6 @@ Feature: Lodging Committee Calculations
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "lodging_class.name" of "<class>"
     And a characteristic "property_rooms" of "<rooms>"
-    And a characteristic "census_region.number" of "<region>"
     And a characteristic "census_division.number" of "<division>"
     When the "country_lodging_class" committee reports
     And the "rooms_range" committee reports
@@ -274,14 +263,13 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "electricity" and value "<electricity>"
     And the conclusion of the committee should include a key of "district_heat" and value "<district_heat>"
     Examples:
-      | class | rooms | region | division | natural_gas | fuel_oil | electricity | district_heat | notes |
-      | Hotel | 50    | 4      | 9        | 2.53177     | 0.0      | 29.69253    | 0.0           | class rooms division |
-      | Inn   | 20    | 4      | 9        | 1.57069     | 0.46650  | 27.69965    | 1.62346       | class |
+      | class | rooms | division | natural_gas | fuel_oil | electricity | district_heat | notes |
+      | Hotel | 50    | 9        | 2.53177     | 0.0      | 29.69253    | 0.0           | class rooms division |
+      | Inn   | 20    | 9        | 1.57069     | 0.46650  | 27.69965    | 1.62346       | class |
 
   Scenario: Fuel intensities committee from cohort (based on rooms and region)
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "property_rooms" of "20"
-    And a characteristic "census_region.number" of "4"
     And a characteristic "census_division.number" of "9"
     When the "rooms_range" committee reports
     And the "cohort" committee reports

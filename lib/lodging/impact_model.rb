@@ -216,7 +216,7 @@ module BrighterPlanet
             # Start with all responses, and then select only the responses that match the lodging's `country lodging class`, `rooms range`, `census region`, and `cenusus division`.
             # If fewer than 8 responses match all of those characteristics, drop the last characteristic (initially `census division`) and try again.
             # Continue until we have 8 or more responses or we've dropped all the characteristics.
-            quorum 'from country and input', :needs => :country, :appreciates => [:country_lodging_class, :rooms_range, :census_region, :census_division],
+            quorum 'from country and input', :needs => :country, :appreciates => [:country_lodging_class, :rooms_range, :census_division],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 if characteristics[:country].iso_3166_code == 'US'
 =begin
@@ -230,8 +230,10 @@ module BrighterPlanet
                   FIXME TODO shouldn't have to call :value on :rooms_range
 =end
                   provided_characteristics << [:lodging_rooms, characteristics[:rooms_range].value] if characteristics[:rooms_range].present?
-                  provided_characteristics << [:census_region_number, characteristics[:census_region].number] if characteristics[:census_region].present?
-                  provided_characteristics << [:census_division_number, characteristics[:census_division].number] if characteristics[:census_division].present?
+                  if characteristics[:census_division].present?
+                    provided_characteristics << [:census_region_number, characteristics[:census_division].census_region_number]
+                    provided_characteristics << [:census_division_number, characteristics[:census_division].number]
+                  end
                   
                   cohort = CommercialBuildingEnergyConsumptionSurveyResponse.where(:detailed_activity => ['Hotel', 'Motel or inn']).strict_cohort(*provided_characteristics)
                   cohort.any? ? cohort : nil
@@ -339,16 +341,6 @@ module BrighterPlanet
             quorum 'from state', :needs => :state,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 Country.united_states
-            end
-          end
-          
-          #### Census region
-          # *The lodging's [census region](http://data.brighterplanet.com/census_regions).*
-          committee :census_region do
-            # Look up the `census division` census region.
-            quorum 'from census division', :needs => :census_division,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:census_division].census_region
             end
           end
           
