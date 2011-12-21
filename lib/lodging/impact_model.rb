@@ -229,7 +229,7 @@ module BrighterPlanet
 =begin
                   FIXME TODO shouldn't have to call :value on :rooms_range
 =end
-                  provided_characteristics << [:lodging_rooms, characteristics[:rooms_range].value] if characteristics[:rooms_range].present?
+                  provided_characteristics << [:lodging_rooms, characteristics[:rooms_range]] if characteristics[:rooms_range].present?
                   if characteristics[:census_division].present?
                     provided_characteristics << [:census_region_number, characteristics[:census_division].census_region_number]
                     provided_characteristics << [:census_division_number, characteristics[:census_division].number]
@@ -318,16 +318,6 @@ module BrighterPlanet
           #
           # Use client input, if available.
           
-          #### eGRID subregion
-          # *The lodging's [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
-          committee :egrid_subregion do
-            # Look up the `zip code` eGRID subregion.
-            quorum 'from zip code', :needs => :zip_code,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:zip_code].egrid_subregion
-            end
-          end
-          
           #### Country
           # *The lodging's [country](http://data.brighterplanet.com/countries).*
           committee :country do
@@ -339,6 +329,9 @@ module BrighterPlanet
                 Country.united_states
             end
           end
+=begin
+          FIXME TODO import geographic database and look up country based on postcode, city, or locality
+=end
           
           #### Census division
           # *The lodging's [census division](http://data.brighterplanet.com/census_divisions).*
@@ -350,20 +343,63 @@ module BrighterPlanet
             end
           end
           
+          #### eGRID subregion
+          # *The lodging's [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
+          committee :egrid_subregion do
+            # Look up the `zip code` eGRID subregion.
+            quorum 'from zip code', :needs => :zip_code,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:zip_code].egrid_subregion
+            end
+          end
+          
           #### State
-          # *The lodging's [state](http://data.brighterplanet.com/states).*
+          # *The lodging's [US state](http://data.brighterplanet.com/states).*
           committee :state do
-            # Use client input, if available.
-            
-            # Otherwise use the `zip code` state.
+            # Look up the `zip code` state.
             quorum 'from zip code', :needs => :zip_code,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:zip_code].state
             end
+            
+            # Try to match `locality` to a US state.
+            quorum 'from locality', :needs => :locality,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                State.find_by_name characteristics[:locality]
+            end
           end
+=begin
+          FIXME TODO import geographic database and look up state from city
+=end
           
           #### Zip code
-          # *The lodging's [zip code](http://data.brighterplanet.com/zip_codes).*
+          # *The lodging's [US zip code](http://data.brighterplanet.com/zip_codes).*
+          committee :zip_code do
+            # Try to match `postcode` to a US zip code.
+            quorum 'from postcode', :needs => :postcode,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                ZipCode.find_by_name characteristics[:postcode]
+            end
+          end
+          
+          #### Locality
+          # *The lodging's locality (state, province, territory, etc.).*
+          #
+          # Use client input, if available.
+=begin
+          FIXME TODO import geographic database and look up locality from postcode or city
+=end
+          
+          #### City
+          # *The lodging's city.*
+          #
+          # Use client input, if available.
+=begin
+          FIXME TODO import geographic database and look up city from postcode
+=end
+          
+          #### Postcode
+          # *The lodging's postcode.*
           #
           # Use client input, if available.
           

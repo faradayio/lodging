@@ -5,8 +5,9 @@ module BrighterPlanet
         base.characterize do
           has :rooms
           has :duration, :measures => :time
-          has :zip_code
-          has :state
+          has :postcode
+          has :city
+          has :locality
           has :country
           has :lodging_class
           has :property_rooms

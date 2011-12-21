@@ -43,11 +43,39 @@ Feature: Lodging Committee Calculations
       | 2009-01-15 | 2009-01-01/2009-02-01 | 2     | 172800   | 4           |
       | 2009-02-15 | 2009-01-01/2009-02-01 | 2     | 172800   | 0           |
 
+  Scenario: Zip code committee from postcode that is zip code
+    Given a characteristic "postcode" of "94122"
+    When the "zip_code" committee reports
+    Then the committee should have used quorum "from postcode"
+    And the conclusion of the committee should have "name" of "94122"
+
+  Scenario: Zip code committee from postcode that is not zip code
+    Given a characteristic "postcode" of "38000"
+    When the "zip_code" committee reports
+    Then the conclusion of the committee should be nil
+
+  Scenario: State committee from locality that is state
+    Given a characteristic "locality" of "California"
+    When the "state" committee reports
+    Then the committee should have used quorum "from locality"
+    And the conclusion of the committee should have "postal_abbreviation" of "CA"
+
+  Scenario: State committee from locality that is not state
+    Given a characteristic "locality" of "Isère"
+    When the "state" committee reports
+    Then the conclusion of the committee should be nil
+
   Scenario: State committee from zip code
     Given a characteristic "zip_code.name" of "94122"
     When the "state" committee reports
     Then the committee should have used quorum "from zip code"
     And the conclusion of the committee should have "postal_abbreviation" of "CA"
+
+  Scenario: eGRID subregion from zip code
+    Given a characteristic "zip_code.name" of "94122"
+    When the "egrid_subregion" committee reports
+    Then the committee should have used quorum "from zip code"
+    And the conclusion of the committee should have "abbreviation" of "CAMX"
 
   Scenario: Census division committee from state
     Given a characteristic "state.postal_abbreviation" of "CA"
@@ -60,12 +88,6 @@ Feature: Lodging Committee Calculations
     When the "country" committee reports
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should have "iso_3166_code" of "US"
-
-  Scenario: eGRID subregion from zip code
-    Given a characteristic "zip_code.name" of "94122"
-    When the "egrid_subregion" committee reports
-    Then the committee should have used quorum "from zip code"
-    And the conclusion of the committee should have "abbreviation" of "CAMX"
 
   Scenario: Country lodging class committee from valid country and lodging class
     Given a characteristic "lodging_class.name" of "Hotel"
