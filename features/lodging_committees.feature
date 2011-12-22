@@ -112,7 +112,7 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should have "northstar_id" of "<id>"
     Examples:
       | name        | city    | locality     | country | id |
-      | Lincoln Inn | Lincoln | England      | GB      | 1  |
+      | Lincoln Inn | Lincoln | Lincolnshire | GB      | 1  |
       | Motel 6     | Lincoln | Nebraska     | US      | 2  |
       | Motel 6     | Lincoln | Pennsylvania | US      | 3  |
 

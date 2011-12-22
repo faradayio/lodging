@@ -1,0 +1,5 @@
+northstar_id,name,city,locality,postcode,country_iso_3166_alpha_3_code,lodging_rooms,lodging_class_name
+1,Lincoln Inn,Lincoln,Lincolnshire,LN2 1JD,GBR,25,Inn
+2,Motel 6,Lincoln,Nebraska,68510,USA,100,Motel
+3,Motel 6,Lincoln,Pennsylvania,15135,USA,75,Motel
+4,Motel 6,Lincoln,Pennsylvania,15135,USA,125,Motel
