@@ -28,8 +28,8 @@ Feature: Lodging Emissions Calculations
       |          |            | GB      | 113.98 | country missing fuel intensities and elec ef |
       |          |            | VI      | 268.20 | country with fuel intensities but no elec ef |
       |          |            | US      | 105.20 | country with intensities + elec ef |
-      |          | California | US      |  90.42 | cohort census division |
-      | 94122    | California | US      |  55.36 | cohort census division + egrid |
+      |          | California |         |  90.42 | cohort census division |
+      | 94122    |            |         |  55.36 | cohort census division + egrid |
 
   Scenario Outline: Calculations from rooms, duration, postcode, locality, and country
     Given it has "rooms" of "2"
@@ -46,6 +46,6 @@ Feature: Lodging Emissions Calculations
       | Hotel |                |          |            | GB      | 113.98 | county only |
       | Hotel |                |          |            | VI      | 301.20 | country lodging class |
       | Inn   |                |          |            | US      |  87.03 | cohort country lodging class |
-      | Hotel | 50             |          | California | US      |  93.81 | cohort country lodging class rooms division |
-      | Hotel | 50             | 94122    | California | US      |  58.00 | cohort country lodging class rooms division + egrid |
-      |       | 20             |          | California | US      |  79.50 | cohort rooms region + egrid |
+      | Hotel | 50             |          | California |         |  93.81 | cohort country lodging class rooms division |
+      | Hotel | 50             | 94122    |            |         |  58.00 | cohort country lodging class rooms division + egrid |
+      |       | 20             |          | California |         |  79.50 | cohort rooms region + egrid |
