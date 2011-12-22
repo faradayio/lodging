@@ -315,11 +315,54 @@ module BrighterPlanet
           
           #### Lodging class
           # *The [lodging's class](http://data.brighterplanet.com/lodging_classes).*
+          #### Lodging property
+          # *The property where the stay occurred.*
+          committee :lodging_property do
+=begin
+            FIXME TODO for all of these: figure out what to do when there are multiple properties that match
+=end
+            # Look up the property based on `property name`, `postcode`, and `country`.
+            quorum 'from lodging property name, postcode, and country', :needs => [:lodging_property_name, :postcode, :country],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                LodgingProperty.where(
+                  :name => characteristics[:lodging_property_name],
+                  :postcode => characteristics[:postcode],
+                  :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
+                ).first
+            end
+            
+            # Otherwise look up the property based on `property name`, `city`, `locality`, and `country`.
+            quorum 'from lodging property name, city, locality, and country', :needs => [:lodging_property_name, :city, :locality, :country],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                LodgingProperty.where(
+                  :name => characteristics[:lodging_property_name],
+                  :city => characteristics[:city],
+                  :locality => characteristics[:locality],
+                  :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
+                ).first
+            end
+            
+            # Otherwise if the property is not in the United States, look it up based on `property name`, `city`, and `country`.
+            # Don't do this within the US because our database includes locality for all US properties. It's dangerous to look up by city without locality because many localities share city names.
+            quorum 'from lodging property name, city, and country', :needs => [:lodging_property_name, :city, :country],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                if characteristics[:country].iso_3166_alpha_3_code != 'US'
+                  LodgingProperty.where(
+                    :name => characteristics[:lodging_property_name],
+                    :city => characteristics[:city],
+                    :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
+                  ).first
+                end
+            end
+          end
+          
+          #### Lodging property name
+          # *The name of the property where the stay occurred.*
           #
-          # Use client input, if available.
+          # Use client input, if available
           
           #### Country
-          # *The lodging's [country](http://data.brighterplanet.com/countries).*
+          # *The lodging property's [country](http://data.brighterplanet.com/countries).*
           committee :country do
             # Use client input, if available.
             
@@ -334,7 +377,7 @@ module BrighterPlanet
 =end
           
           #### Census division
-          # *The lodging's [census division](http://data.brighterplanet.com/census_divisions).*
+          # *The lodging property's [census division](http://data.brighterplanet.com/census_divisions).*
           committee :census_division do
             # Look up the `state` census division.
             quorum 'from state', :needs => :state,
@@ -344,7 +387,7 @@ module BrighterPlanet
           end
           
           #### eGRID subregion
-          # *The lodging's [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
+          # *The lodging property's [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
           committee :egrid_subregion do
             # Look up the `zip code` eGRID subregion.
             quorum 'from zip code', :needs => :zip_code,
@@ -354,7 +397,7 @@ module BrighterPlanet
           end
           
           #### State
-          # *The lodging's [US state](http://data.brighterplanet.com/states).*
+          # *The lodging property's [US state](http://data.brighterplanet.com/states).*
           committee :state do
             # Look up the `zip code` state.
             quorum 'from zip code', :needs => :zip_code,
@@ -373,7 +416,7 @@ module BrighterPlanet
 =end
           
           #### Zip code
-          # *The lodging's [US zip code](http://data.brighterplanet.com/zip_codes).*
+          # *The lodging property's [US zip code](http://data.brighterplanet.com/zip_codes).*
           committee :zip_code do
             # Try to match `postcode` to a US zip code.
             quorum 'from postcode', :needs => :postcode,
@@ -383,7 +426,7 @@ module BrighterPlanet
           end
           
           #### Locality
-          # *The lodging's locality (state, province, territory, etc.).*
+          # *The lodging property's locality (state, province, territory, etc.).*
           #
           # Use client input, if available.
 =begin
@@ -391,7 +434,7 @@ module BrighterPlanet
 =end
           
           #### City
-          # *The lodging's city.*
+          # *The lodging property's city.*
           #
           # Use client input, if available.
 =begin

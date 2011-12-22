@@ -89,6 +89,48 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should have "iso_3166_code" of "US"
 
+  Scenario Outline: Lodging property committee from lodging property name, postcode, and country
+    Given a characteristic "lodging_property_name" of string value "<name>"
+    And a characteristic "postcode" of string value "<postcode>"
+    And a characteristic "country.iso_3166_code" of "<country>"
+    When the "lodging_property" committee reports
+    Then the committee should have used quorum "from lodging property name, postcode, and country"
+    And the conclusion of the committee should have "northstar_id" of "<id>"
+    Examples:
+      | name        | postcode | country | id |
+      | Lincoln Inn | LN2 1JD  | GB      | 1  |
+      | Motel 6     | 68510    | US      | 2  |
+      | Motel 6     | 15135    | US      | 3  |
+
+  Scenario Outline: Lodging property committee from lodging property name, city, locality, and country
+    Given a characteristic "lodging_property_name" of string value "<name>"
+    And a characteristic "city" of "<city>"
+    And a characteristic "locality" of "<locality>"
+    And a characteristic "country.iso_3166_code" of "<country>"
+    When the "lodging_property" committee reports
+    Then the committee should have used quorum "from lodging property name, city, locality, and country"
+    And the conclusion of the committee should have "northstar_id" of "<id>"
+    Examples:
+      | name        | city    | locality     | country | id |
+      | Lincoln Inn | Lincoln | England      | GB      | 1  |
+      | Motel 6     | Lincoln | Nebraska     | US      | 2  |
+      | Motel 6     | Lincoln | Pennsylvania | US      | 3  |
+
+  Scenario: Lodging property committee from lodging property name, city, and country
+    Given a characteristic "lodging_property_name" of "Lincoln Inn"
+    And a characteristic "city" of "Lincoln"
+    And a characteristic "country.iso_3166_code" of "GB"
+    When the "lodging_property" committee reports
+    Then the committee should have used quorum "from lodging property name, city, and country"
+    And the conclusion of the committee should have "northstar_id" of "1"
+
+  Scenario: Lodging property committee from lodging property name, city, and country when country is US
+    Given a characteristic "lodging_property_name" of string value "Motel 6"
+    And a characteristic "city" of "Lincoln"
+    And a characteristic "country.iso_3166_code" of "US"
+    When the "lodging_property" committee reports
+    Then the conclusion of the committee should be nil
+
   Scenario: Country lodging class committee from valid country and lodging class
     Given a characteristic "lodging_class.name" of "Hotel"
     And a characteristic "country.iso_3166_code" of "US"

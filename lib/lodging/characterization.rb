@@ -9,6 +9,7 @@ module BrighterPlanet
           has :city
           has :locality
           has :country
+          has :lodging_property_name
           has :lodging_class
           has :property_rooms
         end

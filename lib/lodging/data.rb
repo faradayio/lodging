@@ -8,6 +8,7 @@ module BrighterPlanet
         base.col :city
         base.col :locality
         base.col :country_iso_3166_code
+        base.col :lodging_property_name
         base.col :lodging_class_name
         base.col :property_rooms, :type => :integer
         
