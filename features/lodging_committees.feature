@@ -131,6 +131,18 @@ Feature: Lodging Committee Calculations
     When the "lodging_property" committee reports
     Then the conclusion of the committee should be nil
 
+  Scenario: Lodging class from lodging property
+    Given a characteristic "lodging_property.northstar_id" of string value "1"
+    When the "lodging_class" committee reports
+    Then the committee should have used quorum "from lodging property"
+    And the conclusion of the committee should have "name" of "Inn"
+
+  Scenario: Property rooms from lodging property
+    Given a characteristic "lodging_property.northstar_id" of string value "1"
+    When the "property_rooms" committee reports
+    Then the committee should have used quorum "from lodging property"
+    And the conclusion of the committee should be "25"
+
   Scenario: Country lodging class committee from valid country and lodging class
     Given a characteristic "lodging_class.name" of "Hotel"
     And a characteristic "country.iso_3166_code" of "US"

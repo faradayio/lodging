@@ -305,16 +305,28 @@ module BrighterPlanet
           
           #### Property rooms
           # *The number of guest rooms in the lodging property.*
-          #
-          # Use client input, if available.
-          
-          #### Construction year
-          # *The year the lodging was constructed.*
-          #
-          # Use client input, if available.
+          committee :property_rooms do
+            # Use client input, if available.
+            
+            # Otherwise look up the `lodging property` number of rooms.
+            quorum 'from lodging property', :needs => :lodging_property,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:lodging_property].lodging_rooms
+            end
+          end
           
           #### Lodging class
           # *The [lodging's class](http://data.brighterplanet.com/lodging_classes).*
+          committee :lodging_class do
+            # Use client input, if available.
+            
+            # Otherwise look up the `lodging property` lodging class.
+            quorum 'from lodging property', :needs => :lodging_property,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:lodging_property].lodging_class
+            end
+          end
+          
           #### Lodging property
           # *The property where the stay occurred.*
           committee :lodging_property do
