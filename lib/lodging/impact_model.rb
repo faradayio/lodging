@@ -358,7 +358,7 @@ module BrighterPlanet
             # Don't do this within the US because our database includes locality for all US properties. It's dangerous to look up by city without locality because many localities share city names.
             quorum 'from lodging property name, city, and country', :needs => [:lodging_property_name, :city, :country],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                if characteristics[:country].iso_3166_alpha_3_code != 'US'
+                if characteristics[:country].iso_3166_code != 'US'
                   LodgingProperty.where(
                     :name => characteristics[:lodging_property_name],
                     :city => characteristics[:city],
