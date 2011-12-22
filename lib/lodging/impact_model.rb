@@ -137,7 +137,7 @@ module BrighterPlanet
           committee :fuel_intensities do
             # For each record in the cohort, multiply months used (*months*) by 365 (*days / year*) and divide by 7 (*days / week*) and by 12 (*months / year*) to give *weeks* the surveyed building was used.
             # Divide weekly hours (*hours / week*) by 24 (*hours / day*) and multiply by *weeks* to give *days* the survey building was used.
-            # Multiply by the number of rooms in the building and 0.59 (average occupancy after PriceWaterhouseCoopers) to give *occupied room nights*.
+            # Multiply by the number of rooms in the lodging property and 0.59 (average occupancy after PriceWaterhouseCoopers) to give *occupied room nights*.
             # Divide total use of each fuel by *occupied room nights* to give *fuel / room-night*.
             # Calculate the weighted average of each intensity across all records in the `cohort` to give:
             #
@@ -210,10 +210,10 @@ module BrighterPlanet
           end
           
           #### Cohort
-          # *A set of responses from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) that represent buildings similar to the lodging building.*
+          # *A set of responses from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) that represent buildings similar to the lodging property.*
           committee :cohort do
             # If the lodging is in the United States, assemble a cohort of CBECS responses:
-            # Start with all responses, and then select only the responses that match the lodging's `country lodging class`, `rooms range`, `census region`, and `cenusus division`.
+            # Start with all responses, and then select only the responses that match `country lodging class`, `rooms range`, `census region`, and `cenusus division`.
             # If fewer than 8 responses match all of those characteristics, drop the last characteristic (initially `census division`) and try again.
             # Continue until we have 8 or more responses or we've dropped all the characteristics.
             quorum 'from country and input', :needs => :country, :appreciates => [:country_lodging_class, :rooms_range, :census_division],
