@@ -3,3 +3,4 @@ northstar_id,name,city,locality,postcode,country_iso_3166_alpha_3_code,lodging_r
 2,Sleepy Inn,Lincoln,Nebraska,68510,USA,100,Motel
 3,Sleepy Inn,Lincoln,Pennsylvania,15135,USA,75,Motel
 4,Sleepy Inn,Lincoln,Pennsylvania,15135,USA,125,Motel
+5,Queen Ann Hotel,San Francisco,California,94122,USA,50,Hotel

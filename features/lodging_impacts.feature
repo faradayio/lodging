@@ -49,3 +49,21 @@ Feature: Lodging Emissions Calculations
       | Hotel | 50             |          | California |         |  93.81 | cohort country lodging class rooms division |
       | Hotel | 50             | 94122    |            |         |  58.00 | cohort country lodging class rooms division + egrid |
       |       | 20             |          | California |         |  79.50 | cohort rooms region + egrid |
+
+  Scenario Outline: Calculations involving a property
+    Given it has "rooms" of "2"
+    And it has "duration" of "172800"
+    And it has "lodging_property_name" of "<name>"
+    And it has "postcode" of "<postcode>"
+    And it has "city" of "<city>"
+    And it has "locality" of "<locality>"
+    And it has "country.iso_3166_code" of "<country>"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Examples:
+      | name            | postcode | city          | locality   | country | carbon | notes |
+      | Lincoln Inn     | LN2 1JD  |               |            | GB      | 113.98 | property found but outside US so no cohort |
+      | Sleepy Inn      |          | Lincoln       | Nebraska   | US      |  87.03 | rooms and class from property but cohort based only on class |
+      | Sleepy Inn      |          | Lincoln       |            | US      | 105.20 | not enough info to look up property |
+      | Queen Ann Hotel |          | San Francisco | California | US      |  93.81 | cohort hotel 50 rms western division |
+      | Queen Ann Hotel | 94122    |               |            |         |  58.00 | will look up country from zip code; cohort hotel 50 rms western division + egrid |
