@@ -420,7 +420,7 @@ module BrighterPlanet
             # Try to match `locality` to a US state.
             quorum 'from locality', :needs => :locality,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                State.find_by_name characteristics[:locality]
+                State.find_by_name characteristics[:locality].to_s
             end
           end
 =begin
@@ -433,7 +433,7 @@ module BrighterPlanet
             # Try to match `postcode` to a US zip code.
             quorum 'from postcode', :needs => :postcode,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                ZipCode.find_by_name characteristics[:postcode]
+                ZipCode.find_by_name characteristics[:postcode].to_s
             end
           end
           
