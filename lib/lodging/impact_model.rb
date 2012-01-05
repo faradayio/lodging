@@ -229,7 +229,7 @@ module BrighterPlanet
 =begin
                   FIXME TODO shouldn't have to call :value on :rooms_range
 =end
-                  provided_characteristics << [:lodging_rooms, characteristics[:rooms_range]] if characteristics[:rooms_range].present?
+                  provided_characteristics << [:lodging_rooms, characteristics[:rooms_range].value] if characteristics[:rooms_range].present?
                   if characteristics[:census_division].present?
                     provided_characteristics << [:census_region_number, characteristics[:census_division].census_region_number]
                     provided_characteristics << [:census_division_number, characteristics[:census_division].number]
