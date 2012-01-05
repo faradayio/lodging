@@ -337,8 +337,8 @@ module BrighterPlanet
             quorum 'from lodging property name, postcode, and country', :needs => [:lodging_property_name, :postcode, :country],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 LodgingProperty.where(
-                  :name => characteristics[:lodging_property_name],
-                  :postcode => characteristics[:postcode],
+                  :name => characteristics[:lodging_property_name].value,
+                  :postcode => characteristics[:postcode].value,
                   :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
                 ).first
             end
@@ -347,9 +347,9 @@ module BrighterPlanet
             quorum 'from lodging property name, city, locality, and country', :needs => [:lodging_property_name, :city, :locality, :country],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 LodgingProperty.where(
-                  :name => characteristics[:lodging_property_name],
-                  :city => characteristics[:city],
-                  :locality => characteristics[:locality],
+                  :name => characteristics[:lodging_property_name].value,
+                  :city => characteristics[:city].value,
+                  :locality => characteristics[:locality].value,
                   :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
                 ).first
             end
@@ -360,8 +360,8 @@ module BrighterPlanet
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 if characteristics[:country].iso_3166_code != 'US'
                   LodgingProperty.where(
-                    :name => characteristics[:lodging_property_name],
-                    :city => characteristics[:city],
+                    :name => characteristics[:lodging_property_name].value,
+                    :city => characteristics[:city].value,
                     :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
                   ).first
                 end
@@ -420,7 +420,7 @@ module BrighterPlanet
             # Try to match `locality` to a US state.
             quorum 'from locality', :needs => :locality,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                State.find_by_name characteristics[:locality].to_s
+                State.find_by_name characteristics[:locality].value
             end
           end
 =begin
@@ -433,7 +433,7 @@ module BrighterPlanet
             # Try to match `postcode` to a US zip code.
             quorum 'from postcode', :needs => :postcode,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                ZipCode.find_by_name characteristics[:postcode].to_s
+                ZipCode.find_by_name characteristics[:postcode].value
             end
           end
           
