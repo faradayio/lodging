@@ -411,13 +411,15 @@ module BrighterPlanet
           #### State
           # *The lodging property's [US state](http://data.brighterplanet.com/states).*
           committee :state do
-            # Look up the `zip code` state.
+            # Use client input, if available.
+            
+            # Otherwise look up the `zip code` state.
             quorum 'from zip code', :needs => :zip_code,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:zip_code].state
             end
             
-            # Try to match `locality` to a US state.
+            # Otherwise try to match `locality` to a US state.
             quorum 'from locality', :needs => :locality,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 State.find_by_name characteristics[:locality].value
@@ -430,7 +432,9 @@ module BrighterPlanet
           #### Zip code
           # *The lodging property's [US zip code](http://data.brighterplanet.com/zip_codes).*
           committee :zip_code do
-            # Try to match `postcode` to a US zip code.
+            # Use client input, if available.
+            
+            # Otherwise try to match `postcode` to a US zip code.
             quorum 'from postcode', :needs => :postcode,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 ZipCode.find_by_name characteristics[:postcode].value
