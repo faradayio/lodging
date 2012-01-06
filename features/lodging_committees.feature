@@ -54,8 +54,14 @@ Feature: Lodging Committee Calculations
     When the "zip_code" committee reports
     Then the conclusion of the committee should be nil
 
-  Scenario: State committee from locality that is state
+  Scenario: State committee from locality that is state name
     Given a characteristic "locality" of "California"
+    When the "state" committee reports
+    Then the committee should have used quorum "from locality"
+    And the conclusion of the committee should have "postal_abbreviation" of "CA"
+
+  Scenario: State committee from locality that is state postal abbreviation
+    Given a characteristic "locality" of "CA"
     When the "state" committee reports
     Then the committee should have used quorum "from locality"
     And the conclusion of the committee should have "postal_abbreviation" of "CA"

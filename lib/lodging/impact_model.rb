@@ -422,7 +422,11 @@ module BrighterPlanet
             # Otherwise try to match `locality` to a US state.
             quorum 'from locality', :needs => :locality,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                State.find_by_name characteristics[:locality].value
+                if state = State.find_by_name(characteristics[:locality].value)
+                  state
+                else
+                  State.find_by_postal_abbreviation characteristics[:locality].value
+                end
             end
           end
 =begin
@@ -461,6 +465,9 @@ module BrighterPlanet
           # *The lodging's postcode.*
           #
           # Use client input, if available.
+=begin
+          FIXME TODO import geographic database and look up city from postcode
+=end
           
           #### Room nights (*room-nights*)
           # The stay's room-nights that occurred during `timeframe`.
