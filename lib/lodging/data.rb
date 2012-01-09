@@ -2,6 +2,7 @@ module BrighterPlanet
   module Lodging
     module Data
       def self.included(base)
+        base.col :date,     :type => :date
         base.col :rooms,    :type => :integer
         base.col :duration, :type => :integer
         base.col :postcode

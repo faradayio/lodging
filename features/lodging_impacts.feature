@@ -9,6 +9,16 @@ Feature: Lodging Emissions Calculations
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "28.49"
 
+  Scenario Outline: Calculations starting from date
+    Given it has "date" of "<date>"
+    And it has "timeframe" of "<timeframe>"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Examples:
+      | date       | timeframe             | carbon |
+      | 2011-01-15 | 2011-01-01/2012-01-01 | 28.49  |
+      | 2012-01-15 | 2011-01-01/2012-01-01 |  0.0   |
+
   Scenario: Calculations starting from rooms and duration
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
