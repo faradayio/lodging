@@ -5,10 +5,10 @@ module BrighterPlanet
         base.col :date,     :type => :date
         base.col :rooms,    :type => :integer
         base.col :duration, :type => :integer
-        base.col :postcode
+        # base.col :postcode
         base.col :zip_code_name
         base.col :city
-        base.col :locality
+        # base.col :locality
         base.col :state_postal_abbreviation
         base.col :country_iso_3166_code
         base.col :lodging_property_name

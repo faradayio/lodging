@@ -445,24 +445,8 @@ module BrighterPlanet
             end
           end
           
-          #### Locality
-          # *The lodging property's locality (state, province, territory, etc.).*
-          #
-          # Use client input, if available.
-=begin
-          FIXME TODO import geographic database and look up locality from postcode or city
-=end
-          
           #### City
           # *The lodging property's city.*
-          #
-          # Use client input, if available.
-=begin
-          FIXME TODO import geographic database and look up city from postcode
-=end
-          
-          #### Postcode
-          # *The lodging's postcode.*
           #
           # Use client input, if available.
 =begin
