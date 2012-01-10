@@ -333,15 +333,6 @@ module BrighterPlanet
 =begin
             FIXME TODO for all of these: figure out what to do when there are multiple properties that match
 =end
-            # Look up the property based on `property name`, `postcode`, and `country`.
-            quorum 'from lodging property name, postcode, and country', :needs => [:lodging_property_name, :postcode, :country],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                LodgingProperty.where(
-                  :name => characteristics[:lodging_property_name].value,
-                  :postcode => characteristics[:postcode].value,
-                  :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
-                ).first
-            end
             
             # Otherwise look up the property based on `property name`, `city`, `locality`, and `country`.
             quorum 'from lodging property name, city, locality, and country', :needs => [:lodging_property_name, :city, :locality, :country],
