@@ -1,3 +1,4 @@
+require 'loose_tight_dictionary'
 # Copyright © 2010 Brighter Planet.
 # See LICENSE for details.
 # Contact Brighter Planet for dual-license arrangements.
@@ -334,15 +335,27 @@ module BrighterPlanet
             FIXME TODO for all of these: figure out what to do when there are multiple properties that match
 =end
             
-            # Otherwise look up the property based on `property name`, `city`, `locality`, and `country`.
-            quorum 'from lodging property name, city, locality, and country', :needs => [:lodging_property_name, :city, :locality, :country],
+            # Otherwise look up the property based on `property name`, `city`, and `state`.
+            quorum 'from lodging property name, city, and state', :needs => [:lodging_property_name, :city, :state],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                LodgingProperty.where(
-                  :name => characteristics[:lodging_property_name].value,
-                  :city => characteristics[:city].value,
-                  :locality => characteristics[:locality].value,
-                  :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
-                ).first
+                # Looking only at properties in `state`, find the best match for `city` out of all the possible properties' cities.
+                state_properties = LodgingProperty.where(:locality => characteristics[:state].name)
+                state_cities = state_properties.select("DISTINCT city").map(&:city)
+                matched_city = LooseTightDictionary.new(state_cities).find characteristics[:city].value
+                
+                # Looking only at properties in the matched city, find the best match for `lodging property name` out of all the possible properties' names.
+                city_properties = state_properties.where(:city => matched_city)
+                city_names = city_properties.select("DISTINCT name").map(&:name)
+                city_names_dictionary = LooseTightDictionary.new(city_names, :stop_words => [("/" + matched_city + "/i")])
+                matched_name = city_names_dictionary.find characteristics[:lodging_property_name]
+                
+                # Use the first property in the matched city that has the matched name.
+                city_properties.where(:name => matched_name)[0]
+=begin
+  FIXME TODO incorporate zipcode somehow
+  tried looking up best match for name within zip code and using that instead if score > 0.42
+  that doesn't work b/c if there's a decent match it will be used over a perfect match in another zip code
+=end
             end
             
             # Otherwise if the property is not in the United States, look it up based on `property name`, `city`, and `country`.
