@@ -331,44 +331,12 @@ module BrighterPlanet
           #### Lodging property
           # *The property where the stay occurred.*
           committee :lodging_property do
-=begin
-            FIXME TODO for all of these: figure out what to do when there are multiple properties that match
-=end
-            
-            # Otherwise look up the property based on `property name`, `city`, and `state`.
-            quorum 'from lodging property name, city, and state', :needs => [:lodging_property_name, :city, :state],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                # Looking only at properties in `state`, find the best match for `city` out of all the possible properties' cities.
-                state_properties = LodgingProperty.where(:locality => characteristics[:state].name)
-                state_cities = state_properties.select("DISTINCT city").map(&:city)
-                matched_city = LooseTightDictionary.new(state_cities).find characteristics[:city].value
-                
-                # Looking only at properties in the matched city, find the best match for `lodging property name` out of all the possible properties' names.
-                city_properties = state_properties.where(:city => matched_city)
-                city_names = city_properties.select("DISTINCT name").map(&:name)
-                city_names_dictionary = LooseTightDictionary.new(city_names, :stop_words => [("/" + matched_city + "/i")])
-                matched_name = city_names_dictionary.find characteristics[:lodging_property_name]
-                
-                # Use the first property in the matched city that has the matched name.
-                city_properties.where(:name => matched_name)[0]
-=begin
-  FIXME TODO incorporate zipcode somehow
-  tried looking up best match for name within zip code and using that instead if score > 0.42
-  that doesn't work b/c if there's a decent match it will be used over a perfect match in another zip code
-=end
-            end
-            
-            # Otherwise if the property is not in the United States, look it up based on `property name`, `city`, and `country`.
-            # Don't do this within the US because our database includes locality for all US properties. It's dangerous to look up by city without locality because many localities share city names.
-            quorum 'from lodging property name, city, and country', :needs => [:lodging_property_name, :city, :country],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                if characteristics[:country].iso_3166_code != 'US'
-                  LodgingProperty.where(
-                    :name => characteristics[:lodging_property_name].value,
-                    :city => characteristics[:city].value,
-                    :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code
-                  ).first
-                end
+            quorum "from lodging property name", :needs => [:lodging_property_name], :appreciates => [:zip_code, :state, :city], :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+              if LodgingProperty.respond_to?(:better_match)
+                LodgingProperty.better_match characteristics
+              else
+                LodgingProperty.find_by_name characteristics[:lodging_property_name]
+              end
             end
           end
           
@@ -422,37 +390,22 @@ module BrighterPlanet
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:zip_code].state
             end
-            
-            # Otherwise try to match `locality` to a US state.
-            quorum 'from locality', :needs => :locality,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                if state = State.find_by_name(characteristics[:locality].value)
-                  state
-                else
-                  State.find_by_postal_abbreviation characteristics[:locality].value
-                end
-            end
           end
 =begin
           FIXME TODO import geographic database and look up state from city
 =end
           
-          #### Zip code
-          # *The lodging property's [US zip code](http://data.brighterplanet.com/zip_codes).*
-          committee :zip_code do
+          #### City
+          # *The lodging property's [US state](http://data.brighterplanet.com/states).*
+          committee :city do
             # Use client input, if available.
-            
-            # Otherwise try to match `postcode` to a US zip code.
-            quorum 'from postcode', :needs => :postcode,
+
+            # Otherwise look up the `zip code` description.
+            quorum 'from zip code', :needs => :zip_code,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                ZipCode.find_by_name characteristics[:postcode].value
+                characteristics[:zip_code].description
             end
           end
-          
-          #### City
-          # *The lodging property's city.*
-          #
-          # Use client input, if available.
 =begin
           FIXME TODO import geographic database and look up city from postcode
 =end
