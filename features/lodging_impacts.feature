@@ -39,6 +39,9 @@ Feature: Lodging Emissions Calculations
       | US      |       | 105.20 | country with intensities + elec ef |
       | GB      | Hotel | 113.98 | country missing fuel intensities and elec ef |
       | VI      | Hotel | 301.20 | country with fuel intensities but no elec ef |
+      | US      | Hotel | 171.52 | country with intensities + elec ef |
+      | US      | Motel |  87.07 | country with intensities + elec ef |
+      | US      | Inn   |  87.07 | country with intensities + elec ef |
 
   Scenario Outline: Calculations from rooms, duration, zip, state, lodging class, and property rooms
     Given it has "rooms" of "2"

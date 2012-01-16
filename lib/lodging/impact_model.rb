@@ -212,13 +212,13 @@ module BrighterPlanet
           #### Cohort
           # *A set of responses from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) that represent buildings similar to the lodging property.*
           committee :cohort do
-            # If the lodging is in the United States, assemble a cohort of CBECS responses:
+            # If the lodging is in the United States and we know `rooms range` or `census division`, assemble a cohort of CBECS responses:
             # Start with all responses, and then select only the responses that match `country lodging class`, `rooms range`, `census region`, and `cenusus division`.
             # If fewer than 8 responses match all of those characteristics, drop the last characteristic (initially `census division`) and try again.
             # Continue until we have 8 or more responses or we've dropped all the characteristics.
             quorum 'from country and input', :needs => :country, :appreciates => [:country_lodging_class, :rooms_range, :census_division],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                if characteristics[:country].iso_3166_code == 'US'
+                if characteristics[:country].iso_3166_code == 'US' and [characteristics[:rooms_range], characteristics[:census_division]].any?
 =begin
                   lodging class is almost always better predictor of electricity or nat gas than census region
                   lodging class is usually better predictor of electricity or nat gas than census division
