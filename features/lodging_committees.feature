@@ -43,39 +43,40 @@ Feature: Lodging Committee Calculations
       | 2009-01-15 | 2009-01-01/2009-02-01 | 2     | 172800   | 4           |
       | 2009-02-15 | 2009-01-01/2009-02-01 | 2     | 172800   | 0           |
 
-  Scenario: Zip code committee from postcode that is zip code
-    Given a characteristic "postcode" of "94122"
-    When the "zip_code" committee reports
-    Then the committee should have used quorum "from postcode"
-    And the conclusion of the committee should have "name" of "94122"
+  # Scenario: Zip code committee from postcode that is zip code
+  #   Given a characteristic "postcode" of "94122"
+  #   When the "zip_code" committee reports
+  #   Then the committee should have used quorum "from postcode"
+  #   And the conclusion of the committee should have "name" of "94122"
+  # 
+  # Scenario: Zip code committee from postcode that is zip+4
+  #   Given a characteristic "postcode" of "94122-1234"
+  #   When the "zip_code" committee reports
+  #   Then the committee should have used quorum "from postcode"
+  #   And the conclusion of the committee should have "name" of "94122"
+  # 
+  # Scenario: Zip code committee from postcode that is not zip code
+  #   Given a characteristic "postcode" of "38000"
+  #   When the "zip_code" committee reports
+  #   Then the conclusion of the committee should be nil
 
-  Scenario: Zip code committee from postcode that is not zip code
-    Given a characteristic "postcode" of "38000"
-    When the "zip_code" committee reports
-    Then the conclusion of the committee should be nil
-
-  Scenario: State committee from locality that is state name
-    Given a characteristic "locality" of "California"
-    When the "state" committee reports
-    Then the committee should have used quorum "from locality"
-    And the conclusion of the committee should have "postal_abbreviation" of "CA"
-
-  Scenario: State committee from locality that is state postal abbreviation
-    Given a characteristic "locality" of "CA"
-    When the "state" committee reports
-    Then the committee should have used quorum "from locality"
-    And the conclusion of the committee should have "postal_abbreviation" of "CA"
-
-  Scenario: State committee from locality that is not state
-    Given a characteristic "locality" of "Isère"
-    When the "state" committee reports
-    Then the conclusion of the committee should be nil
+  Scenario: City committee from zip code
+    Given a characteristic "zip_code.name" of "94122"
+    When the "city" committee reports
+    Then the committee should have used quorum "from zip code"
+    And the conclusion of the committee should be "San Francisco"
 
   Scenario: State committee from zip code
     Given a characteristic "zip_code.name" of "94122"
     When the "state" committee reports
     Then the committee should have used quorum "from zip code"
     And the conclusion of the committee should have "postal_abbreviation" of "CA"
+
+  Scenario: Country committee from state
+    Given a characteristic "state.postal_abbreviation" of "CA"
+    When the "country" committee reports
+    Then the committee should have used quorum "from state"
+    And the conclusion of the committee should have "iso_3166_code" of "US"
 
   Scenario: eGRID subregion from zip code
     Given a characteristic "zip_code.name" of "94122"
@@ -89,62 +90,39 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should have "number" of "9"
 
-  Scenario: Country committee from state
-    Given a characteristic "state.postal_abbreviation" of "CA"
-    When the "country" committee reports
-    Then the committee should have used quorum "from state"
-    And the conclusion of the committee should have "iso_3166_code" of "US"
-
-  Scenario Outline: Lodging property committee from lodging property name, postcode, and country
-    Given a characteristic "lodging_property_name" of "<name>"
-    And a characteristic "postcode" of "<postcode>"
-    And a characteristic "country.iso_3166_code" of "<country>"
-    When the "lodging_property" committee reports
-    Then the committee should have used quorum "from lodging property name, postcode, and country"
-    And the conclusion of the committee should have "northstar_id" of "<id>"
-    Examples:
-      | name        | postcode | country | id |
-      | Lincoln Inn | LN2 1JD  | GB      | 1  |
-      | Sleepy Inn  | 68510    | US      | 2  |
-      | Sleepy Inn  | 15135    | US      | 3  |
-
-  Scenario Outline: Lodging property committee from lodging property name, city, locality, and country
+  Scenario Outline: Lodging property committee from lodging property name, city, and state
     Given a characteristic "lodging_property_name" of "<name>"
     And a characteristic "city" of "<city>"
-    And a characteristic "locality" of "<locality>"
-    And a characteristic "country.iso_3166_code" of "<country>"
+    And a characteristic "state.postal_abbreviation" of "<state>"
     When the "lodging_property" committee reports
-    Then the committee should have used quorum "from lodging property name, city, locality, and country"
+    Then the committee should have used quorum "from lodging property name, city, and state"
+    And the conclusion of the committee should have "name" of "<matched_name>"
     And the conclusion of the committee should have "northstar_id" of "<id>"
     Examples:
-      | name        | city    | locality     | country | id |
-      | Lincoln Inn | Lincoln | Lincolnshire | GB      | 1  |
-      | Sleepy Inn  | Lincoln | Nebraska     | US      | 2  |
-      | Sleepy Inn  | Lincoln | Pennsylvania | US      | 3  |
+      | name                 | city          | state | matched_name         | id |
+      | Hilton San Francisco | San Francisco | CA    | Hilton San Francisco | 1  |
+      | Pacific Inn          | Daly City     | CA    | Pacific Inn          | 3  |
 
-  Scenario: Lodging property committee from lodging property name, city, and country
-    Given a characteristic "lodging_property_name" of "Lincoln Inn"
-    And a characteristic "city" of "Lincoln"
-    And a characteristic "country.iso_3166_code" of "GB"
+  Scenario Outline: Lodging property committee from lodging property name and zip code
+    Given a characteristic "lodging_property_name" of "<name>"
+    And a characteristic "zip_code.name" of "<zip>"
     When the "lodging_property" committee reports
-    Then the committee should have used quorum "from lodging property name, city, and country"
-    And the conclusion of the committee should have "northstar_id" of "1"
-
-  Scenario: Lodging property committee from lodging property name, city, and country when country is US
-    Given a characteristic "lodging_property_name" of "Sleepy Inn"
-    And a characteristic "city" of "Lincoln"
-    And a characteristic "country.iso_3166_code" of "US"
-    When the "lodging_property" committee reports
-    Then the conclusion of the committee should be nil
+    Then the committee should have used quorum "from lodging property name and zip code"
+    And the conclusion of the committee should have "name" of "<matched_name>"
+    And the conclusion of the committee should have "northstar_id" of "<id>"
+    Examples:
+      | name                 | zip   | matched_name         | id |
+      | Hilton San Francisco | 94122 | Hilton San Francisco | 1  |
+      | Pacific Inn          | 94014 | Pacific Inn          | 3  |
 
   Scenario: Lodging class from lodging property
-    Given a characteristic "lodging_property.northstar_id" of "1"
+    Given a characteristic "lodging_property.northstar_id" of "3"
     When the "lodging_class" committee reports
     Then the committee should have used quorum "from lodging property"
     And the conclusion of the committee should have "name" of "Inn"
 
   Scenario: Property rooms from lodging property
-    Given a characteristic "lodging_property.northstar_id" of "1"
+    Given a characteristic "lodging_property.northstar_id" of "3"
     When the "property_rooms" committee reports
     Then the committee should have used quorum "from lodging property"
     And the conclusion of the committee should be "25"
@@ -211,15 +189,6 @@ Feature: Lodging Committee Calculations
       | Hotel | 50    | 9        | 8       | class, rooms, and division |
       | Inn   | 20    | 9        | 8       | class |
 
-  Scenario: cohort committee from various characteristics
-    Given a characteristic "country.iso_3166_code" of "US"
-    And a characteristic "property_rooms" of "20"
-    And a characteristic "census_division.number" of "9"
-    When the "rooms_range" committee reports
-    And the "cohort" committee reports
-    Then the committee should have used quorum "from country and input"
-    And the conclusion of the committee should have a record with "count" equal to "8"
-
   Scenario Outline: cohort committee from insufficient characteristics
     Given a characteristic "country.iso_3166_code" of "<country>"
     And a characteristic "property_rooms" of "<rooms>"
@@ -228,6 +197,7 @@ Feature: Lodging Committee Calculations
     Then the conclusion of the committee should be nil
     Examples:
       | country | rooms | notes |
+      | US      |       | not enough user inputs |
       | US      | 75    | not enough records |
       | GB      | 15    | not in US |
 

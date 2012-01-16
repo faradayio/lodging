@@ -25,55 +25,50 @@ Feature: Lodging Emissions Calculations
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "113.98"
 
-  Scenario Outline: Calculations from rooms, duration, postcode, locality, and country
+  Scenario Outline: Calculations from rooms, duration, country, and lodging class
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
-    And it has "postcode" of "<postcode>"
-    And it has "locality" of "<locality>"
     And it has "country.iso_3166_code" of "<country>"
+    And it has "lodging_class.name" of "<class>"
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
-      | postcode | locality   | country | carbon | notes |
-      |          |            | GB      | 113.98 | country missing fuel intensities and elec ef |
-      |          |            | VI      | 268.20 | country with fuel intensities but no elec ef |
-      |          |            | US      | 105.20 | country with intensities + elec ef |
-      |          | California |         |  90.42 | cohort census division |
-      | 94122    |            |         |  55.36 | cohort census division + egrid |
+      | country | class | carbon | notes |
+      | GB      |       | 113.98 | country missing fuel intensities and elec ef |
+      | VI      |       | 268.20 | country with fuel intensities but no elec ef |
+      | US      |       | 105.20 | country with intensities + elec ef |
+      | GB      | Hotel | 113.98 | country missing fuel intensities and elec ef |
+      | VI      | Hotel | 301.20 | country with fuel intensities but no elec ef |
 
-  Scenario Outline: Calculations from rooms, duration, postcode, locality, and country
+  Scenario Outline: Calculations from rooms, duration, zip, state, lodging class, and property rooms
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
+    And it has "zip_code.name" of "<zip>"
+    And it has "state.postal_abbreviation" of "<state>"
     And it has "lodging_class.name" of "<class>"
     And it has "property_rooms" of "<property_rooms>"
-    And it has "postcode" of "<postcode>"
-    And it has "locality" of "<locality>"
-    And it has "country.iso_3166_code" of "<country>"
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
-      | class | property_rooms | postcode | locality   | country | carbon | notes |
-      | Hotel |                |          |            | GB      | 113.98 | county only |
-      | Hotel |                |          |            | VI      | 301.20 | country lodging class |
-      | Inn   |                |          |            | US      |  87.03 | cohort country lodging class |
-      | Hotel | 50             |          | California |         |  93.81 | cohort country lodging class rooms division |
-      | Hotel | 50             | 94122    |            |         |  58.00 | cohort country lodging class rooms division + egrid |
-      |       | 20             |          | California |         |  79.50 | cohort rooms region + egrid |
+      | zip      | state | class | property_rooms | carbon | notes |
+      |          | CA    |       |                |  90.42 | cohort from division; elec ef from country |
+      |          | CA    | Hotel | 50             |  93.81 | cohort from class, rooms, division; elec ef from country |
+      | 94122    |       |       |                |  55.36 | cohort from division; elec ef from egrid |
+      | 94122    |       | Hotel | 50             |  58.00 | cohort from class, rooms, division; elec ef from egrid |
+      |          | CA    |       | 20             |  79.50 | cohort from rooms, region; elec ef from country |
 
   Scenario Outline: Calculations involving a property
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
     And it has "lodging_property_name" of "<name>"
-    And it has "postcode" of "<postcode>"
+    And it has "zip_code.name" of "<zip>"
     And it has "city" of "<city>"
-    And it has "locality" of "<locality>"
-    And it has "country.iso_3166_code" of "<country>"
+    And it has "state.postal_abbreviation" of "<state>"
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
-      | name            | postcode | city          | locality   | country | carbon | notes |
-      | Lincoln Inn     | LN2 1JD  |               |            | GB      | 113.98 | property found but outside US so no cohort |
-      | Sleepy Inn      |          | Lincoln       | Nebraska   | US      |  87.03 | rooms and class from property but cohort based only on class |
-      | Sleepy Inn      |          | Lincoln       |            | US      | 105.20 | not enough info to look up property |
-      | Queen Ann Hotel |          | San Francisco | California | US      |  93.81 | cohort hotel 50 rms western division |
-      | Queen Ann Hotel | 94122    |               |            |         |  58.00 | will look up country from zip code; cohort hotel 50 rms western division + egrid |
+      | name                  | zip   | city          | state | carbon | notes |
+      | Courtyard by Marriott |       | San Francisco | CA    | 87.03  | cohort based on class only; elec ef from country |
+      | Hilton San Francisco  |       | San Francisco | CA    | 93.81  | cohort based on class rooms division; elec ef from country |
+      | Hilton San Francisco  | 94122 |               |       | 58.00  | cohort based on class rooms division; elec ef from egrid |
+      | Pacific Inn           |       | San Francisco | CA    | 90.42  | not enough to identify property; cohort from division; elec ef from country |

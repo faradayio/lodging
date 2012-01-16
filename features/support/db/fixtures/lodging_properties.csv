@@ -1,6 +1,4 @@
 northstar_id,name,city,locality,postcode,country_iso_3166_alpha_3_code,lodging_rooms,lodging_class_name
-1,Lincoln Inn,Lincoln,Lincolnshire,LN2 1JD,GBR,25,Inn
-2,Sleepy Inn,Lincoln,Nebraska,68510,USA,100,Motel
-3,Sleepy Inn,Lincoln,Pennsylvania,15135,USA,75,Motel
-4,Sleepy Inn,Lincoln,Pennsylvania,15135,USA,125,Motel
-5,Queen Ann Hotel,San Francisco,California,94122,USA,50,Hotel
+1,Hilton San Francisco,San Francisco,California,94122,USA,50,Hotel
+2,Courtyard by Marriott,San Francisco,California,94133,USA,100,Motel
+3,Pacific Inn,Daly City,California,94014,USA,25,Inn
