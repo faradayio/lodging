@@ -151,6 +151,12 @@ module BrighterPlanet
                 [:natural_gas, :fuel_oil, :electricity, :district_heat].each do |fuel|
                   intensities[fuel] = characteristics[:cohort].inject(0) do |sum, record|
                     next sum unless record.send("#{fuel}_use").present?
+=begin
+  days/year * weeks/day * years/month = weeks/month
+  weeks/month * months in a year = weeks in a year
+  weeks in a year * hours/week = hours in a year
+  hours in a year * days/hour = days in a year
+=end
                     occupied_room_nights = 365.0 / 7.0 / 12.0 * record.months_used * record.weekly_hours / 24.0 * record.lodging_rooms * 0.59
                     sum + (record.weighting * record.send("#{fuel}_use") / occupied_room_nights)
                   end / characteristics[:cohort].sum(:weighting)
@@ -357,21 +363,6 @@ module BrighterPlanet
           #
           # Use client input, if available
           
-          #### Country
-          # *The lodging property's [country](http://data.brighterplanet.com/countries).*
-          committee :country do
-            # Use client input, if available.
-            
-            # If state is defined then the country is the United States.
-            quorum 'from state', :needs => :state,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                Country.united_states
-            end
-          end
-=begin
-          FIXME TODO import geographic database and look up country based on postcode, city, or locality
-=end
-          
           #### Census division
           # *The lodging property's [census division](http://data.brighterplanet.com/census_divisions).*
           committee :census_division do
@@ -392,6 +383,18 @@ module BrighterPlanet
             end
           end
           
+          #### Country
+          # *The lodging property's [country](http://data.brighterplanet.com/countries).*
+          committee :country do
+            # Use client input, if available.
+            
+            # If state is defined then the country is the United States.
+            quorum 'from state', :needs => :state,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                Country.united_states
+            end
+          end
+          
           #### State
           # *The lodging property's [US state](http://data.brighterplanet.com/states).*
           committee :state do
@@ -403,23 +406,25 @@ module BrighterPlanet
                 characteristics[:zip_code].state
             end
           end
-=begin
-          FIXME TODO import geographic database and look up state from city
-=end
           
           #### City
           # *The lodging property's city.*
           committee :city do
             # Use client input, if available.
-
+            
             # Otherwise look up the `zip code` description.
             quorum 'from zip code', :needs => :zip_code,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:zip_code].description
             end
           end
+          
+          #### Zip code
+          # *The lodging property's [US zip code](http://data.brighterplanet.com/zip_codes).*
+          #
+          # Use client input, if available.
 =begin
-          FIXME TODO import geographic database and look up city from postcode
+          FIXME TODO ensure user-input zip+4 gets interpreted properly
 =end
           
           #### Room nights (*room-nights*)
