@@ -13,8 +13,9 @@ module BrighterPlanet
           has :state
           has :country
           has :lodging_property_name
-          has :lodging_class
           has :property_rooms
+          has :property_construction_year
+          has :lodging_class
         end
       end
     end

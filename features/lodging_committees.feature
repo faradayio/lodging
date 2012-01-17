@@ -90,6 +90,24 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should have "number" of "9"
 
+  Scenario: Climate division committee from zip code
+    Given a characteristic "zip_code.name" of "94122"
+    When the "climate_division" committee reports
+    Then the committee should have used quorum "from zip code"
+    And the conclusion of the committee should have "name" of "CA4"
+
+  Scenario: Climate zone number committee from climate division
+    Given a characteristic "climate_division.name" of "CA4"
+    When the "climate_zone_number" committee reports
+    Then the committee should have used quorum "from climate division"
+    And the conclusion of the committee should be "4"
+
+  Scenario: Climate zone number committee from state
+    Given a characteristic "state.postal_abbreviation" of "CA"
+    When the "climate_zone_number" committee reports
+    Then the committee should have used quorum "from state"
+    And the conclusion of the committee should be "4"
+
   Scenario Outline: Lodging property committee from lodging property name, city, and state
     Given a characteristic "lodging_property_name" of "<name>"
     And a characteristic "city" of "<city>"
@@ -121,12 +139,6 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from lodging property"
     And the conclusion of the committee should have "name" of "Inn"
 
-  Scenario: Property rooms from lodging property
-    Given a characteristic "lodging_property.northstar_id" of "3"
-    When the "property_rooms" committee reports
-    Then the committee should have used quorum "from lodging property"
-    And the conclusion of the committee should be "25"
-
   Scenario: Country lodging class committee from valid country and lodging class
     Given a characteristic "lodging_class.name" of "Hotel"
     And a characteristic "country.iso_3166_code" of "US"
@@ -138,6 +150,12 @@ Feature: Lodging Committee Calculations
     And a characteristic "country.iso_3166_code" of "GB"
     When the "country_lodging_class" committee reports
     Then the conclusion of the committee should be nil
+
+  Scenario: Property rooms from lodging property
+    Given a characteristic "lodging_property.northstar_id" of "3"
+    When the "property_rooms" committee reports
+    Then the committee should have used quorum "from lodging property"
+    And the conclusion of the committee should be "25"
 
   Scenario Outline: rooms range committee from property rooms
     Given a characteristic "property_rooms" of "<rooms>"
@@ -173,6 +191,12 @@ Feature: Lodging Committee Calculations
       | Inn   | 73    | 53..93    |
       | Inn   | 111   | 71..151   |
       | Inn   | 130   | 100..9999 |
+
+  Scenario: property construction year from lodging property
+    Given a characteristic "lodging_property.northstar_id" of "1"
+    When the "property_construction_year" committee reports
+    Then the committee should have used quorum "from lodging property"
+    And the conclusion of the committee should be "1995"
 
   Scenario Outline: cohort committee from various characteristics
     Given a characteristic "country.iso_3166_code" of "US"

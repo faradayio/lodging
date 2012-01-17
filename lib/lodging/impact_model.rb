@@ -247,6 +247,18 @@ module BrighterPlanet
             end
           end
           
+          #### Property construction year
+          # *The year the lodging property was built.*
+          committee :property_construction_year do
+            # Use client input, if available.
+            
+            # Otherwise look up the `lodging property` construction year.
+            quorum 'from lodging property', :needs => :lodging_property,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:lodging_property].construction_year
+            end
+          end
+          
           #### Rooms range
           # *A range in the number of `property rooms`, used to look up similar buildings from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses).*
           committee :rooms_range do
@@ -299,16 +311,6 @@ module BrighterPlanet
             end
           end
           
-          #### Country lodging class
-          # *The lodging's [country-specific lodging class](http://data.brighterplanet.com/country_lodging_classes).*
-          committee :country_lodging_class do
-            # Check whether the combination of `country` and `lodging class` matches a record in our database.
-            quorum 'from country and lodging class', :needs => [:country, :lodging_class],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                CountryLodgingClass.find_by_country_iso_3166_code_and_lodging_class_name(characteristics[:country].iso_3166_code, characteristics[:lodging_class].name)
-            end
-          end
-          
           #### Property rooms
           # *The number of guest rooms in the lodging property.*
           committee :property_rooms do
@@ -318,6 +320,16 @@ module BrighterPlanet
             quorum 'from lodging property', :needs => :lodging_property,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:lodging_property].lodging_rooms
+            end
+          end
+          
+          #### Country lodging class
+          # *The lodging's [country-specific lodging class](http://data.brighterplanet.com/country_lodging_classes).*
+          committee :country_lodging_class do
+            # Check whether the combination of `country` and `lodging class` matches a record in our database.
+            quorum 'from country and lodging class', :needs => [:country, :lodging_class],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                CountryLodgingClass.find_by_country_iso_3166_code_and_lodging_class_name(characteristics[:country].iso_3166_code, characteristics[:lodging_class].name)
             end
           end
           
@@ -362,6 +374,32 @@ module BrighterPlanet
           # *The name of the property where the stay occurred.*
           #
           # Use client input, if available
+          
+          #### Climate zone number
+          # *The lodging property's [climate zone number](http://www.eia.gov/emeu/cbecs/climate_zones.html).*
+          committee :climate_zone_number do
+            # Look up the `climate division` climate zone number.
+            quorum 'from climate division', :needs => :climate_division,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:climate_division].climate_zone_number
+            end
+            
+            # Look up the `state` climate zone number.
+            quorum 'from state', :needs => :state,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:state].climate_zone_number
+            end
+          end
+          
+          #### Climate division
+          # *The lodging property's [climate division](http://data.brighterplanet.com/climate_divisions).*
+          committee :climate_division do
+            # Look up the `zip code` climate division.
+            quorum 'from zip code', :needs => :zip_code,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:zip_code].climate_division
+            end
+          end
           
           #### Census division
           # *The lodging property's [census division](http://data.brighterplanet.com/census_divisions).*
