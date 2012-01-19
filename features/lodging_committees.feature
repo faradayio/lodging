@@ -174,14 +174,14 @@ Feature: Lodging Committee Calculations
       | Inn   | 111   | 71..151   |
       | Inn   | 130   | 100..9999 |
 
-  Scenario Outline: cohort committee from various characteristics
+  Scenario Outline: lodging properties cohort committee from various characteristics
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "lodging_class.name" of "<class>"
     And a characteristic "property_rooms" of "<rooms>"
     And a characteristic "census_division.number" of "<division>"
     When the "country_lodging_class" committee reports
     And the "rooms_range" committee reports
-    And the "cohort" committee reports
+    And the "lodging_properties_cohort" committee reports
     Then the committee should have used quorum "from country and input"
     And the conclusion of the committee should have a record with "count" equal to "<records>"
     Examples:
@@ -189,11 +189,11 @@ Feature: Lodging Committee Calculations
       | Hotel | 50    | 9        | 8       | class, rooms, and division |
       | Inn   | 20    | 9        | 8       | class |
 
-  Scenario Outline: cohort committee from insufficient characteristics
+  Scenario Outline: lodging properties cohort committee from insufficient characteristics
     Given a characteristic "country.iso_3166_code" of "<country>"
     And a characteristic "property_rooms" of "<rooms>"
     When the "rooms_range" committee reports
-    And the "cohort" committee reports
+    And the "lodging_properties_cohort" committee reports
     Then the conclusion of the committee should be nil
     Examples:
       | country | rooms | notes |
@@ -245,7 +245,7 @@ Feature: Lodging Committee Calculations
     And a characteristic "census_division.number" of "<division>"
     When the "country_lodging_class" committee reports
     And the "rooms_range" committee reports
-    And the "cohort" committee reports
+    And the "lodging_properties_cohort" committee reports
     And the "fuel_intensities" committee reports
     Then the committee should have used quorum "from cohort"
     And the conclusion of the committee should include a key of "natural_gas" and value "<natural_gas>"
@@ -262,7 +262,7 @@ Feature: Lodging Committee Calculations
     And a characteristic "property_rooms" of "20"
     And a characteristic "census_division.number" of "9"
     When the "rooms_range" committee reports
-    And the "cohort" committee reports
+    And the "lodging_properties_cohort" committee reports
     And the "fuel_intensities" committee reports
     Then the committee should have used quorum "from cohort"
     And the conclusion of the committee should include a key of "natural_gas" and value "3.11101"
