@@ -13,15 +13,7 @@ module BrighterPlanet
           has :state
           has :country
           has :lodging_property_name
-          has :lodging_property do |lp| # don't really want user to enter this but need to conceal it in methodology display
-            "A lodging property"
-          end
-          has :property_rooms do |pr|
-            "The number of lodging rooms"
-          end
-          has :rooms_range do |rr| # don't really want user to enter this but need to conceal it in methodology display
-            "A range of rooms"
-          end
+          has :property_rooms
           has :lodging_class
         end
       end
