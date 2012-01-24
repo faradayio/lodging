@@ -65,15 +65,15 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | rooms | year | carbon | notes |
-      |  25   | 1910 |  14.92 | rm yr equation |
-      |  25   |      |  22.58 | rm equation |
-      |       | 1910 |  16.65 | yr equation |
-      |  75   | 1983 |  13.77 | rm yr equation |
-      |  75   |      |  25.30 | rm equation |
-      |       | 1983 |  15.92 | yr equation |
-      | 500   | 2011 |  37.50 | rm yr equation |
-      | 500   |      |  58.00 | rm equation |
-      |       | 2011 |  16.66 | yr equation |
+      |  25   | 1910 |  59.69 | rm yr equation |
+      |  25   |      |  90.33 | rm equation |
+      |       | 1910 |  66.60 | yr equation |
+      |  75   | 1983 |  55.09 | rm yr equation |
+      |  75   |      | 101.21 | rm equation |
+      |       | 1983 |  63.67 | yr equation |
+      | 500   | 2011 | 149.99 | rm yr equation |
+      | 500   |      | 231.99 | rm equation |
+      |       | 2011 |  66.66 | yr equation |
       |       |      | 113.98 | fallbacks |
 
   Scenario Outline: Calculations with fuel use equations including climate zone
@@ -86,16 +86,16 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | zip   | rooms | year | carbon | notes |
-      | 94122 |  25   | 1910 | 11.25  | zone rm yr equation + egrid elec ef |
-      | 94122 |  25   |      | 10.19  | zone rm equation + egrid elec ef |
-      | 94122 |       | 1910 | 13.60  | zone yr equation + egrid elec ef |
-      | 94122 |  75   | 1983 | 14.97  | zone rm yr equation + egrid elec ef |
-      | 94122 |  75   |      | 11.69  | zone rm equation + egrid elec ef |
-      | 94122 |       | 1983 | 19.33  | zone yr equation + egrid elec ef |
-      | 94122 | 500   | 2011 | 57.17  | zone rm yr equation + egrid elec ef |
-      | 94122 | 500   |      | 35.28  | zone rm equation + egrid elec ef |
-      | 94122 |       | 2011 | 23.15  | zone yr equation + egrid elec ef |
-      | 94122 |       |      | 12.04  | zone equation + egrid elec ef |
+      | 94122 |  25   | 1910 |  45.00 | zone rm yr equation + egrid elec ef |
+      | 94122 |  25   |      |  40.76 | zone rm equation + egrid elec ef |
+      | 94122 |       | 1910 |  54.39 | zone yr equation + egrid elec ef |
+      | 94122 |  75   | 1983 |  59.87 | zone rm yr equation + egrid elec ef |
+      | 94122 |  75   |      |  46.76 | zone rm equation + egrid elec ef |
+      | 94122 |       | 1983 |  77.33 | zone yr equation + egrid elec ef |
+      | 94122 | 500   | 2011 | 228.70 | zone rm yr equation + egrid elec ef |
+      | 94122 | 500   |      | 141.11 | zone rm equation + egrid elec ef |
+      | 94122 |       | 2011 |  92.58 | zone yr equation + egrid elec ef |
+      | 94122 |       |      |  48.16 | zone equation + egrid elec ef |
 
   Scenario Outline: Calculations involving a property
     Given it has "rooms" of "2"
@@ -108,9 +108,9 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | name                  | zip   | city          | state | carbon | notes |
-      | Hilton San Francisco  |       | San Francisco | CA    | 11.69  | rm yr equation + country elec ef |
-      | Hilton San Francisco  | 94122 |               |       | 14.45  | zone rm yr equation + egrid elec ef |
-      | Courtyard by Marriott |       | San Francisco | CA    | 13.59  | rm yr equation + country elec ef |
-      | Courtyard by Marriott | 94122 | San Francisco | CA    | 17.34  | zone rm yr equation + egrid elec ef |
+      | Hilton San Francisco  |       | San Francisco | CA    | 46.74  | rm yr equation + country elec ef |
+      | Hilton San Francisco  | 94122 |               |       | 57.78  | zone rm yr equation + egrid elec ef |
+      | Courtyard by Marriott |       | San Francisco | CA    | 54.34  | rm yr equation + country elec ef |
+      | Courtyard by Marriott | 94122 | San Francisco | CA    | 69.37  | zone rm yr equation + egrid elec ef |
       | Pacific Inn           |       | San Francisco | CA    | 97.06  | cohort intens div 9 + country elec ef |
-      | Pacific Inn           | 94122 | San Francisco | CA    | 12.04  | cohort intens div 9 + country elec ef |
+      | Pacific Inn           | 94122 | San Francisco | CA    | 48.16  | zone equation + egrid elec ef |

@@ -80,9 +80,9 @@ module BrighterPlanet
           # The lodging's natural gas use during `timeframe`.
           committee :natural_gas_use do
             # 
-            quorum 'from fuels use equation and inputs', :needs => :fuels_use_equation, :appreciates => [:property_rooms, :property_construction_year],
+            quorum 'from fuels use equation, room nights, and inputs', :needs => [:fuels_use_equation, :room_nights], :appreciates => [:property_rooms, :property_construction_year],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                fuels_use = if characteristics[:property_rooms].present? and characteristics[:property_construction_year].present?
+                fuels_intensity = if characteristics[:property_rooms].present? and characteristics[:property_construction_year].present?
                   characteristics[:fuels_use_equation].constant + (characteristics[:fuels_use_equation].rooms_factor * characteristics[:property_rooms].value) + (characteristics[:fuels_use_equation].year_factor * characteristics[:property_construction_year].value)
                 elsif characteristics[:property_rooms].present?
                   characteristics[:fuels_use_equation].constant + (characteristics[:fuels_use_equation].rooms_factor * characteristics[:property_rooms].value)
@@ -91,11 +91,10 @@ module BrighterPlanet
                 else
                   characteristics[:fuels_use_equation].constant
                 end
-                gas_energy = fuels_use * characteristics[:fuels_use_equation].gas_share
-                
-                gas_to_make_steam_energy = (fuels_use * characteristics[:fuels_use_equation].steam_share / 2.0 / 0.817 / 0.95)
-                
-                (gas_energy + gas_to_make_steam_energy) / 0.59 / Fuel.find('Pipeline Natural Gas').energy_content
+                direct_gas_energy_intensity = fuels_intensity * characteristics[:fuels_use_equation].gas_share
+                indirect_gas_energy_intensity = (fuels_intensity * characteristics[:fuels_use_equation].steam_share / 2.0 / 0.817 / 0.95)
+                gas_intensity = (direct_gas_energy_intensity + indirect_gas_energy_intensity) / Fuel.find('Pipeline Natural Gas').energy_content
+                gas_intensity * characteristics[:room_nights] / 0.59
             end
             
             quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
@@ -114,9 +113,9 @@ module BrighterPlanet
           #### Fuel oil use (*l*)
           # The lodging's fuel oil use during `timeframe`.
           committee :fuel_oil_use do
-            quorum 'from fuels use equation and inputs', :needs => :fuels_use_equation, :appreciates => [:property_rooms, :property_construction_year],
+            quorum 'from fuels use equation, room nights, and inputs', :needs => [:fuels_use_equation, :room_nights], :appreciates => [:property_rooms, :property_construction_year],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                fuels_use = if characteristics[:property_rooms].present? and characteristics[:property_construction_year].present?
+                fuels_intensity = if characteristics[:property_rooms].present? and characteristics[:property_construction_year].present?
                   characteristics[:fuels_use_equation].constant + (characteristics[:fuels_use_equation].rooms_factor * characteristics[:property_rooms].value) + (characteristics[:fuels_use_equation].year_factor * characteristics[:property_construction_year].value)
                 elsif characteristics[:property_rooms].present?
                   characteristics[:fuels_use_equation].constant + (characteristics[:fuels_use_equation].rooms_factor * characteristics[:property_rooms].value)
@@ -125,11 +124,10 @@ module BrighterPlanet
                 else
                   characteristics[:fuels_use_equation].constant
                 end
-                oil_energy = fuels_use * characteristics[:fuels_use_equation].oil_share
-                
-                oil_to_make_steam_energy = (fuels_use * characteristics[:fuels_use_equation].steam_share / 2.0 / 0.846 / 0.95)
-                
-                (oil_energy + oil_to_make_steam_energy) / 0.59 / Fuel.find('Distillate Fuel Oil No. 2').energy_content
+                direct_oil_energy_intensity = fuels_intensity * characteristics[:fuels_use_equation].oil_share
+                indirect_oil_energy_intensity = (fuels_intensity * characteristics[:fuels_use_equation].steam_share / 2.0 / 0.846 / 0.95)
+                oil_intensity = (direct_oil_energy_intensity + indirect_oil_energy_intensity) / Fuel.find('Distillate Fuel Oil No. 2').energy_content
+                oil_intensity * characteristics[:room_nights] / 0.59
             end
             
             quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
@@ -148,9 +146,9 @@ module BrighterPlanet
           #### Electricity use (*kWh*)
           # The lodging's electricity use during `timeframe`.
           committee :electricity_use do
-            quorum 'from electricity use equation and inputs', :needs => :electricity_use_equation, :appreciates => [:property_rooms, :property_construction_year],
+            quorum 'from electricity use equation, room nights, and inputs', :needs => [:electricity_use_equation, :room_nights], :appreciates => [:property_rooms, :property_construction_year],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                electricity_energy = if characteristics[:property_rooms].present? and characteristics[:property_construction_year].present?
+                electricity_intensity = if characteristics[:property_rooms].present? and characteristics[:property_construction_year].present?
                   characteristics[:electricity_use_equation].constant * (characteristics[:electricity_use_equation].rooms_factor ** characteristics[:property_rooms].value) * (characteristics[:electricity_use_equation].year_factor ** characteristics[:property_construction_year].value)
                 elsif characteristics[:property_rooms].present?
                   characteristics[:electricity_use_equation].constant * (characteristics[:electricity_use_equation].rooms_factor ** characteristics[:property_rooms].value)
@@ -159,7 +157,7 @@ module BrighterPlanet
                 else
                   characteristics[:electricity_use_equation].constant
                 end
-                (electricity_energy / 0.59).megajoules.to(:kilowatt_hours)
+                electricity_intensity.megajoules.to(:kilowatt_hours) * characteristics[:room_nights] / 0.59
             end
             
             # Multiply `room nights` (*room-nights*) by `electricity intensity` (*kWh / room-night*) to give *kWh*.

@@ -278,31 +278,29 @@ Feature: Lodging Committee Calculations
     And a characteristic "property_construction_year" of "<year>"
     When the "electricity_use_equation" committee reports
     And the "electricity_use" committee reports
-    Then the committee should have used quorum "from electricity use equation and inputs"
-    And the conclusion of the committee should be "<intensity>"
+    Then the committee should have used quorum "from electricity use equation, room nights, and inputs"
+    And the conclusion of the committee should be "<elec>"
     Examples:
-      | zone | rooms | year | intensity |
-      | 4    | 25    | 1910 | 18.61268  |
-      | 4    | 25    |      | 20.60131  |
-      | 4    |       | 1910 | 25.46848  |
-      | 4    |       |      | 25.47081  |
-      |      | 25    | 1910 | 6.04333   |
-      |      | 25    |      | 23.65737  |
-      |      |       | 1910 | 7.64054   |
-      | 4    | 75    | 1983 | 35.97550  |
-      | 4    | 75    |      | 23.92993  |
-      | 4    |       | 1983 | 48.98444  |
-      | 4    |       |      | 25.47081  |
-      |      | 75    | 1983 | 11.94761  |
-      |      | 75    |      | 26.14282  |
-      |      |       | 1983 | 14.69533  |
-      | 4    | 500   | 2011 | 156.21709 |
-      | 4    | 500   |      | 85.47479  |
-      | 4    |       | 2011 | 62.95218  |
-      | 4    |       |      | 25.47081  |
-      |      | 500   | 2011 | 34.91062  |
-      |      | 500   |      | 61.11308  |
-      |      |       | 2011 | 18.88565  |
+      | zone | rooms | year | elec      |
+      | 4    |       |      | 101.88324 |
+      | 4    | 25    | 1910 |  74.45070 |
+      | 4    | 25    |      |  82.40524 |
+      | 4    |       | 1910 | 101.87391 |
+      |      | 25    | 1910 |  24.17331 |
+      |      | 25    |      |  94.62947 |
+      |      |       | 1910 |  30.56217 |
+      | 4    | 75    | 1983 | 143.90199 |
+      | 4    | 75    |      |  95.71974 |
+      | 4    |       | 1983 | 195.93775 |
+      |      | 75    | 1983 |  47.79044 |
+      |      | 75    |      | 104.57130 |
+      |      |       | 1983 |  58.78133 |
+      | 4    | 500   | 2011 | 624.86834 |
+      | 4    | 500   |      | 341.89915 |
+      | 4    |       | 2011 | 251.80873 |
+      |      | 500   | 2011 | 139.64249 |
+      |      | 500   |      | 244.45231 |
+      |      |       | 2011 |  75.54262 |
 
   Scenario: Fuel oil use committee from fuel intensities
     Given a characteristic "room_nights" of "4"
@@ -318,31 +316,29 @@ Feature: Lodging Committee Calculations
     And a characteristic "property_construction_year" of "<year>"
     When the "fuels_use_equation" committee reports
     And the "fuel_oil_use" committee reports
-    Then the committee should have used quorum "from fuels use equation and inputs"
-    And the conclusion of the committee should be "<intensity>"
+    Then the committee should have used quorum "from fuels use equation, room nights, and inputs"
+    And the conclusion of the committee should be "<fuel_oil>"
     Examples:
-      | zone | rooms | year | intensity |
-      | 4    | 25    | 1910 | 0.34271   |
-      | 4    | 25    |      | 0.22958   |
-      | 4    |       | 1910 | 0.34999   |
-      | 4    |       |      | 0.24687   |
-      |      | 25    | 1910 | 1.76405   |
-      |      | 25    |      | 1.01840   |
-      |      |       | 1910 | 1.86589   |
-      | 4    | 75    | 1983 | 0.21363   |
-      | 4    | 75    |      | 0.25688   |
-      | 4    |       | 1983 | 0.22158   |
-      | 4    |       |      | 0.24687   |
-      |      | 75    | 1983 | 0.90345   |
-      |      | 75    |      | 1.18228   |
-      |      |       | 1983 | 0.94301   |
-      | 4    | 500   | 2011 | 0.41028   |
-      | 4    | 500   |      | 0.48889   |
-      | 4    |       | 2011 | 0.17232   |
-      | 4    |       |      | 0.24687   |
-      |      | 500   | 2011 | 2.18850   |
-      |      | 500   |      | 2.57526   |
-      |      |       | 2011 | 0.58903   |
+      | zone | rooms | year | fuel_oil |
+      | 4    |       |      |  0.98748 |
+      | 4    | 25    | 1910 |  1.37083 |
+      | 4    | 25    |      |  0.91833 |
+      | 4    |       | 1910 |  1.39994 |
+      |      | 25    | 1910 |  7.05621 |
+      |      | 25    |      |  4.07359 |
+      |      |       | 1910 |  7.46357 |
+      | 4    | 75    | 1983 |  0.85452 |
+      | 4    | 75    |      |  1.02751 |
+      | 4    |       | 1983 |  0.88631 |
+      |      | 75    | 1983 |  3.61379 |
+      |      | 75    |      |  4.72911 |
+      |      |       | 1983 |  3.77205 |
+      | 4    | 500   | 2011 |  1.64111 |
+      | 4    | 500   |      |  1.95555 |
+      | 4    |       | 2011 |  0.68930 |
+      |      | 500   | 2011 |  8.75401 |
+      |      | 500   |      | 10.30104 |
+      |      |       | 2011 |  2.35613 |
 
   Scenario: Natural gas use committee from fuel intensities
     Given a characteristic "room_nights" of "4"
@@ -358,31 +354,29 @@ Feature: Lodging Committee Calculations
     And a characteristic "property_construction_year" of "<year>"
     When the "fuels_use_equation" committee reports
     And the "natural_gas_use" committee reports
-    Then the committee should have used quorum "from fuels use equation and inputs"
-    And the conclusion of the committee should be "<intensity>"
+    Then the committee should have used quorum "from fuels use equation, room nights, and inputs"
+    And the conclusion of the committee should be "<nat_gas>"
     Examples:
-      | zone | rooms | year | intensity |
-      | 4    | 25    | 1910 | 2.23777   |
-      | 4    | 25    |      | 1.49911   |
-      | 4    |       | 1910 | 2.28530   |
-      | 4    |       |      | 1.61199   |
-      |      | 25    | 1910 | 3.14497   |
-      |      | 25    |      | 1.81561   |
-      |      |       | 1910 | 3.32653   |
-      | 4    | 75    | 1983 | 1.39494   |
-      | 4    | 75    |      | 1.67734   |
-      | 4    |       | 1983 | 1.44683   |
-      | 4    |       |      | 1.61199   |
-      |      | 75    | 1983 | 1.61067   |
-      |      | 75    |      | 2.10777   |
-      |      |       | 1983 | 1.68121   |
-      | 4    | 500   | 2011 | 2.67899   |
-      | 4    | 500   |      | 3.19229   |
-      | 4    |       | 2011 | 1.12522   |
-      | 4    |       |      | 1.61199   |
-      |      | 500   | 2011 | 3.90168   |
-      |      | 500   |      | 4.59119   |
-      |      |       | 2011 | 1.05013   |
+      | zone | rooms | year | nat_gas  |
+      | 4    |       |      |  6.44794 |
+      | 4    | 25    | 1910 |  8.95108 |
+      | 4    | 25    |      |  5.99643 |
+      | 4    |       | 1910 |  9.14119 |
+      |      | 25    | 1910 | 12.57986 |
+      |      | 25    |      |  7.26243 |
+      |      |       | 1910 | 13.30611 |
+      | 4    | 75    | 1983 |  5.57977 |
+      | 4    | 75    |      |  6.70935 |
+      | 4    |       | 1983 |  5.78731 |
+      |      | 75    | 1983 |  6.44269 |
+      |      | 75    |      |  8.43110 |
+      |      |       | 1983 |  6.72484 |
+      | 4    | 500   | 2011 | 10.71594 |
+      | 4    | 500   |      | 12.76915 |
+      | 4    |       | 2011 |  4.50089 |
+      |      | 500   | 2011 | 15.60671 |
+      |      | 500   |      | 18.36476 |
+      |      |       | 2011 |  4.20052 |
 
   Scenario: Electricity emission factor committee from default
     When the "electricity_emission_factor" committee reports
