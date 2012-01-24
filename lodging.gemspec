@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version = BrighterPlanet::Lodging::VERSION
 
   s.authors = ["Andy Rossmeissl", "Seamus Abshere", "Ian Hough", "Matt Kling", "Derek Kastner"]
-  s.date = %q{2011-02-25}
+  s.date = "2012-01-24"
   s.summary = %q{A carbon model}
   s.description = %q{A software model in Ruby for the greenhouse gas emissions of a lodging}
   s.email = %q{andy@rossmeissl.net}
