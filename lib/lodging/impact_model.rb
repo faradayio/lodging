@@ -175,7 +175,7 @@ module BrighterPlanet
           end
           
           #### Fuels use equation
-          # *An [equation](http://data.brighterplanet.com/lodging_fuel_use_equations) derived from CBECS that predicts fuels use based on a lodging property's location and physical characteristics.*
+          # *An [equation](http://data.brighterplanet.com/lodging_fuel_use_equations) that predicts fuels use based on a lodging property's location and physical characteristics.*
           committee :fuels_use_equation do
             # Look up the appropriate equation for the available inputs.
             quorum 'from available characteristics', :appreciates => [:climate_zone_number, :property_rooms, :property_construction_year],
@@ -185,7 +185,7 @@ module BrighterPlanet
           end
           
           #### Electricity use equation
-          # *An [equation](http://data.brighterplanet.com/lodging_fuel_use_equations) derived from CBECS that predicts electricity use based on a lodging property's location and physical characteristics.*
+          # *An [equation](http://data.brighterplanet.com/lodging_fuel_use_equations) that predicts electricity use based on a lodging property's location and physical characteristics.*
           committee :electricity_use_equation do
             # Look up the appropriate equation for the available inputs.
             quorum 'from available characteristics', :appreciates => [:climate_zone_number, :property_rooms, :property_construction_year],
