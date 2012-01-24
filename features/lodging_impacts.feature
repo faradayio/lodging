@@ -34,31 +34,68 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | country | class | carbon | notes |
-      | GB      |       | 113.98 | country missing fuel intensities and elec ef |
-      | VI      |       | 268.20 | country with fuel intensities but no elec ef |
-      | US      |       | 105.20 | country with intensities + elec ef |
-      | GB      | Hotel | 113.98 | country missing fuel intensities and elec ef |
-      | VI      | Hotel | 301.20 | country with fuel intensities but no elec ef |
-      | US      | Hotel | 171.52 | country with intensities + elec ef |
-      | US      | Motel |  87.07 | country with intensities + elec ef |
-      | US      | Inn   |  87.07 | country with intensities + elec ef |
+      | GB      |       | 113.98 | defaults |
+      | VI      |       | 268.20 | country fuel intens |
+      | US      |       | 105.20 | country fuel intens + country elec ef |
+      | GB      | Hotel | 113.98 | defaults |
+      | VI      | Hotel | 301.20 | country class fuel intens |
+      | US      | Hotel | 171.52 | country class fuel intens + country elec ef |
+      | US      | Motel |  87.07 | country class fuel intens + country elec ef |
+      | US      | Inn   |  87.07 | country class fuel intens + country elec ef |
 
-  Scenario Outline: Calculations from rooms, duration, zip, state, lodging class, and property rooms
+  Scenario Outline: Calculations involving cohorts
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
-    And it has "zip_code.name" of "<zip>"
     And it has "state.postal_abbreviation" of "<state>"
     And it has "lodging_class.name" of "<class>"
-    And it has "property_rooms" of "<property_rooms>"
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
-      | zip      | state | class | property_rooms | carbon | notes |
-      |          | CA    |       |                |  90.42 | cohort from division; elec ef from country |
-      |          | CA    | Hotel | 50             |  93.81 | cohort from class, rooms, division; elec ef from country |
-      | 94122    |       |       |                |  55.36 | cohort from division; elec ef from egrid |
-      | 94122    |       | Hotel | 50             |  58.00 | cohort from class, rooms, division; elec ef from egrid |
-      |          | CA    |       | 20             |  79.50 | cohort from rooms, region; elec ef from country |
+      | state | class | carbon | notes |
+      | CA    |       |  97.06 | cohort intens div 9 + country elec ef |
+      | CA    | Hotel | 166.25 | cohort intens div 9 hotel + country elec ef |
+      | CA    | Motel | 112.90 | cohort intens reg 4 + country elec ef |
+
+  Scenario Outline: Calculations with fuel use equations not using climate zone
+    Given it has "rooms" of "2"
+    And it has "duration" of "172800"
+    And it has "property_rooms" of "<rooms>"
+    And it has "property_construction_year" of "<year>"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Examples:
+      | rooms | year | carbon | notes |
+      |  25   | 1910 |  14.92 | rm yr equation |
+      |  25   |      |  22.58 | rm equation |
+      |       | 1910 |  16.65 | yr equation |
+      |  75   | 1983 |  13.77 | rm yr equation |
+      |  75   |      |  25.30 | rm equation |
+      |       | 1983 |  15.92 | yr equation |
+      | 500   | 2011 |  37.50 | rm yr equation |
+      | 500   |      |  58.00 | rm equation |
+      |       | 2011 |  16.66 | yr equation |
+      |       |      | 113.98 | fallbacks |
+
+  Scenario Outline: Calculations with fuel use equations including climate zone
+    Given it has "rooms" of "2"
+    And it has "duration" of "172800"
+    And it has "zip_code.name" of "<zip>"
+    And it has "property_rooms" of "<rooms>"
+    And it has "property_construction_year" of "<year>"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Examples:
+      | zip   | rooms | year | carbon | notes |
+      | 94122 |  25   | 1910 | 11.25  | zone rm yr equation + egrid elec ef |
+      | 94122 |  25   |      | 10.19  | zone rm equation + egrid elec ef |
+      | 94122 |       | 1910 | 13.60  | zone yr equation + egrid elec ef |
+      | 94122 |  75   | 1983 | 14.97  | zone rm yr equation + egrid elec ef |
+      | 94122 |  75   |      | 11.69  | zone rm equation + egrid elec ef |
+      | 94122 |       | 1983 | 19.33  | zone yr equation + egrid elec ef |
+      | 94122 | 500   | 2011 | 57.17  | zone rm yr equation + egrid elec ef |
+      | 94122 | 500   |      | 35.28  | zone rm equation + egrid elec ef |
+      | 94122 |       | 2011 | 23.15  | zone yr equation + egrid elec ef |
+      | 94122 |       |      | 12.04  | zone equation + egrid elec ef |
 
   Scenario Outline: Calculations involving a property
     Given it has "rooms" of "2"
@@ -71,7 +108,9 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | name                  | zip   | city          | state | carbon | notes |
-      | Courtyard by Marriott |       | San Francisco | CA    | 87.03  | cohort based on class only; elec ef from country |
-      | Hilton San Francisco  |       | San Francisco | CA    | 93.81  | cohort based on class rooms division; elec ef from country |
-      | Hilton San Francisco  | 94122 |               |       | 58.00  | cohort based on class rooms division; elec ef from egrid |
-      | Pacific Inn           |       | San Francisco | CA    | 90.42  | not enough to identify property; cohort from division; elec ef from country |
+      | Hilton San Francisco  |       | San Francisco | CA    | 11.69  | rm yr equation + country elec ef |
+      | Hilton San Francisco  | 94122 |               |       | 14.45  | zone rm yr equation + egrid elec ef |
+      | Courtyard by Marriott |       | San Francisco | CA    | 13.59  | rm yr equation + country elec ef |
+      | Courtyard by Marriott | 94122 | San Francisco | CA    | 17.34  | zone rm yr equation + egrid elec ef |
+      | Pacific Inn           |       | San Francisco | CA    | 97.06  | cohort intens div 9 + country elec ef |
+      | Pacific Inn           | 94122 | San Francisco | CA    | 12.04  | cohort intens div 9 + country elec ef |
