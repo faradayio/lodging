@@ -12,6 +12,7 @@ module BrighterPlanet
         base.col :state_postal_abbreviation
         base.col :country_iso_3166_code
         base.col :lodging_property_name
+        base.col :lodging_property_northstar_id
         base.col :property_rooms, :type => :integer
         base.col :property_construction_year, :type => :integer
         base.col :lodging_class_name
