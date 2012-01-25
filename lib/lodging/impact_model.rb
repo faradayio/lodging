@@ -207,15 +207,15 @@ module BrighterPlanet
             # - Fuel oil intensity: *l / room-night*
             # - Electricity intensity: *kWh / room-night*
             # - Steam heat intensity: *MJ / room-night*
-            quorum 'from cohort', :needs => :lodging_properties_cohort,
+            quorum 'from cohort', :needs => :cohort,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 intensities = {}
                 [:natural_gas, :fuel_oil, :electricity, :steam].each do |fuel|
-                  intensities[fuel] = characteristics[:lodging_properties_cohort].inject(0) do |sum, record|
+                  intensities[fuel] = characteristics[:cohort].inject(0) do |sum, record|
                     next sum unless record.send("#{fuel}_use").present?
                     occupied_room_nights = 365.0 / 7.0 / 12.0 * record.months_used * record.weekly_hours / 24.0 * record.lodging_rooms * 0.59
                     sum + (record.weighting * record.send("#{fuel}_use") / occupied_room_nights)
-                  end / characteristics[:lodging_properties_cohort].sum(:weighting)
+                  end / characteristics[:cohort].sum(:weighting)
                 end
                 intensities
             end
@@ -272,7 +272,7 @@ module BrighterPlanet
           
           #### Cohort
           # *A set of responses from the [EIA Commercial Buildings Energy Consumption Survey](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) that represent buildings similar to the lodging property.*
-          committee :lodging_properties_cohort do
+          committee :cohort do
             # If we know `census division`, assemble a cohort of CBECS responses:
             # Start with all responses, and then select only the responses that match `census region`, `country lodging class`, and `census division`.
             # If fewer than 8 responses match all of those characteristics, drop the last characteristic (initially `census division`) and try again.

@@ -163,12 +163,12 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from lodging property"
     And the conclusion of the committee should be "1995"
 
-  Scenario Outline: lodging properties cohort committee from various characteristics
+  Scenario Outline: cohort committee from various characteristics
     Given a characteristic "country.iso_3166_code" of "US"
     And a characteristic "lodging_class.name" of "<class>"
     And a characteristic "census_division.number" of "<division>"
     When the "country_lodging_class" committee reports
-    And the "lodging_properties_cohort" committee reports
+    And the "cohort" committee reports
     Then the committee should have used quorum "from census division and input"
     And the conclusion of the committee should have a record with "count" equal to "<records>"
     Examples:
@@ -218,7 +218,7 @@ Feature: Lodging Committee Calculations
     And a characteristic "lodging_class.name" of "<class>"
     And a characteristic "census_division.number" of "<division>"
     When the "country_lodging_class" committee reports
-    And the "lodging_properties_cohort" committee reports
+    And the "cohort" committee reports
     And the "fuel_intensities" committee reports
     Then the committee should have used quorum "from cohort"
     And the conclusion of the committee should include a key of "natural_gas" and value "<gas>"
