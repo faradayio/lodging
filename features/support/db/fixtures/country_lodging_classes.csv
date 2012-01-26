@@ -1,5 +1,0 @@
-name,country_iso_3166_code,lodging_class_name,cbecs_detailed_activity,natural_gas_intensity,fuel_oil_intensity,electricity_intensity,steam_intensity,weighting
-US Hotel,US,Hotel,Hotel,3.55,0.25,56.20,2.30,19600
-US Inn,US,Inn,Motel or inn,1.57,0.47,27.70,1.62,35000
-US Motel,US,Motel,Motel or inn,1.57,0.47,27.70,1.62,35000
-VI Hotel,VI,Hotel,,4.0,1.0,65.0,0.0

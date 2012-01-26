@@ -7,7 +7,7 @@ Feature: Lodging Emissions Calculations
   Scenario: Calculations starting from nothing
     Given a lodging has nothing
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "28.49"
+    Then the amount of "carbon" should be within "0.01" of "25.06"
 
   Scenario Outline: Calculations starting from date
     Given it has "date" of "<date>"
@@ -16,45 +16,28 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | date       | timeframe             | carbon |
-      | 2011-01-15 | 2011-01-01/2012-01-01 | 28.49  |
+      | 2011-01-15 | 2011-01-01/2012-01-01 | 25.06  |
       | 2012-01-15 | 2011-01-01/2012-01-01 |  0.0   |
 
   Scenario: Calculations starting from rooms and duration
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "113.98"
+    Then the amount of "carbon" should be within "0.01" of "100.25"
 
-  Scenario Outline: Calculations from rooms, duration, country, and lodging class
+  Scenario Outline: Calculations from rooms, duration, and country
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
     And it has "country.iso_3166_code" of "<country>"
-    And it has "lodging_class.name" of "<class>"
-    When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "<carbon>"
-    Examples:
-      | country | class | carbon | notes |
-      | GB      |       | 113.98 | defaults |
-      | VI      |       | 268.20 | country fuel intens |
-      | US      |       | 105.20 | country fuel intens + country elec ef |
-      | GB      | Hotel | 113.98 | defaults |
-      | VI      | Hotel | 301.20 | country class fuel intens |
-      | US      | Hotel | 171.52 | country class fuel intens + country elec ef |
-      | US      | Motel |  87.07 | country class fuel intens + country elec ef |
-      | US      | Inn   |  87.07 | country class fuel intens + country elec ef |
-
-  Scenario Outline: Calculations involving cohorts
-    Given it has "rooms" of "2"
-    And it has "duration" of "172800"
     And it has "state.postal_abbreviation" of "<state>"
-    And it has "lodging_class.name" of "<class>"
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
-      | state | class | carbon | notes |
-      | CA    |       |  97.06 | cohort intens div 9 + country elec ef |
-      | CA    | Hotel | 166.25 | cohort intens div 9 hotel + country elec ef |
-      | CA    | Motel | 112.90 | cohort intens reg 4 + country elec ef |
+      | country | state | carbon | notes |
+      | GB      |       | 100.25 | defaults |
+      | VI      |       | 116.80 | zone equation + country elec ef |
+      | US      |       |  78.88 | zone equation + country elec ef |
+      |         | CA    |  78.88 | zone equation + country elec ef |
 
   Scenario Outline: Calculations with fuel use equations not using climate zone
     Given it has "rooms" of "2"
@@ -74,7 +57,7 @@ Feature: Lodging Emissions Calculations
       | 500   | 2011 | 149.99 | rm yr equation |
       | 500   |      | 231.99 | rm equation |
       |       | 2011 |  66.66 | yr equation |
-      |       |      | 113.98 | fallbacks |
+      |       |      | 100.25 | fallback equation |
 
   Scenario Outline: Calculations with fuel use equations including climate zone
     Given it has "rooms" of "2"
@@ -108,9 +91,9 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | name                  | zip   | city          | state | carbon | notes |
-      | Hilton San Francisco  |       | San Francisco | CA    | 46.74  | rm yr equation + country elec ef |
+      | Hilton San Francisco  |       | San Francisco | CA    | 101.55 | zone rm yr equation + country elec ef |
       | Hilton San Francisco  | 94122 |               |       | 57.78  | zone rm yr equation + egrid elec ef |
-      | Courtyard by Marriott |       | San Francisco | CA    | 54.34  | rm yr equation + country elec ef |
+      | Courtyard by Marriott |       | San Francisco | CA    | 123.13 | zone rm yr equation + country elec ef |
       | Courtyard by Marriott | 94122 | San Francisco | CA    | 69.37  | zone rm yr equation + egrid elec ef |
-      | Pacific Inn           |       | San Francisco | CA    | 97.06  | cohort intens div 9 + country elec ef |
+      | Pacific Inn           |       | San Francisco | CA    | 78.88  | zone equation + country elec ef |
       | Pacific Inn           | 94122 | San Francisco | CA    | 48.16  | zone equation + egrid elec ef |

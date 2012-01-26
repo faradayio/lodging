@@ -1,15 +1,17 @@
-name,regression,fuel,climate_zone_number,property_rooms,construction_year,rooms_factor,year_factor,constant,units,oil_share,gas_share,steam_share
-Electricity rooms,power,Electricity,,1,0,1.002,,47.8,megajoules_per_room_night
-Electricity rooms year,power,Electricity,,1,1,1.002,1.008,0.000003,megajoules_per_room_night
-Electricity year,power,Electricity,,0,1,,1.009,0.0000006,megajoules_per_room_night
-Electricity zone 4,power,Electricity,4,0,0,,,54.1,megajoules_per_room_night
-Electricity zone 4 rooms,power,Electricity,4,1,0,1.003,,40.6,megajoules_per_room_night
+name,regression,fuel,climate_zone_number,property_rooms,construction_year,rooms_factor,year_factor,constant,units,gas_share,oil_share,steam_share
 Electricity zone 4 rooms year,power,Electricity,4,1,1,1.003,1.007,0.00006,megajoules_per_room_night
-Electricity zone 4 year,power,Electricity,4,0,1,,1.009,0.000002,megajoules_per_room_night
-Fuels rooms,linear,Fuels,,1,0,0.14,,40.0,megajoules_per_room_night,0.5,0.91,0.04
-Fuels rooms year,linear,Fuels,,1,1,0.17,-0.62,1255.3,megajoules_per_room_night,0.5,0.91,0.04
-Fuels year,linear,Fuels,,0,1,,-0.54,1111.1,megajoules_per_room_night,0.5,0.91,0.04
-Fuels zone 4,linear,Fuels,4,0,0,,,40.7,megajoules_per_room_night,0.08,0.83,0.09
-Fuels zone 4 rooms,linear,Fuels,4,1,0,0.09,,35.6,megajoules_per_room_night,0.08,0.83,0.09
-Fuels zone 4 rooms year,linear,Fuels,4,1,1,0.10,-0.36,741.6,megajoules_per_room_night,0.08,0.83,0.09
-Fuels zone 4 year,linear,Fuels,4,0,1,,-0.29,611.6,megajoules_per_room_night,0.08,0.83,0.09
+Electricity zone 4 rooms,power,Electricity,4,1,0,1.003,1,40.6,megajoules_per_room_night
+Electricity zone 4 year,power,Electricity,4,0,1,1,1.009,0.000002,megajoules_per_room_night
+Electricity zone 4,power,Electricity,4,0,0,1,1,54.1,megajoules_per_room_night
+Electricity rooms year,power,Electricity,,1,1,1.002,1.008,0.000003,megajoules_per_room_night
+Electricity rooms,power,Electricity,,1,0,1.002,1,47.8,megajoules_per_room_night
+Electricity year,power,Electricity,,0,1,1,1.009,0.0000006,megajoules_per_room_night
+Electricity,power,Electricity,,0,0,1,1,64.3,megajoules_per_room_night
+Fuels zone 4 rooms year,linear,Fuels,4,1,1,0.1,-0.36,741.6,megajoules_per_room_night,0.83,8.00E-02,0.09
+Fuels zone 4 rooms,linear,Fuels,4,1,0,0.09,,35.6,megajoules_per_room_night,0.83,8.00E-02,0.09
+Fuels zone 4 year,linear,Fuels,4,0,1,,-0.29,611.6,megajoules_per_room_night,0.83,8.00E-02,0.09
+Fuels zone 4,linear,Fuels,4,0,0,,,40.7,megajoules_per_room_night,0.83,8.00E-02,0.09
+Fuels rooms year,linear,Fuels,,1,1,0.17,-0.62,1255.3,megajoules_per_room_night,0.91,0.5,0.04
+Fuels rooms,linear,Fuels,,1,0,0.14,,40,megajoules_per_room_night,0.91,0.5,0.04
+Fuels year,linear,Fuels,,0,1,,-0.54,1111.1,megajoules_per_room_night,0.91,0.5,0.04
+Fuels,linear,Fuels,,0,0,,,46.4,megajoules_per_room_night,0.91,0.05,0.04
