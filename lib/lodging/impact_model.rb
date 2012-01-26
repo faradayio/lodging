@@ -243,6 +243,12 @@ module BrighterPlanet
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 LodgingProperty.where(:city => characteristics[:city].value, :locality => characteristics[:state].name).find_by_name characteristics[:lodging_property_name].value
             end
+            
+            # Otherwise check whether `lodging property name` matches a property in `city` and `country`, provided `country` is not the United States.
+            quorum "from lodging property name, city, and country", :needs => [:lodging_property_name, :city, :country],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:country] != Country.united_states ? LodgingProperty.where(:city => characteristics[:city].value, :country_iso_3166_alpha_3_code => characteristics[:country].iso_3166_alpha_3_code).find_by_name(characteristics[:lodging_property_name].value) : nil
+            end
           end
           
           #### Lodging property name

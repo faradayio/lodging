@@ -108,6 +108,22 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from climate division"
     And the conclusion of the committee should be "4"
 
+  Scenario: Lodging property committee from lodging property name, city, and country
+    Given a characteristic "lodging_property_name" of "Hilton London"
+    And a characteristic "city" of "London"
+    And a characteristic "country.iso_3166_code" of "GB"
+    When the "lodging_property" committee reports
+    Then the committee should have used quorum "from lodging property name, city, and country"
+    And the conclusion of the committee should have "name" of "Hilton London"
+    And the conclusion of the committee should have "northstar_id" of "4"
+
+  Scenario: Lodging property committee from lodging property name, city, and US
+    Given a characteristic "lodging_property_name" of "Hilton San Francisco"
+    And a characteristic "city" of "San Francisco"
+    And a characteristic "country.iso_3166_code" of "US"
+    When the "lodging_property" committee reports
+    Then the conclusion of the committee should be nil
+
   Scenario Outline: Lodging property committee from lodging property name, city, and state
     Given a characteristic "lodging_property_name" of "<name>"
     And a characteristic "city" of "<city>"

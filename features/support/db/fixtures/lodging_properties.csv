@@ -2,3 +2,4 @@ northstar_id,name,city,locality,postcode,country_iso_3166_alpha_3_code,lodging_r
 1,Hilton San Francisco,San Francisco,California,94122,USA,50,1995,Hotel
 2,Courtyard by Marriott,San Francisco,California,94133,USA,100,2003,Motel
 3,Pacific Inn,Daly City,California,94014,USA,25,1970,Inn
+4,Hilton London,London,United Kingdom,SE12BY,GBR,75,2005,Hotel
