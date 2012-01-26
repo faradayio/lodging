@@ -96,10 +96,10 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from zip code"
     And the conclusion of the committee should have "name" of "CA4"
 
-  Scenario: Climate zone number committee from climate division
-    Given a characteristic "climate_division.name" of "CA4"
+  Scenario: Climate zone number committee from country
+    Given a characteristic "country.iso_3166_code" of "VI"
     When the "climate_zone_number" committee reports
-    Then the committee should have used quorum "from climate division"
+    Then the committee should have used quorum "from country"
     And the conclusion of the committee should be "4"
 
   Scenario: Climate zone number committee from state
@@ -107,6 +107,12 @@ Feature: Lodging Committee Calculations
     When the "climate_zone_number" committee reports
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should be "1"
+
+  Scenario: Climate zone number committee from climate division
+    Given a characteristic "climate_division.name" of "CA4"
+    When the "climate_zone_number" committee reports
+    Then the committee should have used quorum "from climate division"
+    And the conclusion of the committee should be "4"
 
   Scenario Outline: Lodging property committee from lodging property name, city, and state
     Given a characteristic "lodging_property_name" of "<name>"

@@ -375,10 +375,16 @@ module BrighterPlanet
                 characteristics[:climate_division].climate_zone_number
             end
             
-            # Look up the `state` climate zone number.
+            # Otherwise look up the `state` climate zone number.
             quorum 'from state', :needs => :state,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:state].climate_zone_number
+            end
+            
+            # Otherwise check whether `country` has a climate zone number.
+            quorum 'from country', :needs => :country,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:country].climate_zone_number
             end
           end
           
