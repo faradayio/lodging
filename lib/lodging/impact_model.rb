@@ -336,7 +336,9 @@ module BrighterPlanet
           #### Lodging property
           # *The property where the stay occurred.*
           committee :lodging_property do
-            # Use a custom matching algorithm to look up a lodging property based on user inputs.
+            # Use client input, if available.
+            
+            # Otherwise use a custom matching algorithm to look up a lodging property based on user inputs.
             quorum "from custom matching algorithm", :needs => :lodging_property_name, :appreciates => [:zip_code, :city, :state],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 LodgingProperty.better_match characteristics if LodgingProperty.respond_to?(:better_match)
