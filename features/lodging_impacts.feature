@@ -63,15 +63,15 @@ Feature: Lodging Emissions Calculations
   Scenario Outline: Calculations involving a property
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
-    And it has "lodging_property_name" of "<name>"
+    And it has "lodging_property.northstar_id" of "<id>"
     And it has "zip_code.name" of "<zip>"
     And it has "city" of "<city>"
     And it has "state.postal_abbreviation" of "<state>"
     When impacts are calculated
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
-      | name                  | zip   | city          | state | carbon | notes |
-      | Courtyard by Marriott |       | San Francisco | CA    | 87.03  | cohort based on class only; elec ef from country |
-      | Hilton San Francisco  |       | San Francisco | CA    | 93.81  | cohort based on class rooms division; elec ef from country |
-      | Hilton San Francisco  | 94122 |               |       | 58.00  | cohort based on class rooms division; elec ef from egrid |
-      | Pacific Inn           |       | San Francisco | CA    | 90.42  | not enough to identify property; cohort from division; elec ef from country |
+      | id | name                  | zip   | city          | state | carbon | notes |
+      | 2  | Courtyard by Marriott |       | San Francisco | CA    | 87.03  | cohort based on class only; elec ef from country |
+      | 1  | Hilton San Francisco  |       | San Francisco | CA    | 93.81  | cohort based on class rooms division; elec ef from country |
+      | 1  | Hilton San Francisco  | 94122 |               |       | 58.00  | cohort based on class rooms division; elec ef from egrid |
+      |    | Pacific Inn           |       | San Francisco | CA    | 90.42  | not enough to identify property; cohort from division; elec ef from country |

@@ -90,31 +90,6 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from state"
     And the conclusion of the committee should have "number" of "9"
 
-  Scenario Outline: Lodging property committee from lodging property name, city, and state
-    Given a characteristic "lodging_property_name" of "<name>"
-    And a characteristic "city" of "<city>"
-    And a characteristic "state.postal_abbreviation" of "<state>"
-    When the "lodging_property" committee reports
-    Then the committee should have used quorum "from lodging property name, city, and state"
-    And the conclusion of the committee should have "name" of "<matched_name>"
-    And the conclusion of the committee should have "northstar_id" of "<id>"
-    Examples:
-      | name                 | city          | state | matched_name         | id |
-      | Hilton San Francisco | San Francisco | CA    | Hilton San Francisco | 1  |
-      | Pacific Inn          | Daly City     | CA    | Pacific Inn          | 3  |
-
-  Scenario Outline: Lodging property committee from lodging property name and zip code
-    Given a characteristic "lodging_property_name" of "<name>"
-    And a characteristic "zip_code.name" of "<zip>"
-    When the "lodging_property" committee reports
-    Then the committee should have used quorum "from lodging property name and zip code"
-    And the conclusion of the committee should have "name" of "<matched_name>"
-    And the conclusion of the committee should have "northstar_id" of "<id>"
-    Examples:
-      | name                 | zip   | matched_name         | id |
-      | Hilton San Francisco | 94122 | Hilton San Francisco | 1  |
-      | Pacific Inn          | 94014 | Pacific Inn          | 3  |
-
   Scenario: Lodging class from lodging property
     Given a characteristic "lodging_property.northstar_id" of "3"
     When the "lodging_class" committee reports

@@ -341,23 +341,11 @@ module BrighterPlanet
             # Otherwise use a custom matching algorithm to look up a lodging property based on user inputs.
             quorum "from custom matching algorithm", :needs => :lodging_property_name, :appreciates => [:zip_code, :city, :state],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                LodgingProperty.better_match characteristics if LodgingProperty.respond_to?(:better_match)
+                LodgingProperty.better_match characteristics
             end
 =begin
             CAREFUL! there isn't a test for the custom algorithm quorum
 =end
-            
-            # Otherwise check whether `lodging property name` matches a property in `zip code`.
-            quorum "from lodging property name and zip code", :needs => [:lodging_property_name, :zip_code],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                LodgingProperty.where(:postcode => characteristics[:zip_code].name).find_by_name characteristics[:lodging_property_name].value
-            end
-            
-            # Otherwise check whether `lodging property name` matches a property in `city`, `state`.
-            quorum "from lodging property name, city, and state", :needs => [:lodging_property_name, :city, :state],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                LodgingProperty.where(:city => characteristics[:city].value, :locality => characteristics[:state].name).find_by_name characteristics[:lodging_property_name].value
-            end
           end
           
           #### Lodging property name
