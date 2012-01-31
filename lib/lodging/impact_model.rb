@@ -43,12 +43,12 @@ module BrighterPlanet
           # *The lodging's total anthropogenic greenhouse gas emissions during `timeframe`.*
           committee :carbon do
             # Multiply by `emission factor` (*kg CO<sub>2</sub>e / room-night*) to give *kg CO<sub>2</sub>e.
-            quorum 'from natural gas use, fuel oil use, electricity use, district heat use, electricity emission factor, and district heat emission factor', :needs => [:natural_gas_use, :fuel_oil_use, :electricity_use, :district_heat_use, :electricity_emission_factor, :district_heat_emission_factor],
+            quorum 'from natural gas use, fuel oil use, electricity use, district heat use, electricity emission factor, and district heat emission factor', :needs => [:natural_gas_use, :fuel_oil_use, :electricity_use, :steam_use, :electricity_emission_factor, :steam_emission_factor],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:natural_gas_use] * Fuel.find_by_name('Pipeline Natural Gas').co2_emission_factor +
                 characteristics[:fuel_oil_use] * Fuel.find_by_name('Distillate Fuel Oil No. 2').co2_emission_factor +
                 characteristics[:electricity_use] * characteristics[:electricity_emission_factor] +
-                characteristics[:district_heat_use] * characteristics[:district_heat_emission_factor]
+                characteristics[:steam_use] * characteristics[:steam_emission_factor]
             end
           end
           
@@ -76,7 +76,7 @@ module BrighterPlanet
           
           #### District heat emission factor (*kg CO<sub>2</sub> / MJ*)
           # *A greenhouse gas emission factor for district heat used by the lodging.*
-          committee :district_heat_emission_factor do
+          committee :steam_emission_factor do
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
                 # Calculate an energy-based emission factor for [natural gas](http://data.brighterplanet.com/fuels) by dividing its CO<sub>2</sub> emission factor (*kg / m<sup>3</sup>*) by its energy content (*MJ / m<sup>3</sup>*) to give *kg CO<sub>2</sub> / MJ*.
@@ -124,11 +124,11 @@ module BrighterPlanet
           
           #### District heat use (*MJ*)
           # The lodging's district heat use during `timeframe`.
-          committee :district_heat_use do
+          committee :steam_use do
             # Multiply `room nights` (*room-nights*) by `district heat intensity` (*MJ / room-night*) to give *MJ*.
             quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:fuel_intensities][:district_heat]
+                characteristics[:room_nights] * characteristics[:fuel_intensities][:steam]
             end
           end
           
@@ -148,7 +148,7 @@ module BrighterPlanet
             quorum 'from cohort', :needs => :cohort,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 intensities = {}
-                [:natural_gas, :fuel_oil, :electricity, :district_heat].each do |fuel|
+                [:natural_gas, :fuel_oil, :electricity, :steam].each do |fuel|
                   intensities[fuel] = characteristics[:cohort].inject(0) do |sum, record|
                     next sum unless record.send("#{fuel}_use").present?
 =begin
@@ -173,10 +173,10 @@ module BrighterPlanet
             quorum 'from country lodging class', :needs => :country_lodging_class,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 {
-                  :natural_gas   => characteristics[:country_lodging_class].natural_gas_intensity,
-                  :fuel_oil      => characteristics[:country_lodging_class].fuel_oil_intensity,
-                  :electricity   => characteristics[:country_lodging_class].electricity_intensity,
-                  :district_heat => characteristics[:country_lodging_class].district_heat_intensity,
+                  :natural_gas => characteristics[:country_lodging_class].natural_gas_intensity,
+                  :fuel_oil    => characteristics[:country_lodging_class].fuel_oil_intensity,
+                  :electricity => characteristics[:country_lodging_class].electricity_intensity,
+                  :steam       => characteristics[:country_lodging_class].steam_intensity,
                 }
             end
             
@@ -189,10 +189,10 @@ module BrighterPlanet
             quorum 'from country', :needs => :country,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 intensities = {
-                  :natural_gas   => characteristics[:country].lodging_natural_gas_intensity,
-                  :fuel_oil      => characteristics[:country].lodging_fuel_oil_intensity,
-                  :electricity   => characteristics[:country].lodging_electricity_intensity,
-                  :district_heat => characteristics[:country].lodging_district_heat_intensity,
+                  :natural_gas => characteristics[:country].lodging_natural_gas_intensity,
+                  :fuel_oil    => characteristics[:country].lodging_fuel_oil_intensity,
+                  :electricity => characteristics[:country].lodging_electricity_intensity,
+                  :steam       => characteristics[:country].lodging_steam_intensity,
                 }
                 # Ignore the `country` fuel intensities if they're all blank.
                 intensities.values.compact.empty? ? nil : intensities
@@ -207,10 +207,10 @@ module BrighterPlanet
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
                 {
-                  :natural_gas   => Country.fallback.lodging_natural_gas_intensity,
-                  :fuel_oil      => Country.fallback.lodging_fuel_oil_intensity,
-                  :electricity   => Country.fallback.lodging_electricity_intensity,
-                  :district_heat => Country.fallback.lodging_district_heat_intensity,
+                  :natural_gas => Country.fallback.lodging_natural_gas_intensity,
+                  :fuel_oil    => Country.fallback.lodging_fuel_oil_intensity,
+                  :electricity => Country.fallback.lodging_electricity_intensity,
+                  :steam       => Country.fallback.lodging_steam_intensity,
                 }
             end
           end

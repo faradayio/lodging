@@ -1,4 +1,4 @@
-id,census_region_number,census_division_number,lodging_rooms,detailed_activity,months_used,weekly_hours,natural_gas_use,fuel_oil_use,electricity_use,district_heat_use,weighting
+id,census_region_number,census_division_number,lodging_rooms,detailed_activity,months_used,weekly_hours,natural_gas_use,fuel_oil_use,electricity_use,steam_use,weighting
 1,4,9,25,Hotel,12,168,21800,,255670,,90
 2,4,9,30,Hotel,12,168,21800,,255670,,90
 3,4,9,35,Hotel,12,168,21800,,255670,,90
