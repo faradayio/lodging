@@ -339,7 +339,7 @@ module BrighterPlanet
             # Use client input, if available.
             
             # Otherwise use a custom matching algorithm to look up a lodging property based on user inputs.
-            quorum "from custom matching algorithm", :needs => :lodging_property_name, :appreciates => [:zip_code, :city, :state],
+            quorum "from custom matching algorithm", :needs => :lodging_property_name, :appreciates => [:zip_code, :city, :state, :country],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 LodgingProperty.better_match characteristics
             end
