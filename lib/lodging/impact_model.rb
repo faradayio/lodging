@@ -147,6 +147,7 @@ module BrighterPlanet
             # - District heat intensity: *MJ / room-night*
             quorum 'from cohort', :needs => :cohort,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                total_cohort_weight = characteristics[:cohort].sum(:weighting)
                 intensities = {}
                 [:natural_gas, :fuel_oil, :electricity, :steam].each do |fuel|
                   intensities[fuel] = characteristics[:cohort].inject(0) do |sum, record|
@@ -159,7 +160,7 @@ module BrighterPlanet
 =end
                     occupied_room_nights = 365.0 / 7.0 / 12.0 * record.months_used * record.weekly_hours / 24.0 * record.lodging_rooms * 0.59
                     sum + (record.weighting * record.send("#{fuel}_use") / occupied_room_nights)
-                  end / characteristics[:cohort].sum(:weighting)
+                  end / total_cohort_weight
                 end
                 intensities
             end
@@ -206,11 +207,12 @@ module BrighterPlanet
             # - District heat intensity: *MJ / room-night*
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
+                country_fallback = Country.fallback
                 {
-                  :natural_gas => Country.fallback.lodging_natural_gas_intensity,
-                  :fuel_oil    => Country.fallback.lodging_fuel_oil_intensity,
-                  :electricity => Country.fallback.lodging_electricity_intensity,
-                  :steam       => Country.fallback.lodging_steam_intensity,
+                  :natural_gas => country_fallback.lodging_natural_gas_intensity,
+                  :fuel_oil    => country_fallback.lodging_fuel_oil_intensity,
+                  :electricity => country_fallback.lodging_electricity_intensity,
+                  :steam       => country_fallback.lodging_steam_intensity,
                 }
             end
           end
@@ -231,18 +233,23 @@ module BrighterPlanet
                   rooms is often a better predictor of electricity or nat gas than census region
 =end
                   provided_characteristics = []
-                  provided_characteristics << [:detailed_activity, characteristics[:country_lodging_class].cbecs_detailed_activity] if characteristics[:country_lodging_class].present?
+                  if country_lodging_class = characteristics[:country_lodging_class]
+                    provided_characteristics << [:detailed_activity, country_lodging_class.cbecs_detailed_activity]
+                  end
 =begin
                   FIXME TODO shouldn't have to call :value on :rooms_range
 =end
-                  provided_characteristics << [:lodging_rooms, characteristics[:rooms_range].value] if characteristics[:rooms_range].present?
-                  if characteristics[:census_division].present?
-                    provided_characteristics << [:census_region_number, characteristics[:census_division].census_region_number]
-                    provided_characteristics << [:census_division_number, characteristics[:census_division].number]
+                  if rooms_range = characteristics[:rooms_range]
+                    provided_characteristics << [:lodging_rooms, rooms_range.value]
+                  end
+                  if census_division = characteristics[:census_division]
+                    provided_characteristics << [:census_region_number, census_division.census_region_number]
+                    provided_characteristics << [:census_division_number, census_division.number]
                   end
                   
                   cohort = CommercialBuildingEnergyConsumptionSurveyResponse.where(:detailed_activity => ['Hotel', 'Motel or inn']).strict_cohort(*provided_characteristics)
-                  cohort.any? ? cohort : nil
+                  
+                  cohort unless cohort.none?
                 end
             end
           end
@@ -413,9 +420,6 @@ module BrighterPlanet
           # *The lodging property's [US zip code](http://data.brighterplanet.com/zip_codes).*
           #
           # Use client input, if available.
-=begin
-          FIXME TODO ensure user-input zip+4 gets interpreted properly
-=end
           
           #### Room nights (*room-nights*)
           # The stay's room-nights that occurred during `timeframe`.
