@@ -137,7 +137,7 @@ module BrighterPlanet
           committee :fuel_intensities do
             # For each record in the cohort, multiply months used (*months*) by 365 (*days / year*) and divide by 7 (*days / week*) and by 12 (*months / year*) to give *weeks* the surveyed building was used.
             # Divide weekly hours (*hours / week*) by 24 (*hours / day*) and multiply by *weeks* to give *days* the survey building was used.
-            # Multiply by the number of rooms in the lodging property and 0.59 (average occupancy after PriceWaterhouseCoopers) to give *occupied room nights*.
+            # Multiply by the number of rooms in the lodging property and 0.601 (average occupancy after http://www.pwc.com/us/en/press-releases/2012/pwc-us-lodging-industry-forecast.jhtml) to give *occupied room nights*.
             # Divide total use of each fuel by *occupied room nights* to give *fuel / room-night*.
             # Calculate the weighted average of each intensity across all records in the `cohort` to give:
             #
@@ -158,7 +158,7 @@ module BrighterPlanet
   weeks in a year * hours/week = hours in a year
   hours in a year * days/hour = days in a year
 =end
-                    occupied_room_nights = 365.0 / 7.0 / 12.0 * record.months_used * record.weekly_hours / 24.0 * record.lodging_rooms * 0.59
+                    occupied_room_nights = 365.0 / 7.0 / 12.0 * record.months_used * record.weekly_hours / 24.0 * record.lodging_rooms * 0.601
                     sum + (record.weighting * record.send("#{fuel}_use") / occupied_room_nights)
                   end / total_cohort_weight
                 end
