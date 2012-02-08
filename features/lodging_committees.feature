@@ -245,7 +245,7 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "electricity" and value "22.24149"
     And the conclusion of the committee should include a key of "steam" and value "0.0"
 
-  Scenario: District heat use committee
+  Scenario: Steam use committee
     Given a characteristic "room_nights" of "4"
     When the "fuel_intensities" committee reports
     And the "steam_use" committee reports
@@ -273,7 +273,7 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from fuel intensities and room nights"
     And the conclusion of the committee should be "8.0"
 
-  Scenario: District heat emission factor committee
+  Scenario: Steam emission factor committee
     When the "steam_emission_factor" committee reports
     Then the committee should have used quorum "default"
     And the conclusion of the committee should be "0.07641"
