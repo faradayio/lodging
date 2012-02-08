@@ -147,6 +147,7 @@ module BrighterPlanet
             # - Steam intensity: *MJ / room-night*
             quorum 'from cohort', :needs => :cohort,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                occupancy_rate = Country.united_states.lodging_occupancy_rate
                 total_cohort_weight = characteristics[:cohort].sum(:weighting)
                 intensities = {}
                 [:natural_gas, :fuel_oil, :electricity, :steam].each do |fuel|
@@ -158,7 +159,7 @@ module BrighterPlanet
   weeks in a year * hours/week = hours in a year
   hours in a year * days/hour = days in a year
 =end
-                    occupied_room_nights = 365.0 / 7.0 / 12.0 * record.months_used * record.weekly_hours / 24.0 * record.lodging_rooms * 0.601
+                    occupied_room_nights = 365.0 / 7.0 / 12.0 * record.months_used * record.weekly_hours / 24.0 * record.lodging_rooms * occupancy_rate
                     sum + (record.weighting * record.send("#{fuel}_use") / occupied_room_nights)
                   end / total_cohort_weight
                 end
