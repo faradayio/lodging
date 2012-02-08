@@ -229,8 +229,8 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "steam" and value "<steam>"
     Examples:
       | class | rooms | division | natural_gas | fuel_oil | electricity | steam   | notes |
-      | Hotel | 50    | 9        | 2.53177     | 0.0      | 29.69253    | 0.0     | class rooms division |
-      | Inn   | 20    | 9        | 1.57069     | 0.46650  | 27.69965    | 1.62346 | class |
+      | Hotel | 50    | 9        | 2.48543     | 0.0      | 29.14907    | 0.0     | class rooms division |
+      | Inn   | 20    | 9        | 1.54195     | 0.45796  | 27.19267    | 1.59375 | class |
 
   Scenario: Fuel intensities committee from cohort (based on rooms and region)
     Given a characteristic "country.iso_3166_code" of "US"
@@ -240,10 +240,10 @@ Feature: Lodging Committee Calculations
     And the "cohort" committee reports
     And the "fuel_intensities" committee reports
     Then the committee should have used quorum "from cohort"
-    And the conclusion of the committee should include a key of "natural_gas" and value "3.11101"
+    And the conclusion of the committee should include a key of "natural_gas" and value "3.05407"
     And the conclusion of the committee should include a key of "fuel_oil" and value "0.0"
-    And the conclusion of the committee should include a key of "electricity" and value "22.24149"
     And the conclusion of the committee should include a key of "steam" and value "0.0"
+    And the conclusion of the committee should include a key of "electricity" and value "21.83441"
 
   Scenario: Steam use committee
     Given a characteristic "room_nights" of "4"

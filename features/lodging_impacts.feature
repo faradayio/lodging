@@ -54,11 +54,11 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | zip      | state | class | property_rooms | carbon | notes |
-      |          | CA    |       |                |  90.42 | cohort from division; elec ef from country |
-      |          | CA    | Hotel | 50             |  93.81 | cohort from class, rooms, division; elec ef from country |
-      | 94122    |       |       |                |  55.36 | cohort from division; elec ef from egrid |
-      | 94122    |       | Hotel | 50             |  58.00 | cohort from class, rooms, division; elec ef from egrid |
-      |          | CA    |       | 20             |  79.50 | cohort from rooms, region; elec ef from country |
+      |          | CA    |       |                |  88.76 | cohort from division; elec ef from country |
+      |          | CA    | Hotel | 50             |  92.09 | cohort from class, rooms, division; elec ef from country |
+      | 94122    |       |       |                |  54.34 | cohort from division; elec ef from egrid |
+      | 94122    |       | Hotel | 50             |  56.94 | cohort from class, rooms, division; elec ef from egrid |
+      |          | CA    |       | 20             |  78.04 | cohort from rooms, region; elec ef from country |
 
   Scenario Outline: Calculations involving a property
     Given it has "rooms" of "2"
@@ -71,7 +71,7 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | id | name                  | zip   | city          | state | carbon | notes |
-      | 2  | Courtyard by Marriott |       | San Francisco | CA    | 87.03  | cohort based on class only; elec ef from country |
-      | 1  | Hilton San Francisco  |       | San Francisco | CA    | 93.81  | cohort based on class rooms division; elec ef from country |
-      | 1  | Hilton San Francisco  | 94122 |               |       | 58.00  | cohort based on class rooms division; elec ef from egrid |
-      |    | Pacific Inn           |       | San Francisco | CA    | 90.42  | not enough to identify property; cohort from division; elec ef from country |
+      | 2  | Courtyard by Marriott |       | San Francisco | CA    | 85.44  | cohort based on class only; elec ef from country |
+      | 1  | Hilton San Francisco  |       | San Francisco | CA    | 92.09  | cohort based on class rooms division; elec ef from country |
+      | 1  | Hilton San Francisco  | 94122 |               |       | 56.94  | cohort based on class rooms division; elec ef from egrid |
+      |    | Pacific Inn           |       | San Francisco | CA    | 88.76  | not enough to identify property; cohort from division; elec ef from country |
