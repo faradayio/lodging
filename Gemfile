@@ -7,3 +7,4 @@ end
 source :rubygems
 
 gemspec :path => '.'
+gem 'earth', :path => '~/Sites/earth'

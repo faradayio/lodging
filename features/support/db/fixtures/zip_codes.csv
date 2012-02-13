@@ -1,4 +1,4 @@
-name,state_postal_abbreviation,description,egrid_subregion_abbreviation
-94122,CA,San Francisco,CAMX
+name,state_postal_abbreviation,description,egrid_subregion_abbreviation,climate_division_name
+94122,CA,San Francisco,CAMX,CA4
 94133,CA,San Francisco
 94014,CA,Daly City
