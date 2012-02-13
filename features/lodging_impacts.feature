@@ -34,11 +34,11 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | country | class | carbon | notes |
-      | GB      |       | 113.98 | country missing fuel intensities and elec ef |
-      | VI      |       | 268.20 | country with fuel intensities but no elec ef |
+      | VI      |       | 113.98 | country missing fuel intensities and elec ef |
+      | GB      |       | 268.20 | country with fuel intensities but no elec ef |
       | US      |       | 105.20 | country with intensities + elec ef |
-      | GB      | Hotel | 113.98 | country missing fuel intensities and elec ef |
-      | VI      | Hotel | 301.20 | country with fuel intensities but no elec ef |
+      | VI      | Hotel | 113.98 | country missing fuel intensities and elec ef |
+      | GB      | Hotel | 301.20 | country with fuel intensities but no elec ef |
       | US      | Hotel | 171.52 | country with intensities + elec ef |
       | US      | Motel |  87.07 | country with intensities + elec ef |
       | US      | Inn   |  87.07 | country with intensities + elec ef |
@@ -63,7 +63,7 @@ Feature: Lodging Emissions Calculations
   Scenario Outline: Calculations involving a property
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
-    And it has "lodging_property.northstar_id" of "<id>"
+    And it has "property.northstar_id" of "<id>"
     And it has "zip_code.name" of "<zip>"
     And it has "city" of "<city>"
     And it has "state.postal_abbreviation" of "<state>"
