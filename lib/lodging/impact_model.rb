@@ -32,6 +32,8 @@
 
 ##### Collaboration
 # Contributions to this impact model are actively encouraged and warmly welcomed. This library includes a comprehensive test suite to ensure that your changes do not cause regressions. All changes should include test coverage for new functionality. Please see [sniff](https://github.com/brighterplanet/sniff#readme), our emitter testing framework, for more information.
+require 'lodging/cbecs'
+
 module BrighterPlanet
   module Lodging
     module ImpactModel
@@ -125,41 +127,29 @@ module BrighterPlanet
             # If `country` is the US or we know `heating degree days` or `cooling degree days`, calculate fuel intensities from CBECS 2003 data using a fuzzy weighting algorithm.
             quorum 'from degree days and user inputs', :needs => [:heating_degree_days, :cooling_degree_days], :appreciates => [:property_rooms, :property_floors, :property_construction_year, :property_ac_coverage],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-=begin
-                TODO
-                note: not sure whether characteristics.to_a will work with Charisma
-=end
-                fuzzy_table = CommercialBuildingEnergyConsumptionSurveyResponse.new(*characteristics.to_a).lodging_properties
+                inputs = characteristics.to_hash.inject({}) do |memo, item|
+                  case item[0]
+                  when :property_rooms
+                    memo[:lodging_rooms] = item[1]
+                  when :property_floors
+                    memo[:floors] = item[1]
+                  when :property_construction_year
+                    memo[:construction_year] = item[1]
+                  when :property_ac_coverage
+                    memo[:percent_cooled] = item[1]
+                  else
+                    memo[item[0]] = item[1]
+                  end
+                  memo
+                end
+                
+                kernel = CommercialBuildingEnergyConsumptionSurveyResponse.new(inputs)
                 {
-                  :natural_gas =>   fuzzy_table.infer(:natural_gas_per_room_night),
-                  :fuel_oil =>      fuzzy_table.infer(:fuel_oil_per_room_night),
-                  :electricity =>   fuzzy_table.infer(:electricity_per_room_night),
-                  :district_heat => fuzzy_table.infer(:district_heat_per_room_night)
+                  :natural_gas   => kernel.fuzzy_infer(:natural_gas_per_room_night),
+                  :fuel_oil      => kernel.fuzzy_infer(:fuel_oil_per_room_night),
+                  :electricity   => kernel.fuzzy_infer(:electricity_per_room_night),
+                  :district_heat => kernel.fuzzy_infer(:district_heat_per_room_night)
                 }
-            end
-            
-            # Otherwise look up the `country lodging class` fuel intensities.
-            quorum 'from country lodging class', :needs => :country_lodging_class,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                {
-                  :natural_gas   => characteristics[:country_lodging_class].natural_gas_intensity,
-                  :fuel_oil      => characteristics[:country_lodging_class].fuel_oil_intensity,
-                  :electricity   => characteristics[:country_lodging_class].electricity_intensity,
-                  :district_heat => characteristics[:country_lodging_class].district_heat_intensity,
-                }
-            end
-            
-            # Otherwise look up the `country` lodging fuel intensities.
-            quorum 'from country', :needs => :country,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                intensities = {
-                  :natural_gas   => characteristics[:country].lodging_natural_gas_intensity,
-                  :fuel_oil      => characteristics[:country].lodging_fuel_oil_intensity,
-                  :electricity   => characteristics[:country].lodging_electricity_intensity,
-                  :district_heat => characteristics[:country].lodging_district_heat_intensity,
-                }
-                # Ignore the `country` fuel intensities if they're all blank.
-                intensities.values.compact.empty? ? nil : intensities
             end
             
             # Otherwise use global averages.
@@ -171,28 +161,6 @@ module BrighterPlanet
                   :electricity   => Country.fallback.lodging_electricity_intensity,
                   :district_heat => Country.fallback.lodging_district_heat_intensity,
                 }
-            end
-          end
-          
-          #### Country lodging class
-          # *The lodging's [country-specific lodging class](http://data.brighterplanet.com/country_lodging_classes).*
-          committee :country_lodging_class do
-            # Check whether the combination of `country` and `lodging class` matches a record in our database.
-            quorum 'from country and lodging class', :needs => [:country, :lodging_class],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                CountryLodgingClass.find_by_country_iso_3166_code_and_lodging_class_name(characteristics[:country].iso_3166_code, characteristics[:lodging_class].name)
-            end
-          end
-          
-          #### Lodging class
-          # *The property's [lodging's class](http://data.brighterplanet.com/lodging_classes) (hotel, motel, etc.).*
-          committee :lodging_class do
-            # Use client input, if available.
-            
-            # Otherwise look up the `property` lodging class.
-            quorum 'from property', :needs => :property,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:property].lodging_class
             end
           end
           
