@@ -8,3 +8,4 @@ source :rubygems
 
 gemspec :path => '.'
 gem 'earth', :path => '~/Sites/earth'
+gem 'sniff', :path => '~/Sites/sniff'
