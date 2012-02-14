@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
   
   s.add_runtime_dependency 'earth', '~>0.11.10'
   s.add_runtime_dependency 'emitter', '~>0.11.0'
+  s.add_runtime_dependency 'fuzzy_infer'
+  s.add_development_dependency 'mysql2'
   s.add_development_dependency 'sniff'
-  s.add_development_dependency 'sqlite3-ruby' # because sniff doesn't require this for us any more
 end
