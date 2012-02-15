@@ -7,5 +7,5 @@ end
 source :rubygems
 
 gemspec :path => '.'
-gem 'earth', :path => '~/Sites/earth'
-gem 'sniff', :path => '~/Sites/sniff'
+gem 'sniff', :git => 'git://github.com/brighterplanet/sniff.git', :branch => 'nicer_db'
+gem 'fuzzy_infer', :git => 'git://github.com/seamusabshere/fuzzy_infer.git'
