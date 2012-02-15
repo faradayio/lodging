@@ -124,7 +124,7 @@ module BrighterPlanet
           # - Electricity intensity: *kWh / room-night*
           # - District heat intensity: *MJ / room-night*
           committee :fuel_intensities do
-            # If `country` is the US or we know `heating degree days` or `cooling degree days`, calculate fuel intensities from CBECS 2003 data using a fuzzy weighting algorithm.
+            # If `country` is the US or we know `heating degree days` or `cooling degree days`, calculate fuel intensities from CBECS 2003 data using fuzzy inference.
             quorum 'from degree days and user inputs', :needs => [:heating_degree_days, :cooling_degree_days], :appreciates => [:property_rooms, :property_floors, :property_construction_year, :property_ac_coverage],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 inputs = characteristics.to_hash.inject({}) do |memo, item|
