@@ -222,9 +222,6 @@ module BrighterPlanet
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 LodgingProperty.better_match characteristics
             end
-=begin
-            CAREFUL! there isn't a test for the custom algorithm quorum
-=end
           end
           
           #### Property name
@@ -336,9 +333,6 @@ module BrighterPlanet
             # Otherwise `room nights` is zero.
             quorum 'from rooms, duration, date, and timeframe', :needs => [:rooms, :duration, :date],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics, timeframe|
-=begin
-                FIXME TODO user-input date should already be coerced
-=end
                 date = characteristics[:date].is_a?(Date) ? characteristics[:date] : Date.parse(characteristics[:date].to_s)
                 timeframe.include?(date) ? characteristics[:duration] / 86400.0 * characteristics[:rooms] : 0
             end
