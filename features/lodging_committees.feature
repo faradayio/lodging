@@ -182,7 +182,7 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "natural_gas" and value "2.0"
     And the conclusion of the committee should include a key of "fuel_oil" and value "0.4"
     And the conclusion of the committee should include a key of "electricity" and value "33.9"
-    And the conclusion of the committee should include a key of "steam" and value "1.8"
+    And the conclusion of the committee should include a key of "district_heat" and value "1.8"
 
   Scenario: Fuel intensities committee from country missing intensities
     Given a characteristic "country.iso_3166_code" of "GB"
@@ -191,7 +191,7 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "natural_gas" and value "2.0"
     And the conclusion of the committee should include a key of "fuel_oil" and value "0.4"
     And the conclusion of the committee should include a key of "electricity" and value "33.9"
-    And the conclusion of the committee should include a key of "steam" and value "1.8"
+    And the conclusion of the committee should include a key of "district_heat" and value "1.8"
 
   Scenario: Fuel intensities committee from country with intensities
     Given a characteristic "country.iso_3166_code" of "VI"
@@ -200,7 +200,7 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "natural_gas" and value "3.0"
     And the conclusion of the committee should include a key of "fuel_oil" and value "0.5"
     And the conclusion of the committee should include a key of "electricity" and value "60.0"
-    And the conclusion of the committee should include a key of "steam" and value "0.0"
+    And the conclusion of the committee should include a key of "district_heat" and value "0.0"
 
   Scenario: Fuel intensities committee from country lodging class
     Given a characteristic "country.iso_3166_code" of "VI"
@@ -211,7 +211,7 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "natural_gas" and value "4.0"
     And the conclusion of the committee should include a key of "fuel_oil" and value "1.0"
     And the conclusion of the committee should include a key of "electricity" and value "65.0"
-    And the conclusion of the committee should include a key of "steam" and value "0.0"
+    And the conclusion of the committee should include a key of "district_heat" and value "0.0"
 
   Scenario Outline: Fuel intensities committee from cohort
     Given a characteristic "country.iso_3166_code" of "US"
@@ -226,7 +226,7 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "natural_gas" and value "<natural_gas>"
     And the conclusion of the committee should include a key of "fuel_oil" and value "<fuel_oil>"
     And the conclusion of the committee should include a key of "electricity" and value "<electricity>"
-    And the conclusion of the committee should include a key of "steam" and value "<steam>"
+    And the conclusion of the committee should include a key of "district_heat" and value "<steam>"
     Examples:
       | class | rooms | division | natural_gas | fuel_oil | electricity | steam   | notes |
       | Hotel | 50    | 9        | 2.48543     | 0.0      | 29.14907    | 0.0     | class rooms division |
@@ -242,13 +242,13 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from cohort"
     And the conclusion of the committee should include a key of "natural_gas" and value "3.05407"
     And the conclusion of the committee should include a key of "fuel_oil" and value "0.0"
-    And the conclusion of the committee should include a key of "steam" and value "0.0"
     And the conclusion of the committee should include a key of "electricity" and value "21.83441"
+    And the conclusion of the committee should include a key of "district_heat" and value "0.0"
 
-  Scenario: Steam use committee
+  Scenario: District heat use committee
     Given a characteristic "room_nights" of "4"
     When the "fuel_intensities" committee reports
-    And the "steam_use" committee reports
+    And the "district_heat_use" committee reports
     Then the committee should have used quorum "from fuel intensities and room nights"
     And the conclusion of the committee should be "7.2"
     
@@ -273,8 +273,8 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from fuel intensities and room nights"
     And the conclusion of the committee should be "8.0"
 
-  Scenario: Steam emission factor committee
-    When the "steam_emission_factor" committee reports
+  Scenario: District heat emission factor committee
+    When the "district_heat_emission_factor" committee reports
     Then the committee should have used quorum "default"
     And the conclusion of the committee should be "0.07641"
 
