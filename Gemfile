@@ -7,5 +7,3 @@ end
 source :rubygems
 
 gemspec :path => '.'
-
-gem 'earth', :git => 'https://github.com/brighterplanet/earth.git'
