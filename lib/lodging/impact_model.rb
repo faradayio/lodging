@@ -76,13 +76,21 @@ module BrighterPlanet
             end
           end
           
+          #### District heat emission factor (*kg CO<sub>2</sub>e / MJ*)
+          # *A greenhouse gas emission factor for district heat used by the lodging.*
+          committee :district_heat_emission_factor do
+            quorum 'default' do |characteristics|
+              Fuel.find_by_name('District Heat').co2_emission_factor
+            end
+          end
+          
           #### Natural gas use (*m<sup>3</sup>*)
           # The lodging's natural gas use during `timeframe`.
           committee :natural_gas_use do
             # Multiply `room nights` (*room-nights*) by `natural gas intensity` (*m<sup>3</sup> / room-night*) to give *m<sup>3</sup>*.
-            quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
+            quorum 'from adjusted fuel intensities and room nights', :needs => [:adjusted_fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:fuel_intensities][:natural_gas]
+                characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:natural_gas]
             end
           end
           
@@ -90,9 +98,9 @@ module BrighterPlanet
           # The lodging's fuel oil use during `timeframe`.
           committee :fuel_oil_use do
             # Multiply `room nights` (*room-nights*) by `fuel oil intensity` (*l / room-night*) to give *l*.
-            quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
+            quorum 'from adjusted fuel intensities and room nights', :needs => [:adjusted_fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:fuel_intensities][:fuel_oil]
+                characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:fuel_oil]
             end
           end
           
@@ -100,9 +108,9 @@ module BrighterPlanet
           # The lodging's electricity use during `timeframe`.
           committee :electricity_use do
             # Multiply `room nights` (*room-nights*) by `electricity intensity` (*kWh / room-night*) to give *kWh*.
-            quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
+            quorum 'from adjusted fuel intensities and room nights', :needs => [:adjusted_fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:fuel_intensities][:electricity]
+                characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:electricity]
             end
           end
           
@@ -110,9 +118,139 @@ module BrighterPlanet
           # The lodging's district heat use during `timeframe`.
           committee :district_heat_use do
             # Multiply `room nights` (*room-nights*) by `district heat intensity` (*MJ / room-night*) to give *MJ*.
-            quorum 'from fuel intensities and room nights', :needs => [:fuel_intensities, :room_nights],
+            quorum 'from adjusted fuel intensities and room nights', :needs => [:adjusted_fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:fuel_intensities][:district_heat]
+                characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:district_heat]
+            end
+          end
+
+          #### Adjusted fuel intensities (*various*)
+          # *The lodging's use per occupied room night of a variety of fuels, 
+          # adjusted by number of pools, mini-fridges, etc.*
+          #
+          # - Natural gas intensity: *m<sup>3</sup> / room-night*
+          # - Fuel oil intensity: *l / room-night*
+          # - Electricity intensity: *kWh / room-night*
+          # - District heat intensity: *MJ / room-night*
+          committee :adjusted_fuel_intensities do
+            quorum 'from fuel intensities and amenity adjustments',
+              :needs => [:fuel_intensities, :indoor_pool_adjustment, :outdoor_pool_adjustment, :fridge_adjustment, :hot_tub_adjustment] do |characteristics|
+              intensities = characteristics[:fuel_intensities]
+              
+              [:indoor_pool_adjustment, :outdoor_pool_adjustment, :fridge_adjustment, :hot_tub_adjustment].each do |adjustment|
+                characteristics[adjustment].each do |fuel, intensity|
+                  puts "adjusting #{fuel} (#{intensities[fuel]}) by #{intensity}"
+                  intensities[fuel] = intensities[fuel] + intensity
+                end
+              end
+              intensities
+            end
+          end
+
+          #### Indoor pool adjustment
+          #
+          committee :indoor_pool_adjustment do
+            # If `country` is the US, calculate fuel adjustment according to typical
+            # pool energy consumption of 1,011,394,000 BTU/year
+            # http://www.energystar.gov/ia/business/evaluate_performance/swimming_pool_tech_desc.pdf
+            # Recreational pool size assumed
+            quorum 'from property_indoor_pool_count', :needs => [:fuel_intensities, :property_indoor_pool_count] do |characteristics|
+              
+              indoor_pool_fallback = LodgingProperty.fallback.pools_indoor
+              if characteristics[:property_indoor_pool_count] > 0
+                energy = (characteristics[:property_indoor_pool_count] - indoor_pool_fallback) * 2_770_942.47
+              else
+                energy = -1 * indoor_pool_fallback * 2_770_942.47
+              end
+              if characteristics[:fuel_intensities][:fuel_oil] > 0
+                {
+                  :fuel_oil => energy.btus.to(:megajoules) / Fuel.find_by_name('Residual Fuel Oil No. 5').energy_content
+                }
+              else
+                {
+                  :natural_gas => energy.btus.to(:megajoules) / Fuel.find_by_name('Pipeline Natural Gas').energy_content
+                }
+              end
+            end
+            quorum 'default' do
+              {}
+            end
+          end
+
+          #### Outdoor pool adjustment
+          #
+          committee :outdoor_pool_adjustment do
+            # If `country` is the US, calculate fuel adjustment according to typical hot 
+            # pool energy consumption of 120,420,000 BTU/year
+            # http://www.energystar.gov/ia/business/evaluate_performance/swimming_pool_tech_desc.pdf
+            # Recreational pool size assumed
+            quorum 'from property_outdoor_pool_count', :needs => [:fuel_intensities, :property_outdoor_pool_count] do |characteristics|
+              indoor_pool_fallback = LodgingProperty.fallback.pools_indoor
+              if characteristics[:property_outdoor_pool_count] > 0
+                energy = (characteristics[:property_outdoor_pool_count] - indoor_pool_fallback) * 329_917.808
+              else
+                energy = -1 * indoor_pool_fallback * 329_917.808
+              end
+              if characteristics[:fuel_intensities][:fuel_oil] > 0
+                {
+                  :fuel_oil => energy.btus.to(:megajoules) / Fuel.find_by_name('Residual Fuel Oil No. 5').energy_content
+                }
+              else
+                {
+                  :natural_gas => energy.btus.to(:megajoules) / Fuel.find_by_name('Pipeline Natural Gas').energy_content
+                }
+              end
+            end
+            quorum 'default' do
+              {}
+            end
+          end
+
+          #### Hot tub adjustment
+          #
+          committee :hot_tub_adjustment do
+            # If `country` is the US, calculate fuel adjustment according to typical hot 
+            # tub electricity consumption of 2300kWh/yr
+            # http://enduse.lbl.gov/info/LBNL-40297.pdf (page 128)
+            quorum 'from property_hot_tub_count', :needs => :property_hot_tub_count do |characteristics|
+              hot_tub_fallback = LodgingProperty.fallback.hot_tubs
+              if characteristics[:property_hot_tub_count] > 0
+                {
+                  :electricity => ((characteristics[:property_hot_tub_count] - hot_tub_fallback) * 6.30137)
+                }
+              else
+                {
+                  :electricity => (-1 * hot_tub_fallback * 6.30137)
+                }
+              end
+            end
+            quorum 'default' do
+              {}
+            end
+          end
+
+          #### Fridge adjustment
+          #
+          committee :fridge_adjustment do
+            # If `country` is the US, calculate fuel adjustment according to typical fridge
+            # electricity consumption of 1.8kWh/day
+            # http://www.energystar.gov/ia/business/bulk_purchasing/bpsavings_calc/Bulk_Purchasing_CompactRefrig_Sav_Calc.xls
+            # auto-defrost compact fridge assumed
+            quorum 'from property_fridge_coverage', :needs => :property_fridge_coverage do |characteristics|
+              fridge_fallback = [LodgingProperty.fallback.fridge_coverage,
+                                 LodgingProperty.fallback.mini_bar_coverage].max
+              if characteristics[:property_fridge_coverage] > 0
+                {
+                  :electricity => ((characteristics[:property_fridge_coverage] - fridge_fallback) * 1.8)
+                }
+              else
+                {
+                  :electricity => (-1 * fridge_fallback * 1.8)
+                }
+              end
+            end
+            quorum 'default' do
+              {}
             end
           end
           
@@ -127,18 +265,18 @@ module BrighterPlanet
             # If `country` is the US or we know `heating degree days` or `cooling degree days`, calculate fuel intensities from CBECS 2003 data using fuzzy inference.
             quorum 'from degree days and user inputs', :needs => [:heating_degree_days, :cooling_degree_days], :appreciates => [:property_rooms, :property_floors, :property_construction_year, :property_ac_coverage],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                inputs = characteristics.to_hash.inject({}) do |memo, item|
-                  case item[0]
+                inputs = characteristics.to_hash.inject({}) do |memo, (characteristic, value)|
+                  case characteristic
                   when :property_rooms
-                    memo[:lodging_rooms] = item[1]
+                    memo[:lodging_rooms] = value
                   when :property_floors
-                    memo[:floors] = item[1]
+                    memo[:floors] = value
                   when :property_construction_year
-                    memo[:construction_year] = item[1]
+                    memo[:construction_year] = value
                   when :property_ac_coverage
-                    memo[:percent_cooled] = item[1]
+                    memo[:percent_cooled] = value
                   else
-                    memo[item[0]] = item[1]
+                    memo[characteristic] = value
                   end
                   memo
                 end
@@ -161,6 +299,46 @@ module BrighterPlanet
                   :electricity   => Country.fallback.lodging_electricity_intensity,
                   :district_heat => Country.fallback.lodging_district_heat_intensity,
                 }
+            end
+          end
+
+          #### Property indoor pool count
+          # *The number of the property's indoor pools
+          committee :property_indoor_pool_count do
+            quorum 'from property', :needs => :property do |characteristics|
+              unless characteristics[:property].pools_indoor.nil?
+                [characteristics[:property].pools_indoor.to_f, 5].min
+              end
+            end
+          end
+          
+          #### Property outdoor pool count
+          # *The number of the property's outdoor pools
+          committee :property_outdoor_pool_count do
+            quorum 'from property', :needs => :property do |characteristics|
+              unless characteristics[:property].pools_outdoor.nil?
+                [characteristics[:property].pools_outdoor.to_f, 5].min
+              end
+            end
+          end
+          
+          #### Property hot tub count
+          # *The number of the property's hot tubs
+          committee :property_hot_tub_count do
+            quorum 'from property', :needs => :property do |characteristics|
+              characteristics[:property].hot_tubs
+            end
+          end
+          
+          #### Property fridge count
+          # *The percentage of the property's rooms that have fridges
+          committee :property_fridge_coverage do
+            quorum 'from property', :needs => :property do |characteristics|
+              if characteristics[:property].mini_bar_coverage ||
+                characteristics[:property].fridge_coverage
+                [characteristics[:property].mini_bar_coverage.to_f +
+                 characteristics[:property].fridge_coverage.to_f].max
+              end
             end
           end
           
