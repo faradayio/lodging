@@ -1,1 +1,3 @@
 room_nights committee shouldn't need to coerce user-input date
+
+consider not assuming all pool energy use is natural gas
