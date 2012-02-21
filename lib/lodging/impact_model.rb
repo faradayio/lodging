@@ -45,7 +45,7 @@ module BrighterPlanet
           # *The lodging's total anthropogenic greenhouse gas emissions during `timeframe`.*
           committee :carbon do
             # Multiply by `emission factor` (*kg CO<sub>2</sub>e / room-night*) to give *kg CO<sub>2</sub>e.
-            quorum 'from natural gas use, fuel oil use, electricity use, district heat use, electricity emission factor, and district heat emission factor', :needs => [:natural_gas_use, :fuel_oil_use, :electricity_use, :district_heat_use, :electricity_emission_factor, :district_heat_emission_factor],
+            quorum 'from natural gas use, fuel oil use, electricity use, district heat use, and electricity emission factor', :needs => [:natural_gas_use, :fuel_oil_use, :electricity_use, :district_heat_use, :electricity_emission_factor],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:natural_gas_use] * Fuel.find_by_name('Pipeline Natural Gas').co2_emission_factor +
                 characteristics[:fuel_oil_use] * Fuel.find_by_name('Distillate Fuel Oil No. 2').co2_emission_factor +
@@ -73,14 +73,6 @@ module BrighterPlanet
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
                 Country.fallback.electricity_emission_factor
-            end
-          end
-          
-          #### District heat emission factor (*kg CO<sub>2</sub>e / MJ*)
-          # *A greenhouse gas emission factor for district heat used by the lodging.*
-          committee :district_heat_emission_factor do
-            quorum 'default' do |characteristics|
-              Fuel.find_by_name('District Heat').co2_emission_factor
             end
           end
           
@@ -123,7 +115,7 @@ module BrighterPlanet
                 characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:district_heat]
             end
           end
-
+          
           #### Adjusted fuel intensities (*various*)
           # *The lodging's use per occupied room night of a variety of fuels, 
           # adjusted by number of pools, mini-fridges, etc.*
@@ -146,7 +138,7 @@ module BrighterPlanet
               intensities
             end
           end
-
+          
           #### Indoor pool adjustment
           #
           committee :indoor_pool_adjustment do
@@ -176,7 +168,7 @@ module BrighterPlanet
               {}
             end
           end
-
+          
           #### Outdoor pool adjustment
           #
           committee :outdoor_pool_adjustment do
@@ -205,7 +197,7 @@ module BrighterPlanet
               {}
             end
           end
-
+          
           #### Hot tub adjustment
           #
           committee :hot_tub_adjustment do
@@ -228,7 +220,7 @@ module BrighterPlanet
               {}
             end
           end
-
+          
           #### Fridge adjustment
           #
           committee :fridge_adjustment do
@@ -301,7 +293,7 @@ module BrighterPlanet
                 }
             end
           end
-
+          
           #### Property indoor pool count
           # *The number of the property's indoor pools
           committee :property_indoor_pool_count do
