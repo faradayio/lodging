@@ -254,11 +254,14 @@ module BrighterPlanet
           # - Electricity intensity: *kWh / room-night*
           # - District heat intensity: *MJ / room-night*
           committee :fuel_intensities do
-            # If `country` is the US or we know `heating degree days` or `cooling degree days`, calculate fuel intensities from CBECS 2003 data using fuzzy inference.
-            quorum 'from degree days and user inputs', :needs => [:heating_degree_days, :cooling_degree_days], :appreciates => [:property_rooms, :property_floors, :property_construction_year, :property_ac_coverage],
+            # If we know `heating degree days` and `cooling degree days`, calculate fuel intensities from CBECS 2003 data using fuzzy inference.
+            quorum 'from degree days, occupancy rate, and user inputs', :needs => [:heating_degree_days, :cooling_degree_days, :occupancy_rate], :appreciates => [:property_rooms, :property_floors, :property_construction_year, :property_ac_coverage],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                occupancy_rate = 0 # Declare occupancy rate so it will be available outside of the inject
                 inputs = characteristics.to_hash.inject({}) do |memo, (characteristic, value)|
                   case characteristic
+                  when :occupancy_rate
+                    occupancy_rate = value
                   when :property_rooms
                     memo[:lodging_rooms] = value
                   when :property_floors
@@ -275,10 +278,10 @@ module BrighterPlanet
                 
                 kernel = CommercialBuildingEnergyConsumptionSurveyResponse.new(inputs)
                 {
-                  :natural_gas   => kernel.fuzzy_infer(:natural_gas_per_room_night),
-                  :fuel_oil      => kernel.fuzzy_infer(:fuel_oil_per_room_night),
-                  :electricity   => kernel.fuzzy_infer(:electricity_per_room_night),
-                  :district_heat => kernel.fuzzy_infer(:district_heat_per_room_night)
+                  :natural_gas   => kernel.fuzzy_infer(:natural_gas_per_room_night) / occupancy_rate,
+                  :fuel_oil      => kernel.fuzzy_infer(:fuel_oil_per_room_night) / occupancy_rate,
+                  :electricity   => kernel.fuzzy_infer(:electricity_per_room_night) / occupancy_rate,
+                  :district_heat => kernel.fuzzy_infer(:district_heat_per_room_night) / occupancy_rate
                 }
             end
             
@@ -291,6 +294,21 @@ module BrighterPlanet
                   :electricity   => Country.fallback.lodging_electricity_intensity,
                   :district_heat => Country.fallback.lodging_district_heat_intensity,
                 }
+            end
+          end
+          
+          #### Occupancy rate
+          # *The percent of the proprety's rooms that are occupied on an average night.*
+          committee :occupancy_rate do
+            # Look up the `country` average lodging occupancy rate.
+            quorum 'from country', :needs => :country,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:country].lodging_occupancy_rate
+            end
+            
+            # Otherwise use a global average.
+            quorum 'default' do
+              Country.fallback.lodging_occupancy_rate
             end
           end
           

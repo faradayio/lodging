@@ -1,4 +1,4 @@
-iso_3166_code,iso_3166_alpha_3_code,heating_degree_days,cooling_degree_days,electricity_emission_factor,lodging_natural_gas_intensity,lodging_fuel_oil_intensity,lodging_electricity_intensity,lodging_district_heat_intensity
-US,USA,2200,880,0.62783,2.0,0.4,33.9,1.8
-GB,GBR,2800,60,1.0,3.0,0.5,60.0,0.0
+iso_3166_code,iso_3166_alpha_3_code,heating_degree_days,cooling_degree_days,electricity_emission_factor,lodging_occupancy_rate,lodging_natural_gas_intensity,lodging_fuel_oil_intensity,lodging_electricity_intensity,lodging_district_heat_intensity
+US,USA,2200,880,0.62783,0.6,2.0,0.4,33.9,1.8
+GB,GBR,2800,60,1.0,0.5,3.0,0.5,60.0,0.0
 VI,VIR

@@ -35,9 +35,9 @@ Feature: Lodging Emissions Calculations
     Examples:
       | country | state | carbon |
       | VI      |       | 113.98 |
-      | GB      |       |  91.94 |
-      | US      |       |  78.18 |
-      |         | CA    |  78.18 |
+      | GB      |       | 183.87 |
+      | US      |       | 130.29 |
+      |         | CA    | 130.29 |
 
   Scenario Outline: Calculations from fuzzy inference
     Given it has "rooms" of "2"
@@ -50,9 +50,8 @@ Feature: Lodging Emissions Calculations
     Then the amount of "carbon" should be within "0.01" of "<carbon>"
     Examples:
       | id | zip   | city          | state | carbon | notes |
-      | 1  | 94122 |               |       |  21.00 | dd from climate divizion; fuzzy from property attributes |
-      | 1  |       | San Francisco | CA    |  41.93 | dd from country; fuzzy from property attributes |
-      | 2  | 94133 |               |       |  57.48 | dd from country; fuzzy from property attributes |
-      | 2  |       | San Francisco | CA    |  57.48 | dd from country; fuzzy from property attributes |
-      | 3  | 94014 |               |       |  58.59 | dd from country; fuzzy from property attributes |
-      | 3  |       | San Francisco | CA    |  58.59 | dd from country; no find hotel |
+      | 1  | 94122 |               |       |  35.00 | dd from climate divizion; fuzzy from property attributes |
+      | 1  |       | San Francisco | CA    |  69.88 | dd from country; fuzzy from property attributes |
+      | 2  | 94133 |               |       |  95.80 | dd from country; fuzzy from property attributes |
+      | 2  |       | San Francisco | CA    |  95.80 | dd from country; fuzzy from property attributes |
+      | 3  | 94014 |               |       |  97.65 | dd from country; fuzzy from property attributes |

@@ -161,6 +161,17 @@ Feature: Lodging Committee Calculations
       |     5 |     5 |
       |     6 |     5 |
 
+  Scenario Outline: Occupancy rate
+    Given a characteristic "country.iso_3166_code" of "<country>"
+    When the "occupancy_rate" committee reports
+    Then the committee should have used quorum "<quorum>"
+    And the conclusion of the committee should be "<rate>"
+    Examples:
+      | country | quorum       | rate |
+      | US      | from country | 0.6  |
+      | GB      | from country | 0.5  |
+      |         | default      | 0.6  |
+
   Scenario: Fuel intensities committee from default
     When the "fuel_intensities" committee reports
     Then the committee should have used quorum "default"
@@ -169,8 +180,9 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "electricity" and value "33.9"
     And the conclusion of the committee should include a key of "district_heat" and value "1.8"
 
-  Scenario Outline: Fuel intensities committee should not run unless hdd and cdd are present
+  Scenario Outline: Fuel intensities committee should not run unless both hdd and cdd are present
     Given a characteristic "<dd_characteristic>" of "500"
+    And a characteristic "occupancy_rate" of "0.6"
     When the "fuel_intensities" committee reports
     Then the committee should have used quorum "default"
     Examples:
@@ -185,31 +197,32 @@ Feature: Lodging Committee Calculations
     And a characteristic "property_floors" of "<floors>"
     And a characteristic "property_construction_year" of "<year>"
     And a characteristic "property_ac_coverage" of "<ac>"
-    When the "fuel_intensities" committee reports
-    Then the committee should have used quorum "from degree days and user inputs"
+    When the "occupancy_rate" committee reports
+    And the "fuel_intensities" committee reports
+    Then the committee should have used quorum "from degree days, occupancy rate, and user inputs"
     And the conclusion of the committee should include a key of "natural_gas" and value "<gas>"
     And the conclusion of the committee should include a key of "fuel_oil" and value "<oil>"
     And the conclusion of the committee should include a key of "electricity" and value "<elec>"
     And the conclusion of the committee should include a key of "district_heat" and value "<steam>"
     Examples:
      | hdd   | cdd  | rooms | floors | year | ac  | gas     | oil     | elec     | steam    | notes |
-     |  1350 |  150 |       |        |      |     | 0.66112 | 1.74437 | 18.79375 |  8.88000 | CA hdd/cdd |
-     |  1350 |  150 | 100   |        |      |     | 0.51367 | 1.78158 | 16.93042 |  8.14694 | CA hdd/cdd |
-     |  1350 |  150 |       |   3    |      |     | 0.50081 | 1.82912 | 16.72905 |  8.26008 | CA hdd/cdd |
-     |  1350 |  150 |       |        | 1993 |     | 0.73827 | 0.46677 | 24.32164 |  2.49435 | CA hdd/cdd |
-     |  1350 |  150 |       |        |      | 0.5 | 0.25655 | 0.67690 | 15.86021 |  3.44587 | CA hdd/cdd |
-     |  1350 |  150 | 100   |   3    | 1993 | 0.5 | 0.05234 | 0.08006 | 15.01465 |  0.45900 | CA hdd/cdd |
-     | 10000 |    0 |       |        |      |     | 0.14089 | 2.11217 | 13.40082 |  1.19380 | extreme hdd |
-     |  2200 |  800 |       |        |      |     | 0.55203 | 0.95863 | 24.87033 |  4.12816 | us hdd/cdd |
-     |     0 | 4000 |       |        |      |     | 2.60241 | 0.39397 | 36.50741 | 38.00245 | extreme cdd |
-     |  1350 |  150 | 1     |        |      |     | 0.46581 | 1.81544 | 16.63497 |  7.99558 | extreme rooms |
-     |  1350 |  150 | 5000  |        |      |     | 1.09766 | 1.64934 | 23.24206 |  9.35691 | extreme rooms |
-     |  1350 |  150 |       |   1    |      |     | 0.49448 | 1.88423 | 17.08911 |  8.26549 | extreme floors |
-     |  1350 |  150 |       | 100    |      |     | 1.18646 | 1.54623 | 24.50181 | 11.53700 | extreme floors |
-     |  1350 |  150 |       |        | 1200 |     | 0.51698 | 1.82880 | 16.31913 |  7.95283 | extreme year |
-     |  1350 |  150 |       |        | 2012 |     | 0.75121 | 0.39293 | 24.67849 |  2.45184 | extreme year |
-     |  1350 |  150 |       |        |      | 0.0 | 0.03902 | 2.75663 | 10.69469 |  0.52409 | extreme ac |
-     |  1350 |  150 |       |        |      | 1.0 | 1.39744 | 0.77955 | 28.06422 | 18.76990 | extreme ac |
+     |  1350 |  150 |       |        |      |     | 1.10187 | 2.90728 | 31.32292 | 14.80000 | CA hdd/cdd |
+     |  1350 |  150 | 100   |        |      |     | 0.85612 | 2.96930 | 28.21736 | 13.57824 | CA hdd/cdd |
+     |  1350 |  150 |       |   3    |      |     | 0.83468 | 3.04853 | 27.88175 | 13.76680 | CA hdd/cdd |
+     |  1350 |  150 |       |        | 1993 |     | 1.23045 | 0.77795 | 40.53607 |  4.15725 | CA hdd/cdd |
+     |  1350 |  150 |       |        |      | 0.5 | 0.42758 | 1.12817 | 26.43368 |  5.74312 | CA hdd/cdd |
+     |  1350 |  150 | 100   |   3    | 1993 | 0.5 | 0.08723 | 0.13344 | 25.02442 |  0.76500 | CA hdd/cdd |
+     | 10000 |    0 |       |        |      |     | 0.23482 | 3.52029 | 22.33470 |  1.98967 | extreme hdd |
+     |  2200 |  800 |       |        |      |     | 0.92005 | 1.59772 | 41.45055 |  6.88027 | us hdd/cdd |
+     |     0 | 4000 |       |        |      |     | 4.33735 | 0.65661 | 60.84568 | 63.33742 | extreme cdd |
+     |  1350 |  150 | 1     |        |      |     | 0.77635 | 3.02573 | 27.72495 | 13.32596 | extreme rooms |
+     |  1350 |  150 | 5000  |        |      |     | 1.82944 | 2.74889 | 38.73677 | 15.59486 | extreme rooms |
+     |  1350 |  150 |       |   1    |      |     | 0.82413 | 3.14038 | 28.48186 | 13.77581 | extreme floors |
+     |  1350 |  150 |       | 100    |      |     | 1.97743 | 2.57705 | 40.83635 | 19.22833 | extreme floors |
+     |  1350 |  150 |       |        | 1200 |     | 0.86163 | 3.04800 | 27.19855 | 13.25471 | extreme year |
+     |  1350 |  150 |       |        | 2012 |     | 1.25202 | 0.65488 | 41.13082 |  4.08640 | extreme year |
+     |  1350 |  150 |       |        |      | 0.0 | 0.06504 | 4.59438 | 17.82449 |  0.87348 | extreme ac |
+     |  1350 |  150 |       |        |      | 1.0 | 2.32907 | 1.29925 | 46.77370 | 31.28316 | extreme ac |
 
   Scenario: Hot tub adjustment from default
     When the "hot_tub_adjustment" committee reports
