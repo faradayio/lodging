@@ -1,4 +1,4 @@
-northstar_id,name,city,locality,postcode,country_iso_3166_alpha_3_code,lodging_rooms,lodging_class_name
-1,Hilton San Francisco,San Francisco,California,94122,USA,50,Hotel
-2,Courtyard by Marriott,San Francisco,California,94133,USA,100,Motel
-3,Pacific Inn,Daly City,California,94014,USA,25,Inn
+northstar_id,name,city,locality,postcode,country_iso_3166_alpha_3_code,lodging_rooms,floors,construction_year,ac_coverage,lodging_class_name
+1,Courtyard by Marriott,San Francisco,California,94122,USA,100,3,1993,0.5,Motel
+2,Hilton San Francisco,San Francisco,California,94133,USA,50,2,2002,1.0,Hotel
+3,Pacific Inn,Daly City,California,94014,USA,25,,,,Inn

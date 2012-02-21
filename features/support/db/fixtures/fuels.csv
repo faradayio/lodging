@@ -1,3 +1,23 @@
-name,energy_content,co2_emission_factor
-Distillate Fuel Oil No. 2,38,2.7
-Pipeline Natural Gas
+name,density,density_units,energy_content,energy_content_units,carbon_content,carbon_content_units,oxidation_factor,biogenic_fraction,co2_emission_factor,co2_emission_factor_units,co2_biogenic_emission_factor,co2_biogenic_emission_factor_units,physical_units
+Aviation Gasoline,0.7057,kilograms_per_litre,33.499,megajoules_per_litre,17.8758,grams_per_megajoule,1,0,2.19569,kilograms_per_litre,0,kilograms_per_litre,litre
+Biodiesel,,,35.6757,megajoules_per_litre,19.089,grams_per_megajoule,1,1,0,kilograms_per_litre,2.49705,kilograms_per_litre,litre
+Commercial Coal,,,,,,,,,,,,,
+Distillate Fuel Oil No. 1,,,38.6354,megajoules_per_litre,18.9374,grams_per_megajoule,1,0,2.68273,kilograms_per_litre,0,kilograms_per_litre,litre
+Distillate Fuel Oil No. 2,0.8458,kilograms_per_litre,38.5491,megajoules_per_litre,19.1175,grams_per_megajoule,1,0,2.70219,kilograms_per_litre,0,kilograms_per_litre,litre
+Distillate Fuel Oil No. 4,,,40.7125,megajoules_per_litre,19.4018,grams_per_megajoule,1,0,2.89629,kilograms_per_litre,0,kilograms_per_litre,litre
+District Heat,,,1,megajoules_per_megajoule,20.9053,grams_per_megajoule,1,0,0.0766528,kilograms_per_megajoule,0,kilograms_per_megajoule,megajoule
+Ethanol,,,23.4122,megajoules_per_litre,17.6957,grams_per_megajoule,1,1,0,kilograms_per_litre,1.51908,kilograms_per_litre,litre
+Flare Gas,,,42.1026,megajoules_per_cubic_metre,14.5111,grams_per_megajoule,1,0,2.24017,kilograms_per_cubic_metre,0,kilograms_per_cubic_metre,cubic_metre
+Industrial Coking Coal,,,,,,,,,,,,,
+Industrial Other Coal,,,,,,,,,,,,,
+Jet Fuel,0.8156,kilograms_per_litre,,,,,,,,,,,
+Kerosene,,,38.6553,megajoules_per_litre,18.9184,grams_per_megajoule,1,0,2.68142,kilograms_per_litre,0,kilograms_per_litre,litre
+LPG (energy use),,,,,,,,,,,,,
+Methanol,,,18.1696,megajoules_per_litre,16.4541,grams_per_megajoule,1,0,1.09621,kilograms_per_litre,0,kilograms_per_litre,litre
+Motor Gasoline,,,,,,,,,,,,,
+Pipeline Natural Gas,,,,,,,,,,,,,
+Residential Coal,,,,,,,,,,,,,
+Residual Fuel Oil No. 5,,,39.0136,megajoules_per_litre,18.8521,grams_per_megajoule,1,0,2.69679,kilograms_per_litre,0,kilograms_per_litre,litre
+Residual Fuel Oil No. 6,,,41.9203,megajoules_per_litre,19.4113,grams_per_megajoule,1,0,2.98366,kilograms_per_litre,0,kilograms_per_litre,litre
+Utility Coal,,,,,,,,,,,,,
+Vegetable Oil,,,33.446,megajoules_per_litre,21.0795,grams_per_megajoule,1,1,0,kilograms_per_litre,2.58508,kilograms_per_litre,litre

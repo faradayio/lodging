@@ -60,6 +60,17 @@ Feature: Lodging Committee Calculations
   #   When the "zip_code" committee reports
   #   Then the conclusion of the committee should be nil
 
+  Scenario: Climate division from zip code
+    Given a characteristic "zip_code.name" of "94122"
+    When the "climate_division" committee reports
+    Then the committee should have used quorum "from zip code"
+    And the conclusion of the committee should have "name" of "CA4"
+
+  Scenario: Climate division from zip code missing climate division
+    Given a characteristic "zip_code.name" of "94133"
+    When the "climate_division" committee reports
+    Then the conclusion of the committee should be nil
+
   Scenario: City committee from zip code
     Given a characteristic "zip_code.name" of "94122"
     When the "city" committee reports
@@ -84,97 +95,71 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from zip code"
     And the conclusion of the committee should have "abbreviation" of "CAMX"
 
-  Scenario: Census division committee from state
-    Given a characteristic "state.postal_abbreviation" of "CA"
-    When the "census_division" committee reports
-    Then the committee should have used quorum "from state"
-    And the conclusion of the committee should have "number" of "9"
-
-  Scenario: Lodging class from lodging property
-    Given a characteristic "lodging_property.northstar_id" of "3"
-    When the "lodging_class" committee reports
-    Then the committee should have used quorum "from lodging property"
-    And the conclusion of the committee should have "name" of "Inn"
-
-  Scenario: Property rooms from lodging property
-    Given a characteristic "lodging_property.northstar_id" of "3"
-    When the "property_rooms" committee reports
-    Then the committee should have used quorum "from lodging property"
-    And the conclusion of the committee should be "25"
-
-  Scenario: Country lodging class committee from valid country and lodging class
-    Given a characteristic "lodging_class.name" of "Hotel"
-    And a characteristic "country.iso_3166_code" of "US"
-    When the "country_lodging_class" committee reports
-    Then the conclusion of the committee should have "name" of "US Hotel"
-
-  Scenario: Country lodging class committee from invalid country and lodging class
-    Given a characteristic "lodging_class.name" of "Hotel"
-    And a characteristic "country.iso_3166_code" of "GB"
-    When the "country_lodging_class" committee reports
-    Then the conclusion of the committee should be nil
-
-  Scenario Outline: rooms range committee from property rooms
-    Given a characteristic "property_rooms" of "<rooms>"
-    When the "rooms_range" committee reports
-    Then the committee should have used quorum "from property rooms"
-    And the conclusion of the committee should be "<range>"
-    Examples:
-      | rooms | range     |
-      | 7     | 1..17     |
-      | 20    | 10..30    |
-      | 140   | 115..165  |
-      | 300   | 250..350  |
-      | 391   | 316..466  |
-      | 502   | 400..9999 |
-
-  Scenario Outline: rooms range committee from property rooms and country lodging class
+  Scenario: Cooling degree days committee from country
     Given a characteristic "country.iso_3166_code" of "US"
-    Given a characteristic "lodging_class.name" of "<class>"
-    And a characteristic "property_rooms" of "<rooms>"
-    When the "country_lodging_class" committee reports
-    And the "rooms_range" committee reports
-    Then the committee should have used quorum "from property rooms and country lodging class"
-    And the conclusion of the committee should be "<range>"
-    Examples:
-      | class | rooms | range     |
-      | Hotel | 7     | 1..35     |
-      | Hotel | 50    | 25..75    |
-      | Hotel | 300   | 250..350  |
-      | Hotel | 420   | 345..495  |
-      | Hotel | 720   | 400..9999 |
-      | Inn   | 2     | 1..12     |
-      | Inn   | 42    | 32..52    |
-      | Inn   | 73    | 53..93    |
-      | Inn   | 111   | 71..151   |
-      | Inn   | 130   | 100..9999 |
+    When the "cooling_degree_days" committee reports
+    Then the committee should have used quorum "from country"
+    And the conclusion of the committee should be "880"
 
-  Scenario Outline: cohort committee from various characteristics
+  Scenario: Cooling degree days committee from climate division
+    Given a characteristic "climate_division.name" of "CA4"
+    When the "cooling_degree_days" committee reports
+    Then the committee should have used quorum "from climate division"
+    And the conclusion of the committee should be "150"
+
+  Scenario: Heating degree days committee from country
     Given a characteristic "country.iso_3166_code" of "US"
-    And a characteristic "lodging_class.name" of "<class>"
-    And a characteristic "property_rooms" of "<rooms>"
-    And a characteristic "census_division.number" of "<division>"
-    When the "country_lodging_class" committee reports
-    And the "rooms_range" committee reports
-    And the "cohort" committee reports
-    Then the committee should have used quorum "from country and input"
-    And the conclusion of the committee should have a record with "count" equal to "<records>"
-    Examples:
-      | class | rooms | division | records | notes |
-      | Hotel | 50    | 9        | 8       | class, rooms, and division |
-      | Inn   | 20    | 9        | 8       | class |
+    When the "heating_degree_days" committee reports
+    Then the committee should have used quorum "from country"
+    And the conclusion of the committee should be "2200"
 
-  Scenario Outline: cohort committee from insufficient characteristics
-    Given a characteristic "country.iso_3166_code" of "<country>"
-    And a characteristic "property_rooms" of "<rooms>"
-    When the "rooms_range" committee reports
-    And the "cohort" committee reports
-    Then the conclusion of the committee should be nil
+  Scenario: Heating degree days committee from climate division
+    Given a characteristic "climate_division.name" of "CA4"
+    When the "heating_degree_days" committee reports
+    Then the committee should have used quorum "from climate division"
+    And the conclusion of the committee should be "1350"
+
+  Scenario: Property floors from property
+    Given a characteristic "property.northstar_id" of "1"
+    When the "property_floors" committee reports
+    Then the committee should have used quorum "from property"
+    And the conclusion of the committee should be "3"
+
+  Scenario: Property construction year from property
+    Given a characteristic "property.northstar_id" of "1"
+    When the "property_construction_year" committee reports
+    Then the committee should have used quorum "from property"
+    And the conclusion of the committee should be "1993"
+
+  Scenario: Property ac coverage from property
+    Given a characteristic "property.northstar_id" of "1"
+    When the "property_ac_coverage" committee reports
+    Then the committee should have used quorum "from property"
+    And the conclusion of the committee should be "0.5"
+
+  Scenario Outline: Property indoor pool count from property
+    Given a characteristic "property.pools_indoor" of "<pools>"
+    When the "property_indoor_pool_count" committee reports
+    Then the committee should have used quorum "from property"
+    And the conclusion of the committee should be "<count>"
     Examples:
-      | country | rooms | notes |
-      | US      |       | not enough user inputs |
-      | US      | 75    | not enough records |
-      | GB      | 15    | not in US |
+      | pools | count |
+      |     0 |     0 |
+      |     1 |     1 |
+      |     5 |     5 |
+      |     6 |     5 |
+
+  Scenario Outline: Property outdoor pool count from property
+    Given a characteristic "property.pools_outdoor" of "<pools>"
+    When the "property_outdoor_pool_count" committee reports
+    Then the committee should have used quorum "from property"
+    And the conclusion of the committee should be "<count>"
+    Examples:
+      | pools | count |
+      |     0 |     0 |
+      |     1 |     1 |
+      |     5 |     5 |
+      |     6 |     5 |
 
   Scenario: Fuel intensities committee from default
     When the "fuel_intensities" committee reports
@@ -184,99 +169,131 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "electricity" and value "33.9"
     And the conclusion of the committee should include a key of "district_heat" and value "1.8"
 
-  Scenario: Fuel intensities committee from country missing intensities
-    Given a characteristic "country.iso_3166_code" of "GB"
+  Scenario Outline: Fuel intensities committee should not run unless hdd and cdd are present
+    Given a characteristic "<dd_characteristic>" of "500"
     When the "fuel_intensities" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should include a key of "natural_gas" and value "2.0"
-    And the conclusion of the committee should include a key of "fuel_oil" and value "0.4"
-    And the conclusion of the committee should include a key of "electricity" and value "33.9"
-    And the conclusion of the committee should include a key of "district_heat" and value "1.8"
+    Examples:
+     | dd_characteristic   |
+     | heating_degree_days |
+     | cooling_degree_days |
 
-  Scenario: Fuel intensities committee from country with intensities
-    Given a characteristic "country.iso_3166_code" of "VI"
-    When the "fuel_intensities" committee reports
-    Then the committee should have used quorum "from country"
-    And the conclusion of the committee should include a key of "natural_gas" and value "3.0"
-    And the conclusion of the committee should include a key of "fuel_oil" and value "0.5"
-    And the conclusion of the committee should include a key of "electricity" and value "60.0"
-    And the conclusion of the committee should include a key of "district_heat" and value "0.0"
-
-  Scenario: Fuel intensities committee from country lodging class
-    Given a characteristic "country.iso_3166_code" of "VI"
-    And a characteristic "lodging_class.name" of "Hotel"
-    When the "country_lodging_class" committee reports
-    And the "fuel_intensities" committee reports
-    Then the committee should have used quorum "from country lodging class"
-    And the conclusion of the committee should include a key of "natural_gas" and value "4.0"
-    And the conclusion of the committee should include a key of "fuel_oil" and value "1.0"
-    And the conclusion of the committee should include a key of "electricity" and value "65.0"
-    And the conclusion of the committee should include a key of "district_heat" and value "0.0"
-
-  Scenario Outline: Fuel intensities committee from cohort
-    Given a characteristic "country.iso_3166_code" of "US"
-    And a characteristic "lodging_class.name" of "<class>"
+  Scenario Outline: Fuel intensities committee from fuzzy weighting
+    Given a characteristic "heating_degree_days" of "<hdd>"
+    And a characteristic "cooling_degree_days" of "<cdd>"
     And a characteristic "property_rooms" of "<rooms>"
-    And a characteristic "census_division.number" of "<division>"
-    When the "country_lodging_class" committee reports
-    And the "rooms_range" committee reports
-    And the "cohort" committee reports
-    And the "fuel_intensities" committee reports
-    Then the committee should have used quorum "from cohort"
-    And the conclusion of the committee should include a key of "natural_gas" and value "<natural_gas>"
-    And the conclusion of the committee should include a key of "fuel_oil" and value "<fuel_oil>"
-    And the conclusion of the committee should include a key of "electricity" and value "<electricity>"
+    And a characteristic "property_floors" of "<floors>"
+    And a characteristic "property_construction_year" of "<year>"
+    And a characteristic "property_ac_coverage" of "<ac>"
+    When the "fuel_intensities" committee reports
+    Then the committee should have used quorum "from degree days and user inputs"
+    And the conclusion of the committee should include a key of "natural_gas" and value "<gas>"
+    And the conclusion of the committee should include a key of "fuel_oil" and value "<oil>"
+    And the conclusion of the committee should include a key of "electricity" and value "<elec>"
     And the conclusion of the committee should include a key of "district_heat" and value "<steam>"
     Examples:
-      | class | rooms | division | natural_gas | fuel_oil | electricity | steam   | notes |
-      | Hotel | 50    | 9        | 2.48543     | 0.0      | 29.14907    | 0.0     | class rooms division |
-      | Inn   | 20    | 9        | 1.54195     | 0.45796  | 27.19267    | 1.59375 | class |
+     | hdd   | cdd  | rooms | floors | year | ac  | gas     | oil     | elec     | steam    | notes |
+     |  1350 |  150 |       |        |      |     | 0.66112 | 1.74437 | 18.79375 |  8.88000 | CA hdd/cdd |
+     |  1350 |  150 | 100   |        |      |     | 0.51367 | 1.78158 | 16.93042 |  8.14694 | CA hdd/cdd |
+     |  1350 |  150 |       |   3    |      |     | 0.50081 | 1.82912 | 16.72905 |  8.26008 | CA hdd/cdd |
+     |  1350 |  150 |       |        | 1993 |     | 0.73827 | 0.46677 | 24.32164 |  2.49435 | CA hdd/cdd |
+     |  1350 |  150 |       |        |      | 0.5 | 0.25655 | 0.67690 | 15.86021 |  3.44587 | CA hdd/cdd |
+     |  1350 |  150 | 100   |   3    | 1993 | 0.5 | 0.05234 | 0.08006 | 15.01465 |  0.45900 | CA hdd/cdd |
+     | 10000 |    0 |       |        |      |     | 0.14089 | 2.11217 | 13.40082 |  1.19380 | extreme hdd |
+     |  2200 |  800 |       |        |      |     | 0.55203 | 0.95863 | 24.87033 |  4.12816 | us hdd/cdd |
+     |     0 | 4000 |       |        |      |     | 2.60241 | 0.39397 | 36.50741 | 38.00245 | extreme cdd |
+     |  1350 |  150 | 1     |        |      |     | 0.46581 | 1.81544 | 16.63497 |  7.99558 | extreme rooms |
+     |  1350 |  150 | 5000  |        |      |     | 1.09766 | 1.64934 | 23.24206 |  9.35691 | extreme rooms |
+     |  1350 |  150 |       |   1    |      |     | 0.49448 | 1.88423 | 17.08911 |  8.26549 | extreme floors |
+     |  1350 |  150 |       | 100    |      |     | 1.18646 | 1.54623 | 24.50181 | 11.53700 | extreme floors |
+     |  1350 |  150 |       |        | 1200 |     | 0.51698 | 1.82880 | 16.31913 |  7.95283 | extreme year |
+     |  1350 |  150 |       |        | 2012 |     | 0.75121 | 0.39293 | 24.67849 |  2.45184 | extreme year |
+     |  1350 |  150 |       |        |      | 0.0 | 0.03902 | 2.75663 | 10.69469 |  0.52409 | extreme ac |
+     |  1350 |  150 |       |        |      | 1.0 | 1.39744 | 0.77955 | 28.06422 | 18.76990 | extreme ac |
 
-  Scenario: Fuel intensities committee from cohort (based on rooms and region)
-    Given a characteristic "country.iso_3166_code" of "US"
-    And a characteristic "property_rooms" of "20"
-    And a characteristic "census_division.number" of "9"
-    When the "rooms_range" committee reports
-    And the "cohort" committee reports
+  Scenario: Hot tub adjustment from default
+    When the "hot_tub_adjustment" committee reports
+    Then the committee should have used quorum "default"
+    And the conclusion of the committee should be nil
+
+  Scenario Outline: Hot tub adjustment from property_hot_tub_count
+    Given a characteristic "property_hot_tub_count" of "<hot_tubs>"
+    When the "hot_tub_adjustment" committee reports
+    Then the committee should have used quorum "from property_hot_tub_count"
+    And the conclusion of the committee should include a key of "electricity" and value "<adjustment>"
+    Examples:
+      | hot_tubs | adjustment |
+      |        0 |   -0.63017 |
+      |        1 |    5.67123 |
+
+  Scenario Outline: Adjusted fuel intensities committee from fuel intensities, pool adjustment, and fridge adjustment
+    Given a characteristic "heating_degree_days" of "200"
+    And a characteristic "cooling_degree_days" of "100"
+    And an association characteristic "property.pools_outdoor" of "<outdoor_pools>"
+    And an association characteristic "property.pools_indoor" of "<indoor_pools>"
+    And an association characteristic "property.fridge_coverage" of "<fridges>"
+    And an association characteristic "property.mini_bar_coverage" of "<bars>"
+    And an association characteristic "property.hot_tubs" of "<tubs>" having type "LodingProperty"
+    When the "property_indoor_pool_count" committee reports
+    And the "property_outdoor_pool_count" committee reports
+    And the "property_fridge_coverage" committee reports
+    And the "property_hot_tub_count" committee reports
     And the "fuel_intensities" committee reports
-    Then the committee should have used quorum "from cohort"
-    And the conclusion of the committee should include a key of "natural_gas" and value "3.05407"
-    And the conclusion of the committee should include a key of "fuel_oil" and value "0.0"
-    And the conclusion of the committee should include a key of "electricity" and value "21.83441"
-    And the conclusion of the committee should include a key of "district_heat" and value "0.0"
+    And the "indoor_pool_adjustment" committee reports
+    And the "outdoor_pool_adjustment" committee reports
+    And the "hot_tub_adjustment" committee reports
+    And the "fridge_adjustment" committee reports
+    And the "adjusted_fuel_intensities" committee reports
+    Then the committee should have used quorum "from fuel intensities and amenity adjustments"
+    And the conclusion of the committee should include a key of "natural_gas" and value "<gas>"
+    And the conclusion of the committee should include a key of "fuel_oil" and value "<oil>"
+    And the conclusion of the committee should include a key of "electricity" and value "<elec>"
+    And the conclusion of the committee should include a key of "district_heat" and value "<steam>"
+    Examples:
+     | indoor_pools | outdoor_pools | bars | fridges | tubs | gas     | oil     | elec     | steam   |
+     |              |               |      |         |      | 0.63109 | 1.87083 | 17.97537 | 8.28629 |
+     |            0 |               |      |         |      | 0.63109 | 0.87083 | 17.97537 | 8.28629 |
+     |            1 |               |      |         |      | 0.63109 | 7.22407 | 17.97537 | 8.28629 |
+     |              |             0 |      |         |      | 0.63109 | 0.87083 | 17.97537 | 8.28629 |
+     |              |             1 |      |         |      | 0.63109 | 7.87083 | 17.97537 | 8.28629 |
+     |              |               |    0 |       1 |      | 0.63109 | 1.87083 |  7.97537 | 8.28629 |
+     |              |               |    1 |       0 |      | 0.63109 | 1.87083 |  7.97537 | 8.28629 |
+     |              |               |  0.5 |     0.5 |      | 0.63109 | 1.87083 |  7.97537 | 8.28629 |
+     |              |               | 0.75 |     0.5 |      | 0.63109 | 1.87083 |  7.97537 | 8.28629 |
+     |              |               |      |         |    0 | 0.63109 | 1.87083 |  7.97537 | 8.28629 |
+     |              |               |      |         |    1 | 0.63109 | 1.87083 | 27.97537 | 8.28629 |
 
   Scenario: District heat use committee
     Given a characteristic "room_nights" of "4"
     When the "fuel_intensities" committee reports
+    And the "adjusted_fuel_intensities" committee reports
     And the "district_heat_use" committee reports
-    Then the committee should have used quorum "from fuel intensities and room nights"
+    Then the committee should have used quorum "from adjusted fuel intensities and room nights"
     And the conclusion of the committee should be "7.2"
     
   Scenario: Electricity use committee
     Given a characteristic "room_nights" of "4"
     When the "fuel_intensities" committee reports
+    And the "adjusted_fuel_intensities" committee reports
     And the "electricity_use" committee reports
-    Then the committee should have used quorum "from fuel intensities and room nights"
+    Then the committee should have used quorum "from adjusted fuel intensities and room nights"
     And the conclusion of the committee should be "135.6"
     
   Scenario: Fuel oil use committee
     Given a characteristic "room_nights" of "4"
     When the "fuel_intensities" committee reports
+    And the "adjusted_fuel_intensities" committee reports
     And the "fuel_oil_use" committee reports
-    Then the committee should have used quorum "from fuel intensities and room nights"
+    Then the committee should have used quorum "from adjusted fuel intensities and room nights"
     And the conclusion of the committee should be "1.6"
     
   Scenario: Natural gas use committee
     Given a characteristic "room_nights" of "4"
     When the "fuel_intensities" committee reports
+    And the "adjusted_fuel_intensities" committee reports
     And the "natural_gas_use" committee reports
-    Then the committee should have used quorum "from fuel intensities and room nights"
+    Then the committee should have used quorum "from adjusted fuel intensities and room nights"
     And the conclusion of the committee should be "8.0"
-
-  Scenario: District heat emission factor committee
-    When the "district_heat_emission_factor" committee reports
-    Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "0.07641"
 
   Scenario: Electricity emission factor committee from default
     When the "electricity_emission_factor" committee reports
@@ -284,7 +301,7 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should be "0.69252"
 
   Scenario: Electricity emission factor committee from country missing emission factor
-    Given a characteristic "country.iso_3166_code" of "GB"
+    Given a characteristic "country.iso_3166_code" of "VI"
     When the "electricity_emission_factor" committee reports
     Then the committee should have used quorum "default"
     And the conclusion of the committee should be "0.69252"

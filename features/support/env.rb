@@ -11,6 +11,14 @@ require 'data_miner'
 DataMiner.logger = Logger.new(nil)
 
 require 'sniff'
-require 'sqlite3'
 
-Sniff.init File.join(File.dirname(__FILE__), '..', '..'), :earth => [:hospitality, :fuel, :locality], :cucumber => true, :logger => 'log/test_log.txt'
+Sniff.init File.join(File.dirname(__FILE__), '..', '..'),
+  :adapter => 'mysql2',
+  :database => 'test_lodging',
+  :username => 'root',
+  :password => 'password',
+  :earth => [:hospitality, :fuel, :locality],
+  :cucumber => true,
+  :logger => 'log/test_log.txt'
+
+require_relative './lodging_property'
