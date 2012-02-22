@@ -55,3 +55,20 @@ Feature: Lodging Emissions Calculations
       | 2  | 94133 |               |       |  94.24 | dd from country; fuzzy from property attributes |
       | 2  |       | San Francisco | CA    |  94.24 | dd from country; fuzzy from property attributes |
       | 3  | 94014 |               |       | 128.13 | dd from country; fuzzy from property attributes |
+
+  Scenario: Calculations from all user inputs
+    Given it has "rooms" of "2"
+    And it has "duration" of "172800"
+    And it has "country.iso_3166_code" of "GB"
+    And it has "heating_degree_days" of "2700"
+    And it has "cooling_degree_days" of "100"
+    And it has "property_rooms" of "100"
+    And it has "property_floors" of "3"
+    And it has "property_construction_year" of "1993"
+    And it has "property_ac_coverage" of "0.5"
+    And it has "property_fridge_coverage" of "0.6"
+    And it has "property_hot_tubs" of "6"
+    And it has "property_indoor_pools" of "5"
+    And it has "property_outdoor_pools" of "5"
+    When impacts are calculated
+    Then the amount of "carbon" should be within "0.01" of "208.83"

@@ -302,16 +302,11 @@ Feature: Lodging Committee Calculations
     And a characteristic "cooling_degree_days" of "880"
     And a characteristic "property_rooms" of "25"
     And a characteristic "occupancy_rate" of "0.6"
-    And an association characteristic "property.fridge_coverage" of "<fridges>"
-    And an association characteristic "property.mini_bar_coverage" of "<minibars>"
-    And an association characteristic "property.hot_tubs" of "<tubs>"
-    And an association characteristic "property.pools_indoor" of "<indoor_pools>"
-    And an association characteristic "property.pools_outdoor" of "<outdoor_pools>"
+    And a characteristic "property_fridge_coverage" of "<fridges>"
+    And a characteristic "property_hot_tubs" of "<tubs>"
+    And a characteristic "property_indoor_pools" of "<indoor_pools>"
+    And a characteristic "property_outdoor_pools" of "<outdoor_pools>"
     When the "fuel_intensities" committee reports
-    And the "property_fridge_coverage" committee reports
-    And the "property_hot_tubs" committee reports
-    And the "property_indoor_pools" committee reports
-    And the "property_outdoor_pools" committee reports
     And the "fridge_adjustment" committee reports
     And the "hot_tub_adjustment" committee reports
     And the "indoor_pool_adjustment" committee reports
@@ -323,17 +318,16 @@ Feature: Lodging Committee Calculations
     And the conclusion of the committee should include a key of "electricity" and value "<elec>"
     And the conclusion of the committee should include a key of "district_heat" and value "<steam>"
     Examples:
-     | fridges | minibars | tubs | indoor_pools | outdoor_pools | gas     | oil     | elec     | steam   |
-     |         |          |      |              |               | 0.01922 | 0.91159 | 34.86144 | 0.37174 |
-     |      0  |        0 |      |              |               | 0.01922 | 0.91159 | 33.68144 | 0.37174 |
-     |      1  |        0 |      |              |               | 0.01922 | 0.91159 | 35.64811 | 0.37174 |
-     |      0  |        1 |      |              |               | 0.01922 | 0.91159 | 35.64811 | 0.37174 |
-     |         |          |    0 |              |               | 0.01922 | 0.91159 | 34.73544 | 0.37174 |
-     |         |          |    1 |              |               | 0.01922 | 0.91159 | 35.15544 | 0.37174 |
-     |         |          |      |            0 |               | 0.0     | 0.0     | 34.86144 | 0.37174 |
-     |         |          |      |            1 |               | 3.60948 | 0.91159 | 34.86144 | 0.37174 |
-     |         |          |      |              |             0 | 0.0     | 0.59747 | 34.86144 | 0.37174 |
-     |         |          |      |              |             1 | 0.26349 | 0.91159 | 34.86144 | 0.37174 |
+     | fridges | tubs | indoor_pools | outdoor_pools | gas     | oil     | elec     | steam   |
+     |         |      |              |               | 0.01922 | 0.91159 | 34.86144 | 0.37174 |
+     |      0  |      |              |               | 0.01922 | 0.91159 | 33.68144 | 0.37174 |
+     |      1  |      |              |               | 0.01922 | 0.91159 | 35.64811 | 0.37174 |
+     |         |    0 |              |               | 0.01922 | 0.91159 | 34.73544 | 0.37174 |
+     |         |    1 |              |               | 0.01922 | 0.91159 | 35.15544 | 0.37174 |
+     |         |      |            0 |               | 0.0     | 0.0     | 34.86144 | 0.37174 |
+     |         |      |            1 |               | 3.60948 | 0.91159 | 34.86144 | 0.37174 |
+     |         |      |              |             0 | 0.0     | 0.59747 | 34.86144 | 0.37174 |
+     |         |      |              |             1 | 0.26349 | 0.91159 | 34.86144 | 0.37174 |
 
   Scenario: District heat use committee
     Given a characteristic "room_nights" of "4"
