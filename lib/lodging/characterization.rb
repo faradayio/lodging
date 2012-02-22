@@ -19,9 +19,9 @@ module BrighterPlanet
           has :property_construction_year
           has :property_ac_coverage
           has :property_fridge_coverage
-          has :property_hot_tub_count
-          has :property_outdoor_pool_count
-          has :property_indoor_pool_count
+          has :property_hot_tubs
+          has :property_outdoor_pools
+          has :property_indoor_pools
         end
       end
     end
