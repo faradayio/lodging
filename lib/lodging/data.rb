@@ -12,7 +12,6 @@ module BrighterPlanet
         base.col :lodging_class_name
         base.col :heating_degree_days, :type => :float
         base.col :cooling_degree_days, :type => :float
-        base.col :property_name
         base.col :property_northstar_id
         base.col :property_rooms,              :type => :integer
         base.col :property_floors,             :type => :integer

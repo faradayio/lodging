@@ -391,21 +391,9 @@ module BrighterPlanet
           
           #### Property
           # *The property where the stay occurred.*
-          committee :property do
-            # Use client input, if available.
-            
-            # Otherwise use a custom matching algorithm to look up a property based on user inputs.
-            quorum "from custom matching algorithm", :needs => :property_name, :appreciates => [:zip_code, :city, :state, :country],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                LodgingProperty.better_match characteristics
-            end
-          end
-          
-          #### Property name
-          # *The name of the property where the stay occurred.*
           #
           # Use client input, if available
-          
+                    
           #### Heating degree days
           # *The average number of annual heating degree days (base 18°C) at the lodging's location.*
           committee :heating_degree_days do
