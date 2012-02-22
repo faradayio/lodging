@@ -12,21 +12,20 @@ class CommercialBuildingEnergyConsumptionSurveyResponse < ActiveRecord::Base
   def energy_use_membership(basis)
     keys = basis.keys
     
-    formula = "(POW(:heating_degree_days_n_w, 0.8) + POW(:cooling_degree_days_n_w, 0.8))" # fuzzy infer quorum only runs if both hdd and cdd are available
-    
-    formula += if keys.include? :lodging_rooms and keys.include? :floors
-      " * (POW(:lodging_rooms_n_w, 0.8) + POW(:floors_n_w, 0.8))"
-    elsif keys.include? :lodging_rooms
-      " * POW(:lodging_rooms_n_w, 0.8)"
-    elsif keys.include? :floors
-      " * POW(:floors_n_w, 0.8)"
-    else
-      ""
+    unless keys.include?(:heating_degree_days) and keys.include?(:cooling_degree_days)
+      raise ArgumentError, "[lodging] Must provide at least :heating_degree_days and :cooling_degree_days"
     end
     
-    formula += " * POW(:percent_cooled_n_w, 0.8)" if keys.include? :percent_cooled
-    formula += " * POW(:construction_year_n_w, 0.8)" if keys.include? :construction_year
-    
-    formula
+    formula = ['(POW(:heating_degree_days_n_w, 0.8) + POW(:cooling_degree_days_n_w, 0.8))']
+    if keys.include?(:lodging_rooms) and keys.include?(:floors)
+      formula << '(POW(:lodging_rooms_n_w, 0.8) + POW(:floors_n_w, 0.8))'
+    elsif keys.include? :lodging_rooms
+      formula << 'POW(:lodging_rooms_n_w, 0.8)'
+    elsif keys.include? :floors
+      formula << 'POW(:floors_n_w, 0.8)'
+    end
+    formula << 'POW(:percent_cooled_n_w, 0.8)' if keys.include?(:percent_cooled)
+    formula << 'POW(:construction_year_n_w, 0.8)' if keys.include?(:construction_year)
+    formula.join(' * ')
   end
 end
