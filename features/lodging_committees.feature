@@ -119,27 +119,27 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from climate division"
     And the conclusion of the committee should be "1350"
 
-  Scenario: Property floors from property
+  Scenario: Floors
     Given a characteristic "property.northstar_id" of "1"
-    When the "property_floors" committee reports
+    When the "floors" committee reports
     Then the committee should have used quorum "from property"
     And the conclusion of the committee should be "3"
 
-  Scenario: Property construction year from property
+  Scenario: Construction year
     Given a characteristic "property.northstar_id" of "1"
-    When the "property_construction_year" committee reports
+    When the "construction_year" committee reports
     Then the committee should have used quorum "from property"
     And the conclusion of the committee should be "1993"
 
-  Scenario: Property ac coverage from property
+  Scenario: AC coverage
     Given a characteristic "property.northstar_id" of "1"
-    When the "property_ac_coverage" committee reports
+    When the "ac_coverage" committee reports
     Then the committee should have used quorum "from property"
     And the conclusion of the committee should be "0.5"
 
-  Scenario Outline: Property fridge coverage
+  Scenario Outline: Fridge coverage
     Given a characteristic "property.northstar_id" of "<id>"
-    When the "property_fridge_coverage" committee reports
+    When the "fridge_coverage" committee reports
     Then the committee should have used quorum "from property"
     And the conclusion of the committee should be "<coverage>"
     Examples:
@@ -149,9 +149,9 @@ Feature: Lodging Committee Calculations
       | 3  | 0.5      |
       | 4  | 0.6      |
 
-  Scenario Outline: Property hot tubs
+  Scenario Outline: Hot tubs
     Given a characteristic "property.hot_tubs" of "<tubs>"
-    When the "property_hot_tubs" committee reports
+    When the "hot_tubs" committee reports
     Then the committee should have used quorum "from property"
     And the conclusion of the committee should be "<count>"
     Examples:
@@ -160,9 +160,9 @@ Feature: Lodging Committee Calculations
       |    1 |     1 |
       |    6 |     6 |
 
-  Scenario Outline: Property indoor pools
+  Scenario Outline: Indoor pools
     Given a characteristic "property.pools_indoor" of "<pools>"
-    When the "property_indoor_pools" committee reports
+    When the "indoor_pools" committee reports
     Then the committee should have used quorum "from property"
     And the conclusion of the committee should be "<count>"
     Examples:
@@ -172,9 +172,9 @@ Feature: Lodging Committee Calculations
       |     5 |     5 |
       |     6 |     5 |
 
-  Scenario Outline: Property outdoor pools
+  Scenario Outline: Outdoor pools
     Given a characteristic "property.pools_outdoor" of "<pools>"
-    When the "property_outdoor_pools" committee reports
+    When the "outdoor_pools" committee reports
     Then the committee should have used quorum "from property"
     And the conclusion of the committee should be "<count>"
     Examples:
@@ -217,9 +217,9 @@ Feature: Lodging Committee Calculations
     Given a characteristic "heating_degree_days" of "<hdd>"
     And a characteristic "cooling_degree_days" of "<cdd>"
     And a characteristic "property_rooms" of "<rooms>"
-    And a characteristic "property_floors" of "<floors>"
-    And a characteristic "property_construction_year" of "<year>"
-    And a characteristic "property_ac_coverage" of "<ac>"
+    And a characteristic "floors" of "<floors>"
+    And a characteristic "construction_year" of "<year>"
+    And a characteristic "ac_coverage" of "<ac>"
     When the "occupancy_rate" committee reports
     And the "fuel_intensities" committee reports
     Then the committee should have used quorum "from degree days, occupancy rate, and user inputs"
@@ -249,10 +249,10 @@ Feature: Lodging Committee Calculations
      |  1350 |  150 |       |        |      | 1.0 | 2.32907 | 1.29925 | 46.77370 | 31.28316 | extreme ac |
 
  Scenario Outline: Fridge adjustment
-   Given a characteristic "property_fridge_coverage" of "<coverage>"
+   Given a characteristic "fridge_coverage" of "<coverage>"
    And a characteristic "occupancy_rate" of "0.6"
    And the "fridge_adjustment" committee reports
-   Then the committee should have used quorum "from property fridge coverage and occupancy rate"
+   Then the committee should have used quorum "from fridge coverage and occupancy rate"
    And the conclusion of the committee should include a key of "electricity" and value "<adjustment>"
    Examples:
      | coverage | adjustment |
@@ -260,11 +260,11 @@ Feature: Lodging Committee Calculations
      |        1 |    0.78667 |
 
   Scenario Outline: Hot tub adjustment
-    Given a characteristic "property_hot_tubs" of "<hot_tubs>"
+    Given a characteristic "hot_tubs" of "<hot_tubs>"
     And a characteristic "property_rooms" of "10"
     And a characteristic "occupancy_rate" of "0.6"
     When the "hot_tub_adjustment" committee reports
-    Then the committee should have used quorum "from property hot tubs, property rooms, and occupancy rate"
+    Then the committee should have used quorum "from hot tubs, property rooms, and occupancy rate"
     And the conclusion of the committee should include a key of "electricity" and value "<adjustment>"
     Examples:
       | hot_tubs | adjustment |
@@ -272,11 +272,11 @@ Feature: Lodging Committee Calculations
       |        1 |      0.735 |
 
   Scenario Outline: Indoor pool adjustment
-    Given a characteristic "property_indoor_pools" of "<pools>"
+    Given a characteristic "indoor_pools" of "<pools>"
     And a characteristic "property_rooms" of "10"
     And a characteristic "occupancy_rate" of "0.6"
     When the "indoor_pool_adjustment" committee reports
-    Then the committee should have used quorum "from property indoor pools, property rooms, and occupancy rate"
+    Then the committee should have used quorum "from indoor pools, property rooms, and occupancy rate"
     And the conclusion of the committee should include a key of "pool_energy" and value "<adjustment>"
     Examples:
       | pools | adjustment |
@@ -285,11 +285,11 @@ Feature: Lodging Committee Calculations
       |     5 | 2290.07388 |
 
   Scenario Outline: Outdoor pool adjustment
-    Given a characteristic "property_outdoor_pools" of "<pools>"
+    Given a characteristic "outdoor_pools" of "<pools>"
     And a characteristic "property_rooms" of "10"
     And a characteristic "occupancy_rate" of "0.6"
     When the "outdoor_pool_adjustment" committee reports
-    Then the committee should have used quorum "from property outdoor pools, property rooms, and occupancy rate"
+    Then the committee should have used quorum "from outdoor pools, property rooms, and occupancy rate"
     And the conclusion of the committee should include a key of "pool_energy" and value "<adjustment>"
     Examples:
       | pools | adjustment |
@@ -302,10 +302,10 @@ Feature: Lodging Committee Calculations
     And a characteristic "cooling_degree_days" of "880"
     And a characteristic "property_rooms" of "25"
     And a characteristic "occupancy_rate" of "0.6"
-    And a characteristic "property_fridge_coverage" of "<fridges>"
-    And a characteristic "property_hot_tubs" of "<tubs>"
-    And a characteristic "property_indoor_pools" of "<indoor_pools>"
-    And a characteristic "property_outdoor_pools" of "<outdoor_pools>"
+    And a characteristic "fridge_coverage" of "<fridges>"
+    And a characteristic "hot_tubs" of "<tubs>"
+    And a characteristic "indoor_pools" of "<indoor_pools>"
+    And a characteristic "outdoor_pools" of "<outdoor_pools>"
     When the "fuel_intensities" committee reports
     And the "fridge_adjustment" committee reports
     And the "hot_tub_adjustment" committee reports

@@ -128,7 +128,7 @@ module BrighterPlanet
           # - Electricity intensity: *kWh / occupied room-night*
           # - District heat intensity: *MJ / occupied room-night*
           committee :adjusted_fuel_intensities do
-            # Adjust `fuel intensities` based on any amenity adjustments.
+            # Adjust `fuel intensities` based on any amenity adjustments:
             quorum 'from fuel intensities and amenity adjustments',
               :needs => :fuel_intensities, :appreciates => [:indoor_pool_adjustment, :outdoor_pool_adjustment, :fridge_adjustment, :hot_tub_adjustment],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
@@ -172,53 +172,53 @@ module BrighterPlanet
           end
           
           #### Outdoor pools adjustment (*MJ / occupied room-night*)
-          # *Adjusts the property's natural gas intensity based on the number of outdoor pools.*
+          # *Adjusts the natural gas intensity based on the number of outdoor pools.*
           committee :outdoor_pool_adjustment do
             # Assume outdoor pool energy intensity of 329,917 *BTU / night* per [Energy Star](http://www.energystar.gov/ia/business/evaluate_performance/swimming_pool_tech_desc.pdf).
             # Calculate the difference between `outdoor pools` and average outdoor pools.
             # Multiply the difference by outdoor pool energy intensity (*MJ / night*) and divide by `property rooms` and `occupancy rate` to give *MJ / occupied room-night*.
-            quorum 'from property outdoor pools, property rooms, and occupancy rate', :needs => [:property_outdoor_pools, :property_rooms, :occupancy_rate],
+            quorum 'from outdoor pools, property rooms, and occupancy rate', :needs => [:outdoor_pools, :property_rooms, :occupancy_rate],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                difference = characteristics[:property_outdoor_pools] - LodgingProperty.fallback.pools_outdoor
+                difference = characteristics[:outdoor_pools] - LodgingProperty.fallback.pools_outdoor
                 { :pool_energy => difference * 329_917.btus.to(:megajoules) / characteristics[:property_rooms] / characteristics[:occupancy_rate] }
             end
           end
           
           #### Indoor pools adjustment (*MJ / occupied room-night*)
-          # *Adjusts the property's natural gas intensity based on the number of indoor pools.*
+          # *Adjusts the natural gas intensity based on the number of indoor pools.*
           committee :indoor_pool_adjustment do
             # Assume indoor pool energy intensity of 2,770,942 *BTU / night* per [Energy Star](http://www.energystar.gov/ia/business/evaluate_performance/swimming_pool_tech_desc.pdf).
             # Calculate the difference between `indoor pools` and average indoor pools.
             # Multiply the difference by indoor pool energy intensity (*MJ / night*) and divide by `property rooms` and `occupancy rate` to give *MJ / occupied room-night*.
-            quorum 'from property indoor pools, property rooms, and occupancy rate', :needs => [:property_indoor_pools, :property_rooms, :occupancy_rate],
+            quorum 'from indoor pools, property rooms, and occupancy rate', :needs => [:indoor_pools, :property_rooms, :occupancy_rate],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                difference = characteristics[:property_indoor_pools] - LodgingProperty.fallback.pools_indoor
+                difference = characteristics[:indoor_pools] - LodgingProperty.fallback.pools_indoor
                 { :pool_energy => difference * 2_770_942.btus.to(:megajoules) / characteristics[:property_rooms] / characteristics[:occupancy_rate] }
             end
           end
           
           #### Hot tub adjustment (*kWh / occupied room-night*)
-          # *Adjusts the property's electricity intensity based on the number of hot tubs.*
+          # *Adjusts the electricity intensity based on the number of hot tubs.*
           committee :hot_tub_adjustment do
             # Calculate the difference between `hot tubs` and average hot tubs.
             # Assume hot tub electricity intensity of 6.3 *kWh / night* per [LBL residential energy data sourcebook, p128](http://enduse.lbl.gov/info/LBNL-40297.pdf).
             # Multiply the difference by the hot tub electricity intensity (*kWh / night*) and divide by `property rooms` and `occupancy rate` to give *kWh / occupied room-night*.
-            quorum 'from property hot tubs, property rooms, and occupancy rate', :needs => [:property_hot_tubs, :property_rooms, :occupancy_rate],
+            quorum 'from hot tubs, property rooms, and occupancy rate', :needs => [:hot_tubs, :property_rooms, :occupancy_rate],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                difference = characteristics[:property_hot_tubs] - LodgingProperty.fallback.hot_tubs
+                difference = characteristics[:hot_tubs] - LodgingProperty.fallback.hot_tubs
                 { :electricity => difference * 6.3 / characteristics[:property_rooms] / characteristics[:occupancy_rate] }
             end
           end
           
           #### Fridge adjustment (*kWh / occupied room-night*)
-          # *Adjusts the property's electricity intensity based on fridge coverage.*
+          # *Adjusts the electricity intensity based on fridge coverage.*
           committee :fridge_adjustment do
             # Calculate the difference between `fridge coverage` (*fridges / room*) and average fridge coverage (*fridges / room*).
             # Assume an auto-defrost compact fridge electricity intensity of 1.18 *kWh / fridge night* per [Energy Star](http://www.energystar.gov/ia/business/bulk_purchasing/bpsavings_calc/Bulk_Purchasing_CompactRefrig_Sav_Calc.xls).
             # Multiply the difference (*fridges / room*) by the fridge electricity intensity (*kWh / fridge night*) and divide by `occupancy rate` to give *kWh / occupied room-night*.
-            quorum 'from property fridge coverage and occupancy rate', :needs => [:property_fridge_coverage, :occupancy_rate],
+            quorum 'from fridge coverage and occupancy rate', :needs => [:fridge_coverage, :occupancy_rate],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                difference = characteristics[:property_fridge_coverage] - LodgingProperty.fallback.fridge_coverage
+                difference = characteristics[:fridge_coverage] - LodgingProperty.fallback.fridge_coverage
                 { :electricity => (difference * 1.18 / characteristics[:occupancy_rate]) }
             end
           end
@@ -232,20 +232,16 @@ module BrighterPlanet
           # - District heat intensity: *MJ / occupied room-night*
           committee :fuel_intensities do
             # If we know `heating degree days` and `cooling degree days`, calculate fuel intensities from [CBECS 2003](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) data using fuzzy inference and adjust the inferred values based on `occupancy rate`.
-            quorum 'from degree days, occupancy rate, and user inputs', :needs => [:heating_degree_days, :cooling_degree_days, :occupancy_rate], :appreciates => [:property_rooms, :property_floors, :property_construction_year, :property_ac_coverage],
+            quorum 'from degree days, occupancy rate, and user inputs', :needs => [:heating_degree_days, :cooling_degree_days, :occupancy_rate], :appreciates => [:property_rooms, :floors, :construction_year, :ac_coverage],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 inputs = characteristics.to_hash.inject({}) do |memo, (characteristic, value)|
                   case characteristic
                   when :property_rooms
                     memo[:lodging_rooms] = value
-                  when :property_floors
-                    memo[:floors] = value
-                  when :property_construction_year
-                    memo[:construction_year] = value
-                  when :property_ac_coverage
+                  when :ac_coverage
                     memo[:percent_cooled] = value
                   when :occupancy_rate
-                    # Don't include occupancy rate in inputs to fuzzy inference
+                    # Don't include `occupancy rate` in inputs to fuzzy inference
                   else
                     memo[characteristic] = value
                   end
@@ -288,23 +284,9 @@ module BrighterPlanet
             end
           end
           
-          #### Property indoor pools
-          # *The number of the property's indoor pools.*
-          committee :property_indoor_pools do
-            # Use client input, if available.
-            
-            # Otherwise look up the `property` number of indoor pools, but set a ceiling of 5 indoor pools.
-            quorum 'from property', :needs => :property,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                unless characteristics[:property].pools_indoor.nil?
-                  [characteristics[:property].pools_indoor.to_f, 5].min
-                end
-            end
-          end
-          
-          #### Property outdoor pools
-          # *The number of the property's outdoor pools.*
-          committee :property_outdoor_pools do
+          #### Outdoor pools
+          # *The number of outdoor pools.*
+          committee :outdoor_pools do
             # Use client input, if available.
             
             # Otherwise look up the `property` number of outdoor pools, but set a ceiling of 5 outdoor pools.
@@ -316,9 +298,23 @@ module BrighterPlanet
             end
           end
           
-          #### Property hot tubs
-          # *The number of the property's hot tubs.*
-          committee :property_hot_tubs do
+          #### Indoor pools
+          # *The number of indoor pools.*
+          committee :indoor_pools do
+            # Use client input, if available.
+            
+            # Otherwise look up the `property` number of indoor pools, but set a ceiling of 5 indoor pools.
+            quorum 'from property', :needs => :property,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                unless characteristics[:property].pools_indoor.nil?
+                  [characteristics[:property].pools_indoor.to_f, 5].min
+                end
+            end
+          end
+          
+          #### Hot tubs
+          # *The number of hot tubs.*
+          committee :hot_tubs do
             # Use client input, if available.
             
             # Otherwise look up the `property` number of hot tubs.
@@ -328,9 +324,9 @@ module BrighterPlanet
             end
           end
           
-          #### Property fridge count
-          # *The percentage of the property's rooms that have fridges.*
-          committee :property_fridge_coverage do
+          #### Fridge coverage
+          # *The percentage of property rooms that have fridges.*
+          committee :fridge_coverage do
             # Use client input, if available.
             # Otherwise take whichever is greater of the `property` fridge coverage and mini bar coverage.
             quorum 'from property', :needs => :property,
@@ -341,9 +337,9 @@ module BrighterPlanet
             end
           end
           
-          #### Property A/C coverage
-          # *The percent of the property that is air conditioned.*
-          committee :property_ac_coverage do
+          #### A/C coverage
+          # *The percentage of property rooms that are air conditioned.*
+          committee :ac_coverage do
             # Use client input, if available.
             
             # Otherwise look up the `property` A/C coverage.
@@ -353,9 +349,9 @@ module BrighterPlanet
             end
           end
           
-          #### Property construction year
+          #### Construction year
           # *The year the property was built.*
-          committee :property_construction_year do
+          committee :construction_year do
             # Use client input, if available.
             
             # Otherwise look up the year the `property` was built.
@@ -365,9 +361,9 @@ module BrighterPlanet
             end
           end
           
-          #### Property floors
-          # *The number of floors in the property.*
-          committee :property_floors do
+          #### Floors
+          # *The number of floors.*
+          committee :floors do
             # Use client input, if available.
             
             # Otherwise look up the `property` number of floors.
@@ -393,7 +389,7 @@ module BrighterPlanet
           # *The property where the stay occurred.*
           #
           # Use client input, if available
-                    
+          
           #### Heating degree days
           # *The average number of annual heating degree days (base 18°C) at the lodging's location.*
           committee :heating_degree_days do
@@ -431,7 +427,7 @@ module BrighterPlanet
           end
           
           #### eGRID subregion
-          # *The property's [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
+          # *The [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
           committee :egrid_subregion do
             # Look up the `zip code` eGRID subregion.
             quorum 'from zip code', :needs => :zip_code,
@@ -441,7 +437,7 @@ module BrighterPlanet
           end
           
           #### Country
-          # *The property's [country](http://data.brighterplanet.com/countries).*
+          # *The [country](http://data.brighterplanet.com/countries).*
           committee :country do
             # Use client input, if available.
             
@@ -453,7 +449,7 @@ module BrighterPlanet
           end
           
           #### State
-          # *The property's [US state](http://data.brighterplanet.com/states).*
+          # *The [US state](http://data.brighterplanet.com/states).*
           committee :state do
             # Use client input, if available.
             
@@ -465,7 +461,7 @@ module BrighterPlanet
           end
           
           #### City
-          # *The property's city.*
+          # *The city.*
           committee :city do
             # Use client input, if available.
             
@@ -477,7 +473,7 @@ module BrighterPlanet
           end
           
           #### Climate division
-          # *The property's [US climate division](http://data.brighterplanet.com/climate_divisions).*
+          # *The [US climate division](http://data.brighterplanet.com/climate_divisions).*
           committee :climate_division do
             # Look up the `zip code` climate division.
             quorum 'from zip code', :needs => :zip_code,
@@ -487,7 +483,7 @@ module BrighterPlanet
           end
           
           #### Zip code
-          # *The property's [US zip code](http://data.brighterplanet.com/zip_codes).*
+          # *The [US zip code](http://data.brighterplanet.com/zip_codes).*
           #
           # Use client input, if available.
           

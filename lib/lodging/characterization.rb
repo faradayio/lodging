@@ -15,13 +15,13 @@ module BrighterPlanet
           has :cooling_degree_days
           has :property
           has :property_rooms
-          has :property_floors
-          has :property_construction_year
-          has :property_ac_coverage
-          has :property_fridge_coverage
-          has :property_hot_tubs
-          has :property_outdoor_pools
-          has :property_indoor_pools
+          has :floors
+          has :construction_year
+          has :ac_coverage
+          has :fridge_coverage
+          has :hot_tubs
+          has :outdoor_pools
+          has :indoor_pools
         end
       end
     end
