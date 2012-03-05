@@ -27,5 +27,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'emitter', '~>0.11.0'
   s.add_runtime_dependency 'fuzzy_infer'
   s.add_development_dependency 'mysql2'
-  s.add_development_dependency 'sniff'
+  s.add_development_dependency 'sniff', '~>0.11.11'
 end

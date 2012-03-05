@@ -7,4 +7,3 @@ end
 source :rubygems
 
 gemspec :path => '.'
-gem 'sniff', :git => 'git://github.com/brighterplanet/sniff.git'
