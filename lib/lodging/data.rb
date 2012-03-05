@@ -13,14 +13,14 @@ module BrighterPlanet
         base.col :heating_degree_days, :type => :float
         base.col :cooling_degree_days, :type => :float
         base.col :property_northstar_id
-        base.col :property_rooms,    :type => :integer
-        base.col :floors,            :type => :integer
-        base.col :construction_year, :type => :integer
-        base.col :ac_coverage,       :type => :float
-        base.col :fridge_coverage,   :type => :float
-        base.col :hot_tubs,          :type => :integer
-        base.col :outdoor_pools,     :type => :integer
-        base.col :indoor_pools,      :type => :integer
+        base.col :property_rooms,        :type => :integer
+        base.col :floors,                :type => :integer
+        base.col :construction_year,     :type => :integer
+        base.col :ac_coverage,           :type => :float
+        base.col :refrigerator_coverage, :type => :float
+        base.col :hot_tubs,              :type => :integer
+        base.col :outdoor_pools,         :type => :integer
+        base.col :indoor_pools,          :type => :integer
         
         base.data_miner do
           process 'pull orphans' do

@@ -130,7 +130,7 @@ module BrighterPlanet
           committee :adjusted_fuel_intensities do
             # Adjust `fuel intensities` based on any amenity adjustments:
             quorum 'from fuel intensities and amenity adjustments',
-              :needs => :fuel_intensities, :appreciates => [:indoor_pool_adjustment, :outdoor_pool_adjustment, :fridge_adjustment, :hot_tub_adjustment],
+              :needs => :fuel_intensities, :appreciates => [:indoor_pool_adjustment, :outdoor_pool_adjustment, :refrigerator_adjustment, :hot_tub_adjustment],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 gas = Fuel.find_by_name('Pipeline Natural Gas')
                 oil = Fuel.find_by_name('Residual Fuel Oil No. 6')
@@ -210,15 +210,15 @@ module BrighterPlanet
             end
           end
           
-          #### Fridge adjustment (*kWh / occupied room-night*)
-          # *Adjusts the electricity intensity based on fridge coverage.*
-          committee :fridge_adjustment do
-            # Calculate the difference between `fridge coverage` (*fridges / room*) and average fridge coverage (*fridges / room*).
-            # Assume an auto-defrost compact fridge electricity intensity of 1.18 *kWh / fridge night* per [Energy Star](http://www.energystar.gov/ia/business/bulk_purchasing/bpsavings_calc/Bulk_Purchasing_CompactRefrig_Sav_Calc.xls).
-            # Multiply the difference (*fridges / room*) by the fridge electricity intensity (*kWh / fridge night*) and divide by `occupancy rate` to give *kWh / occupied room-night*.
-            quorum 'from fridge coverage and occupancy rate', :needs => [:fridge_coverage, :occupancy_rate],
+          #### Refrigerator adjustment (*kWh / occupied room-night*)
+          # *Adjusts the electricity intensity based on refrigerator coverage.*
+          committee :refrigerator_adjustment do
+            # Calculate the difference between `refrigerator coverage` (*refrigerators / room*) and average refrigerator coverage (*refrigerators / room*).
+            # Assume an auto-defrost compact fridge electricity intensity of 1.18 *kWh / refrigerator night* per [Energy Star](http://www.energystar.gov/ia/business/bulk_purchasing/bpsavings_calc/Bulk_Purchasing_CompactRefrig_Sav_Calc.xls).
+            # Multiply the difference (*refrigerators / room*) by the refrigerator electricity intensity (*kWh / refrigerator night*) and divide by `occupancy rate` to give *kWh / occupied room-night*.
+            quorum 'from refrigerator coverage and occupancy rate', :needs => [:refrigerator_coverage, :occupancy_rate],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                difference = characteristics[:fridge_coverage] - LodgingProperty.fallback.fridge_coverage
+                difference = characteristics[:refrigerator_coverage] - LodgingProperty.fallback.fridge_coverage
                 { :electricity => (difference * 1.18 / characteristics[:occupancy_rate]) }
             end
           end
@@ -324,11 +324,11 @@ module BrighterPlanet
             end
           end
           
-          #### Fridge coverage
-          # *The percentage of property rooms that have fridges.*
-          committee :fridge_coverage do
+          #### Refrigerator coverage
+          # *The percentage of property rooms that have refrigerators.*
+          committee :refrigerator_coverage do
             # Use client input, if available.
-            # Otherwise take whichever is greater of the `property` fridge coverage and mini bar coverage.
+            # Otherwise take whichever is greater of the `property` refrigerator coverage and mini bar coverage.
             quorum 'from property', :needs => :property,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 if characteristics[:property].mini_bar_coverage || characteristics[:property].fridge_coverage

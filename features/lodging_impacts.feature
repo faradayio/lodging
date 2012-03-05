@@ -66,7 +66,7 @@ Feature: Lodging Emissions Calculations
     And it has "floors" of "3"
     And it has "construction_year" of "1993"
     And it has "ac_coverage" of "0.5"
-    And it has "fridge_coverage" of "0.6"
+    And it has "refrigerator_coverage" of "0.6"
     And it has "hot_tubs" of "6"
     And it has "indoor_pools" of "5"
     And it has "outdoor_pools" of "5"

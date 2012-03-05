@@ -18,7 +18,7 @@ module BrighterPlanet
           has :floors
           has :construction_year
           has :ac_coverage
-          has :fridge_coverage
+          has :refrigerator_coverage
           has :hot_tubs
           has :outdoor_pools
           has :indoor_pools
