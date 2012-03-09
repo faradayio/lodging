@@ -70,13 +70,15 @@ module BrighterPlanet
             # Otherwise look up the `country` electricity emission factor (*kg CO<sub>2</sub>e / kWh*).
             quorum 'from country', :needs => :country,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:country].electricity_emission_factor
+                if (emission_factor = characteristics[:country].electricity_emission_factor).present? and (loss_factor = characteristics[:country].electricity_loss_factor).present?
+                  emission_factor / (1 - loss_factor)
+                end
             end
             
             # Otherwise use a global average electricity emission factor (*kg CO<sub>2</sub>e / kWh*).
             quorum 'default',
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
-                Country.fallback.electricity_emission_factor
+                Country.fallback.electricity_emission_factor / (1 - Country.fallback.electricity_loss_factor)
             end
           end
           

@@ -7,13 +7,13 @@ Feature: Lodging Emissions Calculations
   Scenario: Calculations starting from nothing
     Given a lodging has nothing
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "28.62"
+    Then the amount of "carbon" should be within "0.005" of "28.62"
 
   Scenario Outline: Calculations starting from date
     Given it has "date" of "<date>"
     And it has "timeframe" of "<timeframe>"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Then the amount of "carbon" should be within "0.005" of "<carbon>"
     Examples:
       | date       | timeframe             | carbon |
       | 2011-01-15 | 2011-01-01/2012-01-01 |  28.62 |
@@ -23,7 +23,7 @@ Feature: Lodging Emissions Calculations
     Given it has "rooms" of "2"
     And it has "duration" of "172800"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "114.46"
+    Then the amount of "carbon" should be within "0.005" of "114.47"
 
   Scenario Outline: Calculations from fuzzy inference based on country degree days
     Given it has "rooms" of "2"
@@ -31,10 +31,10 @@ Feature: Lodging Emissions Calculations
     And it has "country.iso_3166_code" of "<country>"
     And it has "state.postal_abbreviation" of "<state>"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Then the amount of "carbon" should be within "0.005" of "<carbon>"
     Examples:
       | country | state | carbon |
-      | VI      |       | 114.46 |
+      | VI      |       | 114.47 |
       | GB      |       | 189.56 |
       | US      |       | 131.28 |
       |         | CA    | 131.28 |
@@ -47,7 +47,7 @@ Feature: Lodging Emissions Calculations
     And it has "city" of "<city>"
     And it has "state.postal_abbreviation" of "<state>"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "<carbon>"
+    Then the amount of "carbon" should be within "0.005" of "<carbon>"
     Examples:
       | id | zip   | city          | state | carbon | notes |
       | 1  | 94122 |               |       |  86.85 | dd from climate divizion; fuzzy from property attributes |
@@ -71,4 +71,4 @@ Feature: Lodging Emissions Calculations
     And it has "indoor_pools" of "5"
     And it has "outdoor_pools" of "5"
     When impacts are calculated
-    Then the amount of "carbon" should be within "0.01" of "208.83"
+    Then the amount of "carbon" should be within "0.005" of "208.83"

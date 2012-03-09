@@ -364,13 +364,13 @@ Feature: Lodging Committee Calculations
   Scenario: Electricity emission factor committee from default
     When the "electricity_emission_factor" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "0.69252"
+    And the conclusion of the committee should be "0.69258"
 
   Scenario: Electricity emission factor committee from country missing emission factor
     Given a characteristic "country.iso_3166_code" of "VI"
     When the "electricity_emission_factor" committee reports
     Then the committee should have used quorum "default"
-    And the conclusion of the committee should be "0.69252"
+    And the conclusion of the committee should be "0.69258"
 
   Scenario: Electricity emission factor committee from country with emission factor
     Given a characteristic "country.iso_3166_code" of "US"
