@@ -251,11 +251,12 @@ module BrighterPlanet
                 end
                 
                 kernel = CommercialBuildingEnergyConsumptionSurveyResponse.new(inputs)
+                n, f, e, d = kernel.fuzzy_infer(:natural_gas_per_room_night, :fuel_oil_per_room_night, :electricity_per_room_night, :district_heat_per_room_night)
                 {
-                  :natural_gas   => kernel.fuzzy_infer(:natural_gas_per_room_night) / characteristics[:occupancy_rate],
-                  :fuel_oil      => kernel.fuzzy_infer(:fuel_oil_per_room_night) / characteristics[:occupancy_rate],
-                  :electricity   => kernel.fuzzy_infer(:electricity_per_room_night) / characteristics[:occupancy_rate],
-                  :district_heat => kernel.fuzzy_infer(:district_heat_per_room_night) / characteristics[:occupancy_rate]
+                  :natural_gas   => n / characteristics[:occupancy_rate],
+                  :fuel_oil      => f / characteristics[:occupancy_rate],
+                  :electricity   => e / characteristics[:occupancy_rate],
+                  :district_heat => d / characteristics[:occupancy_rate]
                 }
             end
             
