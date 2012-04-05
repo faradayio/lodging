@@ -21,4 +21,4 @@ Sniff.init File.join(File.dirname(__FILE__), '..', '..'),
   :cucumber => true,
   :logger => 'log/test_log.txt'
 
-require_relative './lodging_property'
+require File.expand_path('../lodging_property', __FILE__)
