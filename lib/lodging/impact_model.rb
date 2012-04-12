@@ -140,6 +140,8 @@ module BrighterPlanet
                 # Duplicate the current intensities so we don't overwrite them.
                 intensities = characteristics[:fuel_intensities].dup
                 
+                # TODO combine pool adjustments - so if we're below average in indoor but above in outdoor we don't accidentally subtract, get less than zero, discard some energy use, and then add energy back for outdoor pools
+                
                 # Cycle through each adjustment...
                 characteristics.each do |characteristic, value|
                   unless characteristic == :fuel_intensities
