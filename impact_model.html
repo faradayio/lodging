@@ -140,7 +140,9 @@ To see which standards a method complies with, look at the <code>:complies =&gt;
 <p>Contributions to this impact model are actively encouraged and warmly welcomed. This library includes a comprehensive test suite to ensure that your changes do not cause regressions. All changes should include test coverage for new functionality. Please see <a href="https://github.com/brighterplanet/sniff#readme">sniff</a>, our emitter testing framework, for more information.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre><span class="k">module</span> <span class="nn">BrighterPlanet</span>
+        <div class='highlight'><pre><span class="nb">require</span> <span class="s1">&#39;lodging/cbecs&#39;</span>
+
+<span class="k">module</span> <span class="nn">BrighterPlanet</span>
   <span class="k">module</span> <span class="nn">Lodging</span>
     <span class="k">module</span> <span class="nn">ImpactModel</span>
       <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
@@ -176,17 +178,19 @@ To see which standards a method complies with, look at the <code>:complies =&gt;
         <div class="pilwrap">
           <a class="pilcrow" href="#section-9">&#182;</a>
         </div>
-        <p>Multiply <code>natural gas use</code> (<em>m<sup>3</sup></em>) by its emission factor (<em>kg CO<sub>2</sub> / m<sup>3</sup></em>),
-multiply <code>fuel oil use</code> (<em>l</em>) by its emission factor (<em>kg CO<sub>2</sub> / l</em>),
-multiply <code>electricity use</code> (<em>kWh</em>) by <code>electricity emission factor</code> (<em>kg CO<sub>2</sub>e / kWh</em>),
-and sum to give *kg CO<sub>2</sub>e.</p>
+        <p>Multiply <code>natural gas use</code> (<em>m<sup>3</sup></em>) by natural gas' emission factor (<em>kg CO<sub>2</sub> / m<sup>3</sup></em>) to give <em>kg CO<sub>2</sub>.</em>
+Multiply <code>fuel oil use</code> (<em>l</em>) by fuel oil&rsquo;s emission factor (<em>kg CO<sub>2</sub> / l</em>) to give <em>kg CO<sub>2</sub>.</em>
+Multiply <code>electricity use</code> (<em>kWh</em>) by <code>electricity emission factor</code> (<em>kg CO<sub>2</sub> / kWh</em>) to give <em>kg CO<sub>2</sub>.</em>
+Multiply <code>district heat use</code> (<em>MJ</em>) by district heat&rsquo;s emission factor` (<em>kg CO<sub>2</sub> / MJ</em>) to give <em>kg CO<sub>2</sub>.</em>
+Sum to give <em>kg CO<sub>2</sub>e.</em></p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from natural gas use, fuel oil use, electricity use, and electricity emission factor&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:natural_gas_use</span><span class="p">,</span> <span class="ss">:fuel_oil_use</span><span class="p">,</span> <span class="ss">:electricity_use</span><span class="p">,</span> <span class="ss">:electricity_emission_factor</span><span class="o">]</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from natural gas use, fuel oil use, electricity use, district heat use, and electricity emission factor&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:natural_gas_use</span><span class="p">,</span> <span class="ss">:fuel_oil_use</span><span class="p">,</span> <span class="ss">:electricity_use</span><span class="p">,</span> <span class="ss">:district_heat_use</span><span class="p">,</span> <span class="ss">:electricity_emission_factor</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
                 <span class="n">characteristics</span><span class="o">[</span><span class="ss">:natural_gas_use</span><span class="o">]</span> <span class="o">*</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find_by_name</span><span class="p">(</span><span class="s1">&#39;Pipeline Natural Gas&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">co2_emission_factor</span> <span class="o">+</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_oil_use</span><span class="o">]</span> <span class="o">*</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find_by_name</span><span class="p">(</span><span class="s1">&#39;Distillate Fuel Oil No. 2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">co2_emission_factor</span> <span class="o">+</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_emission_factor</span><span class="o">]</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_oil_use</span><span class="o">]</span> <span class="o">*</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find_by_name</span><span class="p">(</span><span class="s1">&#39;Residual Fuel Oil No. 6&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">co2_emission_factor</span> <span class="o">+</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_emission_factor</span><span class="o">]</span> <span class="o">+</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:district_heat_use</span><span class="o">]</span> <span class="o">*</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find_by_name</span><span class="p">(</span><span class="s1">&#39;District Heat&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">co2_emission_factor</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -230,7 +234,9 @@ and sum to give *kg CO<sub>2</sub>e.</p>
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from country&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:country</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">electricity_emission_factor</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">emission_factor</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">electricity_emission_factor</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span> <span class="ow">and</span> <span class="p">(</span><span class="n">loss_factor</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">electricity_loss_factor</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
+                  <span class="n">emission_factor</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">loss_factor</span><span class="p">)</span>
+                <span class="k">end</span>
             <span class="k">end</span>
             </pre></div>
       </td>
@@ -245,7 +251,7 @@ and sum to give *kg CO<sub>2</sub>e.</p>
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span>
-                <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">electricity_emission_factor</span>
+                <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">electricity_emission_factor</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">electricity_loss_factor</span><span class="p">)</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -269,47 +275,12 @@ and sum to give *kg CO<sub>2</sub>e.</p>
         <div class="pilwrap">
           <a class="pilcrow" href="#section-15">&#182;</a>
         </div>
-        <p>Use <code>fuels use equation</code> to calculate total fuels intensity (<em>MJ / room-night</em>).
-Multiply total fuels intensity (<em>MJ / room-night</em>) by the natural gas share to give direct natural gas intensity (<em>MJ / room-night</em>).
-Multiply total fuels intensity (<em>MJ / room-night</em>) by the steam share to give steam intensity (<em>MJ / room-night</em>). Assume half of this was generated by natural gas boilers with 81.7% efficiency and that transmission losses are 5% to give indirect natural gas intensity (<em>MJ / room-night</em>).
-Sum direct and indirect natural gas intensity (<em>MJ / room-night</em>) and divide by natural gas energy content (<em>MJ / m<sup>3</sup></em>) to give natural gas intensity (<em>m<sup>3</sup> / room-night</em>).
-Multiply natural gas intensity (<em>m<sup>3</sup> / room-night</em>) by <code>room nights</code> (<em>room-nights</em>) and divide by average hotel occupancy rate to give <em>m<sup>3</sup></em>.</p>
+        <p>Multiply <code>room nights</code> (<em>room-nights</em>) by <code>natural gas intensity</code> (<em>m<sup>3</sup> / occupied room-night</em>) to give <em>m<sup>3</sup></em>.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuels use equation, room nights, and inputs&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:property_construction_year</span><span class="o">]</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from adjusted fuel intensities and room nights&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:adjusted_fuel_intensities</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">fuels_intensity</span> <span class="o">=</span> <span class="k">if</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">present?</span> <span class="ow">and</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">+</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">rooms_factor</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">year_factor</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elsif</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">+</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">rooms_factor</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elsif</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">+</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">year_factor</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">else</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">constant</span>
-                <span class="k">end</span>
-                <span class="n">direct_gas_energy_intensity</span> <span class="o">=</span> <span class="n">fuels_intensity</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">gas_share</span>
-                <span class="n">indirect_gas_energy_intensity</span> <span class="o">=</span> <span class="p">(</span><span class="n">fuels_intensity</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">steam_share</span> <span class="o">/</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">817</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">95</span><span class="p">)</span>
-                <span class="n">gas_intensity</span> <span class="o">=</span> <span class="p">(</span><span class="n">direct_gas_energy_intensity</span> <span class="o">+</span> <span class="n">indirect_gas_energy_intensity</span><span class="p">)</span> <span class="o">/</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Pipeline Natural Gas&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">energy_content</span>
-                <span class="n">gas_intensity</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">59</span>
-            <span class="k">end</span>
-            </pre></div>
-      </td>
-    </tr>
-    <tr id='section-16'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-16">&#182;</a>
-        </div>
-        <p>Otherwise multiply <code>room nights</code> (<em>room-nights</em>) by <code>natural gas intensity</code> (<em>m<sup>3</sup> / room-night</em>) to give direct natural gas use (<em>m<sup>3</sup></em>).
-Multiply <code>room nights</code> (<em>room-nights</em>) by <code>steam intensity</code> (<em>MJ / room-night</em>) to give steam use (<em>MJ</em>). Assume half of this was generated by natural gas boilers with 81.7% efficiency and that transmission losses are 5%; divide by natural gas energy content (<em>MJ / m<sup>3</sup></em>) to give indirect natural gas use (<em>m<sup>3</sup></em>).
-Sum direct and indirect natural gas use to give <em>m<sup>3</sup></em>.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel intensities and room nights&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_intensities</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">direct_gas_use</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_intensities</span><span class="o">][</span><span class="ss">:natural_gas</span><span class="o">]</span>
-                <span class="n">indirect_gas_use</span> <span class="o">=</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_intensities</span><span class="o">][</span><span class="ss">:steam</span><span class="o">]</span> <span class="o">/</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">817</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">95</span><span class="p">)</span> <span class="o">/</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Pipeline Natural Gas&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">energy_content</span>
-                <span class="n">direct_gas_use</span> <span class="o">+</span> <span class="n">indirect_gas_use</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:adjusted_fuel_intensities</span><span class="o">][</span><span class="ss">:natural_gas</span><span class="o">]</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -328,52 +299,17 @@ Sum direct and indirect natural gas use to give <em>m<sup>3</sup></em>.</p>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:fuel_oil_use</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-18'>
+    <tr id='section-17'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-18">&#182;</a>
+          <a class="pilcrow" href="#section-17">&#182;</a>
         </div>
-        <p>Use <code>fuels use equation</code> to calculate total fuels intensity (<em>MJ / room-night</em>).
-Multiply total fuels intensity (<em>MJ / room-night</em>) by the fuel oil share to give direct fuel oil intensity (<em>MJ / room-night</em>).
-Multiply total fuels intensity (<em>MJ</em>) by the steam share to give steam intensity (<em>MJ / room-night</em>). Assume half of this was generated by fuel oil boilers with 84.6% efficiency and that transmission losses are 5% to give indirect fuel oil intensity (<em>MJ / room-night</em>).
-Sum direct and indirect fuel oil intensity (<em>MJ / room-night</em>) and divide by fuel oil energy content (<em>MJ / l</em>) to give fuel oil intensity (<em>l / room-night</em>).
-Multiply fuel oil intensity (<em>l / room-night</em>) by <code>room-nights</code> (<em>room-nights</em>) and divide by average hotel occupancy rate to give <em>l</em>.</p>
+        <p>Multiply <code>room nights</code> (<em>room-nights</em>) by <code>fuel oil intensity</code> (<em>l / occupied room-night</em>) to give <em>l</em>.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuels use equation, room nights, and inputs&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:property_construction_year</span><span class="o">]</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from adjusted fuel intensities and room nights&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:adjusted_fuel_intensities</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">fuels_intensity</span> <span class="o">=</span> <span class="k">if</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">present?</span> <span class="ow">and</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">+</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">rooms_factor</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">year_factor</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elsif</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">+</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">rooms_factor</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elsif</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">+</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">year_factor</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">else</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">constant</span>
-                <span class="k">end</span>
-                <span class="n">direct_oil_energy_intensity</span> <span class="o">=</span> <span class="n">fuels_intensity</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">oil_share</span>
-                <span class="n">indirect_oil_energy_intensity</span> <span class="o">=</span> <span class="p">(</span><span class="n">fuels_intensity</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuels_use_equation</span><span class="o">].</span><span class="n">steam_share</span> <span class="o">/</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">846</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">95</span><span class="p">)</span>
-                <span class="n">oil_intensity</span> <span class="o">=</span> <span class="p">(</span><span class="n">direct_oil_energy_intensity</span> <span class="o">+</span> <span class="n">indirect_oil_energy_intensity</span><span class="p">)</span> <span class="o">/</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Distillate Fuel Oil No. 2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">energy_content</span>
-                <span class="n">oil_intensity</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">59</span>
-            <span class="k">end</span>
-            </pre></div>
-      </td>
-    </tr>
-    <tr id='section-19'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-19">&#182;</a>
-        </div>
-        <p>Otherwise multiply <code>room nights</code> (<em>room-nights</em>) by <code>fuel oil intensity</code> (<em>l / room-night</em>) to give direct fuel oil use (<em>l</em>).
-Multiply <code>room nights</code> (<em>room-nights</em>) by <code>steam intensity</code> (<em>MJ / room-night</em>) to give steam use (<em>MJ</em>). Assume half of this was generated by fuel oil boilers with 84.6% efficiency and that transmission losses are 5%; divide by fuel oil energy content (<em>MJ / l</em>) to give indirect fuel oil use (<em>l</em>).
-Sum direct and indirect fuel oil use to give <em>l</em>.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel intensities and room nights&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_intensities</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">direct_oil_use</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_intensities</span><span class="o">][</span><span class="ss">:fuel_oil</span><span class="o">]</span>
-                <span class="n">indirect_oil_use</span> <span class="o">=</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_intensities</span><span class="o">][</span><span class="ss">:steam</span><span class="o">]</span> <span class="o">/</span> <span class="mi">2</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">846</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">95</span><span class="p">)</span> <span class="o">/</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;Distillate Fuel Oil No. 2&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">energy_content</span>
-                <span class="n">direct_oil_use</span> <span class="o">+</span> <span class="n">indirect_oil_use</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:adjusted_fuel_intensities</span><span class="o">][</span><span class="ss">:fuel_oil</span><span class="o">]</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -392,58 +328,85 @@ Sum direct and indirect fuel oil use to give <em>l</em>.</p>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:electricity_use</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-21'>
+    <tr id='section-19'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-21">&#182;</a>
+          <a class="pilcrow" href="#section-19">&#182;</a>
         </div>
-        <p>Use <code>electricity use equation</code> to calculate electricity intensity (<em>MJ / room-night</em>).
-Convert electricity intensity (<em>MJ / room-night</em>) to <em>kWh / room-night</em>, multiply by <code>room nights</code> (<em>room-nights</em>) and divide by average hotel occupancy to give <em>kWh</em>.</p>
+        <p>Multiply <code>room nights</code> (<em>room-nights</em>) by <code>electricity intensity</code> (<em>kWh / occupied room-night</em>) to give <em>kWh</em>.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from electricity use equation, room nights, and inputs&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:property_construction_year</span><span class="o">]</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from adjusted fuel intensities and room nights&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:adjusted_fuel_intensities</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">electricity_intensity</span> <span class="o">=</span> <span class="k">if</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">present?</span> <span class="ow">and</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">*</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="o">].</span><span class="n">rooms_factor</span> <span class="o">**</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">value</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="o">].</span><span class="n">year_factor</span> <span class="o">**</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elsif</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">*</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="o">].</span><span class="n">rooms_factor</span> <span class="o">**</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">elsif</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">present?</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="o">].</span><span class="n">constant</span> <span class="o">*</span> <span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="o">].</span><span class="n">year_factor</span> <span class="o">**</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_construction_year</span><span class="o">].</span><span class="n">value</span><span class="p">)</span>
-                <span class="k">else</span>
-                  <span class="n">characteristics</span><span class="o">[</span><span class="ss">:electricity_use_equation</span><span class="o">].</span><span class="n">constant</span>
-                <span class="k">end</span>
-                <span class="n">electricity_intensity</span><span class="o">.</span><span class="n">megajoules</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="ss">:kilowatt_hours</span><span class="p">)</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">/</span> <span class="mi">0</span><span class="o">.</span><span class="mi">59</span>
-            <span class="k">end</span>
-            </pre></div>
-      </td>
-    </tr>
-    <tr id='section-22'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-22">&#182;</a>
-        </div>
-        <p>Otherwise multiply <code>room nights</code> (<em>room-nights</em>) by <code>electricity intensity</code> (<em>kWh / room-night</em>) to give <em>kWh</em>.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel intensities and room nights&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:fuel_intensities</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_intensities</span><span class="o">][</span><span class="ss">:electricity</span><span class="o">]</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:adjusted_fuel_intensities</span><span class="o">][</span><span class="ss">:electricity</span><span class="o">]</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
       </td>
     </tr>
-    <tr id='section-Fuels_use_equation'>
+    <tr id='section-District_heat_use_(&lt;em&gt;MJ&lt;/em&gt;)'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-Fuels_use_equation">&#182;</a>
+          <a class="pilcrow" href="#section-District_heat_use_(&lt;em&gt;MJ&lt;/em&gt;)">&#182;</a>
         </div>
-        <h3>Fuels use equation</h3>
+        <h3>District heat use (<em>MJ</em>)</h3>
 
-<p><em>An <a href="http://data.brighterplanet.com/lodging_fuel_use_equations">equation</a> that predicts fuels use based on a lodging property&rsquo;s location and physical characteristics.</em></p>
+<p><em>The lodging&rsquo;s district heat use during <code>timeframe</code>.</em></p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:fuels_use_equation</span> <span class="k">do</span></pre></div>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:district_heat_use</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-21'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-21">&#182;</a>
+        </div>
+        <p>Multiply <code>room nights</code> (<em>room-nights</em>) by <code>district heat intensity</code> (<em>MJ / occupied room-night</em>) to give <em>MJ</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from adjusted fuel intensities and room nights&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:adjusted_fuel_intensities</span><span class="p">,</span> <span class="ss">:room_nights</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:room_nights</span><span class="o">]</span> <span class="o">*</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:adjusted_fuel_intensities</span><span class="o">][</span><span class="ss">:district_heat</span><span class="o">]</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Adjusted_fuel_intensities_(&lt;em&gt;various&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Adjusted_fuel_intensities_(&lt;em&gt;various&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Adjusted fuel intensities (<em>various</em>)</h3>
+
+<p><em>The lodging&rsquo;s use per occupied room night of a variety of fuels, adjusted by number of pools, mini-fridges, etc.</em></p>
+
+<ul>
+<li>Natural gas intensity: <em>m<sup>3</sup> / occupied room-night</em></li>
+<li>Fuel oil intensity: <em>l / occupied room-night</em></li>
+<li>Electricity intensity: <em>kWh / occupied room-night</em></li>
+<li>District heat intensity: <em>MJ / occupied room-night</em></li>
+</ul>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:adjusted_fuel_intensities</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-23'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-23">&#182;</a>
+        </div>
+        <p>Adjust <code>fuel intensities</code> based on any amenity adjustments:</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from fuel intensities and amenity adjustments&#39;</span><span class="p">,</span>
+              <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:fuel_intensities</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:indoor_pool_adjustment</span><span class="p">,</span> <span class="ss">:outdoor_pool_adjustment</span><span class="p">,</span> <span class="ss">:refrigerator_adjustment</span><span class="p">,</span> <span class="ss">:hot_tub_adjustment</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">gas</span> <span class="o">=</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find_by_name</span><span class="p">(</span><span class="s1">&#39;Pipeline Natural Gas&#39;</span><span class="p">)</span>
+                <span class="n">oil</span> <span class="o">=</span> <span class="no">Fuel</span><span class="o">.</span><span class="n">find_by_name</span><span class="p">(</span><span class="s1">&#39;Residual Fuel Oil No. 6&#39;</span><span class="p">)</span>
+                </pre></div>
       </td>
     </tr>
     <tr id='section-24'>
@@ -451,28 +414,22 @@ Convert electricity intensity (<em>MJ / room-night</em>) to <em>kWh / room-night
         <div class="pilwrap">
           <a class="pilcrow" href="#section-24">&#182;</a>
         </div>
-        <p>Look up the appropriate equation for the available inputs.</p>
+        <p>Duplicate the current intensities so we don&rsquo;t overwrite them.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from available characteristics&#39;</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:climate_zone_number</span><span class="p">,</span> <span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:property_construction_year</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">LodgingFuelUseEquation</span><span class="o">.</span><span class="n">find_by_criteria</span><span class="p">(</span><span class="s1">&#39;Fuels&#39;</span><span class="p">,</span> <span class="n">characteristics</span><span class="p">)</span>
-            <span class="k">end</span>
-          <span class="k">end</span>
-          </pre></div>
+        <div class='highlight'><pre>                <span class="n">intensities</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:fuel_intensities</span><span class="o">].</span><span class="n">dup</span>
+                </pre></div>
       </td>
     </tr>
-    <tr id='section-Electricity_use_equation'>
+    <tr id='section-25'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-Electricity_use_equation">&#182;</a>
+          <a class="pilcrow" href="#section-25">&#182;</a>
         </div>
-        <h3>Electricity use equation</h3>
-
-<p><em>An <a href="http://data.brighterplanet.com/lodging_fuel_use_equations">equation</a> that predicts electricity use based on a lodging property&rsquo;s location and physical characteristics.</em></p>
+        <p>TODO combine pool adjustments &ndash; so if we&rsquo;re below average in indoor but above in outdoor we don&rsquo;t accidentally subtract, get less than zero, discard some energy use, and then add energy back for outdoor pools</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:electricity_use_equation</span> <span class="k">do</span></pre></div>
+        <div class='highlight'><pre>                </pre></div>
       </td>
     </tr>
     <tr id='section-26'>
@@ -480,12 +437,202 @@ Convert electricity intensity (<em>MJ / room-night</em>) to <em>kWh / room-night
         <div class="pilwrap">
           <a class="pilcrow" href="#section-26">&#182;</a>
         </div>
-        <p>Look up the appropriate equation for the available inputs.</p>
+        <p>Cycle through each adjustment&hellip;</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from available characteristics&#39;</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:climate_zone_number</span><span class="p">,</span> <span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:property_construction_year</span><span class="o">]</span><span class="p">,</span>
+        <div class='highlight'><pre>                <span class="n">characteristics</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristic</span><span class="p">,</span> <span class="n">value</span><span class="o">|</span>
+                  <span class="k">unless</span> <span class="n">characteristic</span> <span class="o">==</span> <span class="ss">:fuel_intensities</span>
+                    <span class="n">value</span><span class="o">.</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">fuel</span><span class="p">,</span> <span class="n">adjustment</span><span class="o">|</span>
+                      <span class="k">if</span> <span class="n">fuel</span> <span class="o">==</span> <span class="ss">:pool_energy</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-27'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-27">&#182;</a>
+        </div>
+        <p>If the adjustment relates to pool energy, convert natural gas and fuel oil inensities from physical units to energy units.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>                        <span class="n">gas_energy</span> <span class="o">=</span> <span class="n">intensities</span><span class="o">[</span><span class="ss">:natural_gas</span><span class="o">]</span> <span class="o">*</span> <span class="n">gas</span><span class="o">.</span><span class="n">energy_content</span>
+                        <span class="n">oil_energy</span> <span class="o">=</span> <span class="n">intensities</span><span class="o">[</span><span class="ss">:fuel_oil</span><span class="o">]</span>    <span class="o">*</span> <span class="n">oil</span><span class="o">.</span><span class="n">energy_content</span>
+                        </pre></div>
+      </td>
+    </tr>
+    <tr id='section-28'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-28">&#182;</a>
+        </div>
+        <p>Apply the adjustment to natural gas intensity.
+If adjusted natural gas intensity reaches zero, apply any remaining adjustment to fuel oil intensity.
+If adjusted fuel oil intensity also reaches zero, discard any remaining adjustment.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>                        <span class="k">if</span> <span class="p">(</span><span class="n">gas_energy</span> <span class="o">+=</span> <span class="n">adjustment</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+                          <span class="k">if</span> <span class="p">(</span><span class="n">oil_energy</span> <span class="o">+=</span> <span class="n">gas_energy</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+                            <span class="n">oil_energy</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+                          <span class="k">end</span>
+                          <span class="n">gas_energy</span> <span class="o">=</span> <span class="mi">0</span>
+                        <span class="k">end</span>
+                        </pre></div>
+      </td>
+    </tr>
+    <tr id='section-29'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-29">&#182;</a>
+        </div>
+        <p>Convert adjusted natural gas and fuel oil intensities from energy units back to physical units.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>                        <span class="n">intensities</span><span class="o">[</span><span class="ss">:natural_gas</span><span class="o">]</span> <span class="o">=</span> <span class="n">gas_energy</span> <span class="o">/</span> <span class="n">gas</span><span class="o">.</span><span class="n">energy_content</span>
+                        <span class="n">intensities</span><span class="o">[</span><span class="ss">:fuel_oil</span><span class="o">]</span>    <span class="o">=</span> <span class="n">oil_energy</span> <span class="o">/</span> <span class="n">oil</span><span class="o">.</span><span class="n">energy_content</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-30'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-30">&#182;</a>
+        </div>
+        <p>Otherwise apply the adjustment to the appropriate fuel intensity. If adjusted fuel intensity reaches zero, discard any remaining adjustment.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>                      <span class="k">elsif</span> <span class="p">(</span><span class="n">intensities</span><span class="o">[</span><span class="n">fuel</span><span class="o">]</span> <span class="o">+=</span> <span class="n">adjustment</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+                        <span class="n">intensities</span><span class="o">[</span><span class="n">fuel</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">.</span><span class="mi">0</span>
+                      <span class="k">end</span>
+                    <span class="k">end</span>
+                  <span class="k">end</span>
+                <span class="k">end</span>
+                <span class="n">intensities</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Outdoor_pools_adjustment_(&lt;em&gt;MJ_/_occupied_room-night&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Outdoor_pools_adjustment_(&lt;em&gt;MJ_/_occupied_room-night&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Outdoor pools adjustment (<em>MJ / occupied room-night</em>)</h3>
+
+<p><em>Adjusts the natural gas intensity based on the number of outdoor pools.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:outdoor_pool_adjustment</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-32'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-32">&#182;</a>
+        </div>
+        <p>Assume outdoor pool energy intensity of 329,917 <em>BTU / night</em> per <a href="http://www.energystar.gov/ia/business/evaluate_performance/swimming_pool_tech_desc.pdf">Energy Star</a>.
+Calculate the difference between <code>outdoor pools</code> and average outdoor pools.
+Multiply the difference by outdoor pool energy intensity (<em>MJ / night</em>) and divide by <code>property rooms</code> and <code>occupancy rate</code> to give <em>MJ / occupied room-night</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from outdoor pools, property rooms, and occupancy rate&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:outdoor_pools</span><span class="p">,</span> <span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">LodgingFuelUseEquation</span><span class="o">.</span><span class="n">find_by_criteria</span><span class="p">(</span><span class="s1">&#39;Electricity&#39;</span><span class="p">,</span> <span class="n">characteristics</span><span class="p">)</span>
+                <span class="n">difference</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:outdoor_pools</span><span class="o">]</span> <span class="o">-</span> <span class="no">LodgingProperty</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">pools_outdoor</span>
+                <span class="p">{</span> <span class="ss">:pool_energy</span> <span class="o">=&gt;</span> <span class="n">difference</span> <span class="o">*</span> <span class="mi">329_917</span><span class="o">.</span><span class="n">btus</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="ss">:megajoules</span><span class="p">)</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">]</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:occupancy_rate</span><span class="o">]</span> <span class="p">}</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Indoor_pools_adjustment_(&lt;em&gt;MJ_/_occupied_room-night&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Indoor_pools_adjustment_(&lt;em&gt;MJ_/_occupied_room-night&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Indoor pools adjustment (<em>MJ / occupied room-night</em>)</h3>
+
+<p><em>Adjusts the natural gas intensity based on the number of indoor pools.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:indoor_pool_adjustment</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-34'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-34">&#182;</a>
+        </div>
+        <p>Assume indoor pool energy intensity of 2,770,942 <em>BTU / night</em> per <a href="http://www.energystar.gov/ia/business/evaluate_performance/swimming_pool_tech_desc.pdf">Energy Star</a>.
+Calculate the difference between <code>indoor pools</code> and average indoor pools.
+Multiply the difference by indoor pool energy intensity (<em>MJ / night</em>) and divide by <code>property rooms</code> and <code>occupancy rate</code> to give <em>MJ / occupied room-night</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from indoor pools, property rooms, and occupancy rate&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:indoor_pools</span><span class="p">,</span> <span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">difference</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:indoor_pools</span><span class="o">]</span> <span class="o">-</span> <span class="no">LodgingProperty</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">pools_indoor</span>
+                <span class="p">{</span> <span class="ss">:pool_energy</span> <span class="o">=&gt;</span> <span class="n">difference</span> <span class="o">*</span> <span class="mi">2_770_942</span><span class="o">.</span><span class="n">btus</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="ss">:megajoules</span><span class="p">)</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">]</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:occupancy_rate</span><span class="o">]</span> <span class="p">}</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Hot_tub_adjustment_(&lt;em&gt;kWh_/_occupied_room-night&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Hot_tub_adjustment_(&lt;em&gt;kWh_/_occupied_room-night&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Hot tub adjustment (<em>kWh / occupied room-night</em>)</h3>
+
+<p><em>Adjusts the electricity intensity based on the number of hot tubs.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:hot_tub_adjustment</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-36'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-36">&#182;</a>
+        </div>
+        <p>Calculate the difference between <code>hot tubs</code> and average hot tubs.
+Assume hot tub electricity intensity of 6.3 <em>kWh / night</em> per <a href="http://enduse.lbl.gov/info/LBNL-40297.pdf">LBL residential energy data sourcebook, p128</a>.
+Multiply the difference by the hot tub electricity intensity (<em>kWh / night</em>) and divide by <code>property rooms</code> and <code>occupancy rate</code> to give <em>kWh / occupied room-night</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from hot tubs, property rooms, and occupancy rate&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:hot_tubs</span><span class="p">,</span> <span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">difference</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:hot_tubs</span><span class="o">]</span> <span class="o">-</span> <span class="no">LodgingProperty</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">hot_tubs</span>
+                <span class="p">{</span> <span class="ss">:electricity</span> <span class="o">=&gt;</span> <span class="n">difference</span> <span class="o">*</span> <span class="mi">6</span><span class="o">.</span><span class="mi">3</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property_rooms</span><span class="o">]</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:occupancy_rate</span><span class="o">]</span> <span class="p">}</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Refrigerator_adjustment_(&lt;em&gt;kWh_/_occupied_room-night&lt;/em&gt;)'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Refrigerator_adjustment_(&lt;em&gt;kWh_/_occupied_room-night&lt;/em&gt;)">&#182;</a>
+        </div>
+        <h3>Refrigerator adjustment (<em>kWh / occupied room-night</em>)</h3>
+
+<p><em>Adjusts the electricity intensity based on refrigerator coverage.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:refrigerator_adjustment</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-38'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-38">&#182;</a>
+        </div>
+        <p>Calculate the difference between <code>refrigerator coverage</code> (<em>refrigerators / room</em>) and average refrigerator coverage (<em>refrigerators / room</em>).
+Assume an auto-defrost compact fridge electricity intensity of 1.18 <em>kWh / refrigerator night</em> per <a href="http://www.energystar.gov/ia/business/bulk_purchasing/bpsavings_calc/Bulk_Purchasing_CompactRefrig_Sav_Calc.xls">Energy Star</a>.
+Multiply the difference (<em>refrigerators / room</em>) by the refrigerator electricity intensity (<em>kWh / refrigerator night</em>) and divide by <code>occupancy rate</code> to give <em>kWh / occupied room-night</em>.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from refrigerator coverage and occupancy rate&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:refrigerator_coverage</span><span class="p">,</span> <span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">difference</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:refrigerator_coverage</span><span class="o">]</span> <span class="o">-</span> <span class="no">LodgingProperty</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">fridge_coverage</span>
+                <span class="p">{</span> <span class="ss">:electricity</span> <span class="o">=&gt;</span> <span class="p">(</span><span class="n">difference</span> <span class="o">*</span> <span class="mi">1</span><span class="o">.</span><span class="mi">18</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">)</span> <span class="p">}</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -499,182 +646,144 @@ Convert electricity intensity (<em>MJ / room-night</em>) to <em>kWh / room-night
         <h3>Fuel intensities (<em>various</em>)</h3>
 
 <p><em>The lodging&rsquo;s use per occupied room night of a variety of fuels.</em></p>
+
+<ul>
+<li>Natural gas intensity: <em>m<sup>3</sup> / occupied room-night</em></li>
+<li>Fuel oil intensity: <em>l / occupied room-night</em></li>
+<li>Electricity intensity: <em>kWh / occupied room-night</em></li>
+<li>District heat intensity: <em>MJ / occupied room-night</em></li>
+</ul>
       </td>
       <td class=code>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:fuel_intensities</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-28'>
+    <tr id='section-40'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-28">&#182;</a>
+          <a class="pilcrow" href="#section-40">&#182;</a>
         </div>
-        <p>For each record in the <code>cohort</code>, multiply months used (<em>months</em>) by 365 (<em>days / year</em>) and divide by 7 (<em>days / week</em>) and by 12 (<em>months / year</em>) to give <em>weeks</em> the surveyed building was used.
-Multiply by weekly hours (<em>hours / week</em>) and divide by 24 (<em>hours / day</em>) to give <em>days</em> the surveyed building was used.
-Multiply by the number of rooms in the lodging property and 0.59 (average occupancy after PriceWaterhouseCoopers) to give <em>occupied room nights</em>.
-Divide total use of each fuel by <em>occupied room nights</em> to give <em>fuel / room-night</em>.
-Calculate the weighted average of each intensity across all records in the <code>cohort</code> to give:</p>
-
-<ul>
-<li>Natural gas intensity: <em>m<sup>3</sup> / room-night</em></li>
-<li>Fuel oil intensity: <em>l / room-night</em></li>
-<li>Electricity intensity: <em>kWh / room-night</em></li>
-<li>Steam heat intensity: <em>MJ / room-night</em></li>
-</ul>
+        <p>If we know <code>heating degree days</code> and <code>cooling degree days</code>, calculate fuel intensities from <a href="http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses">CBECS 2003</a> data using fuzzy inference and adjust the inferred values based on <code>occupancy rate</code>.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from cohort&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:lodging_properties_cohort</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from degree days, occupancy rate, and user inputs&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:heating_degree_days</span><span class="p">,</span> <span class="ss">:cooling_degree_days</span><span class="p">,</span> <span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:property_rooms</span><span class="p">,</span> <span class="ss">:floors</span><span class="p">,</span> <span class="ss">:construction_year</span><span class="p">,</span> <span class="ss">:ac_coverage</span><span class="o">]</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">intensities</span> <span class="o">=</span> <span class="p">{}</span>
-                <span class="o">[</span><span class="ss">:natural_gas</span><span class="p">,</span> <span class="ss">:fuel_oil</span><span class="p">,</span> <span class="ss">:electricity</span><span class="p">,</span> <span class="ss">:steam</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">fuel</span><span class="o">|</span>
-                  <span class="n">intensities</span><span class="o">[</span><span class="n">fuel</span><span class="o">]</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:lodging_properties_cohort</span><span class="o">].</span><span class="n">inject</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">sum</span><span class="p">,</span> <span class="n">record</span><span class="o">|</span>
-                    <span class="k">next</span> <span class="n">sum</span> <span class="k">unless</span> <span class="n">record</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_use&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">present?</span>
-                    <span class="n">occupied_room_nights</span> <span class="o">=</span> <span class="mi">365</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">7</span><span class="o">.</span><span class="mi">0</span> <span class="o">/</span> <span class="mi">12</span><span class="o">.</span><span class="mi">0</span> <span class="o">*</span> <span class="n">record</span><span class="o">.</span><span class="n">months_used</span> <span class="o">*</span> <span class="n">record</span><span class="o">.</span><span class="n">weekly_hours</span> <span class="o">/</span> <span class="mi">24</span><span class="o">.</span><span class="mi">0</span> <span class="o">*</span> <span class="n">record</span><span class="o">.</span><span class="n">lodging_rooms</span> <span class="o">*</span> <span class="mi">0</span><span class="o">.</span><span class="mi">59</span>
-                    <span class="n">sum</span> <span class="o">+</span> <span class="p">(</span><span class="n">record</span><span class="o">.</span><span class="n">weighting</span> <span class="o">*</span> <span class="n">record</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">#{</span><span class="n">fuel</span><span class="si">}</span><span class="s2">_use&quot;</span><span class="p">)</span> <span class="o">/</span> <span class="n">occupied_room_nights</span><span class="p">)</span>
-                  <span class="k">end</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:lodging_properties_cohort</span><span class="o">].</span><span class="n">sum</span><span class="p">(</span><span class="ss">:weighting</span><span class="p">)</span>
-                <span class="k">end</span>
-                <span class="n">intensities</span>
-            <span class="k">end</span>
-            </pre></div>
+                <span class="n">inputs</span> <span class="o">=</span> <span class="n">characteristics</span><span class="o">.</span><span class="n">to_hash</span><span class="o">.</span><span class="n">inject</span><span class="p">({})</span> <span class="k">do</span> <span class="o">|</span><span class="n">memo</span><span class="p">,</span> <span class="p">(</span><span class="n">characteristic</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span><span class="o">|</span>
+                  <span class="k">case</span> <span class="n">characteristic</span>
+                  <span class="k">when</span> <span class="ss">:property_rooms</span>
+                    <span class="n">memo</span><span class="o">[</span><span class="ss">:lodging_rooms</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+                  <span class="k">when</span> <span class="ss">:ac_coverage</span>
+                    <span class="n">memo</span><span class="o">[</span><span class="ss">:percent_cooled</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+                  <span class="k">when</span> <span class="ss">:occupancy_rate</span></pre></div>
       </td>
     </tr>
-    <tr id='section-29'>
+    <tr id='section-41'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-29">&#182;</a>
+          <a class="pilcrow" href="#section-41">&#182;</a>
         </div>
-        <p>Otherwise look up the <code>country lodging class</code> fuel intensities:</p>
-
-<ul>
-<li>Natural gas intensity: <em>m<sup>3</sup> / room-night</em></li>
-<li>Fuel oil intensity: <em>l / room-night</em></li>
-<li>Electricity intensity: <em>kWh / room-night</em></li>
-<li>Steam heat intensity: <em>MJ / room-night</em></li>
-</ul>
+        <p>Don&rsquo;t include <code>occupancy rate</code> in inputs to fuzzy inference</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from country lodging class&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:country_lodging_class</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+        <div class='highlight'><pre>                  <span class="k">else</span>
+                    <span class="n">memo</span><span class="o">[</span><span class="n">characteristic</span><span class="o">]</span> <span class="o">=</span> <span class="n">value</span>
+                  <span class="k">end</span>
+                  <span class="n">memo</span>
+                <span class="k">end</span>
+                
+                <span class="n">kernel</span> <span class="o">=</span> <span class="no">CommercialBuildingEnergyConsumptionSurveyResponse</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+                <span class="n">n</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">e</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">kernel</span><span class="o">.</span><span class="n">fuzzy_infer</span><span class="p">(</span><span class="ss">:natural_gas_per_room_night</span><span class="p">,</span> <span class="ss">:fuel_oil_per_room_night</span><span class="p">,</span> <span class="ss">:electricity_per_room_night</span><span class="p">,</span> <span class="ss">:district_heat_per_room_night</span><span class="p">)</span>
                 <span class="p">{</span>
-                  <span class="ss">:natural_gas</span>   <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country_lodging_class</span><span class="o">].</span><span class="n">natural_gas_intensity</span><span class="p">,</span>
-                  <span class="ss">:fuel_oil</span>      <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country_lodging_class</span><span class="o">].</span><span class="n">fuel_oil_intensity</span><span class="p">,</span>
-                  <span class="ss">:electricity</span>   <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country_lodging_class</span><span class="o">].</span><span class="n">electricity_intensity</span><span class="p">,</span>
-                  <span class="ss">:steam</span>         <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country_lodging_class</span><span class="o">].</span><span class="n">steam_intensity</span><span class="p">,</span>
+                  <span class="ss">:natural_gas</span>   <span class="o">=&gt;</span> <span class="n">n</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">,</span>
+                  <span class="ss">:fuel_oil</span>      <span class="o">=&gt;</span> <span class="n">f</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">,</span>
+                  <span class="ss">:electricity</span>   <span class="o">=&gt;</span> <span class="n">e</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:occupancy_rate</span><span class="o">]</span><span class="p">,</span>
+                  <span class="ss">:district_heat</span> <span class="o">=&gt;</span> <span class="n">d</span> <span class="o">/</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:occupancy_rate</span><span class="o">]</span>
                 <span class="p">}</span>
             <span class="k">end</span>
             </pre></div>
       </td>
     </tr>
-    <tr id='section-30'>
+    <tr id='section-42'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-30">&#182;</a>
+          <a class="pilcrow" href="#section-42">&#182;</a>
         </div>
-        <p>Otherwise check whether <code>country</code> has lodging fuel intensities:</p>
+        <p>Otherwise use global averages.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">intensities</span> <span class="o">=</span> <span class="p">{</span>
+                  <span class="ss">:natural_gas</span>   <span class="o">=&gt;</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_natural_gas_intensity</span><span class="p">,</span>
+                  <span class="ss">:fuel_oil</span>      <span class="o">=&gt;</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_fuel_oil_intensity</span><span class="p">,</span>
+                  <span class="ss">:electricity</span>   <span class="o">=&gt;</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_electricity_intensity</span><span class="p">,</span>
+                  <span class="ss">:district_heat</span> <span class="o">=&gt;</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_district_heat_intensity</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Occupancy_rate'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Occupancy_rate">&#182;</a>
+        </div>
+        <h3>Occupancy rate</h3>
 
-<ul>
-<li>Natural gas intensity: <em>m<sup>3</sup> / room-night</em></li>
-<li>Fuel oil intensity: <em>l / room-night</em></li>
-<li>Electricity intensity: <em>kWh / room-night</em></li>
-<li>Steam intensity: <em>MJ / room-night</em></li>
-</ul>
+<p><em>The percent of the proprety&rsquo;s rooms that are occupied on an average night.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:occupancy_rate</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-44'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-44">&#182;</a>
+        </div>
+        <p>Look up the <code>country</code> average lodging occupancy rate.</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from country&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:country</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">intensities</span> <span class="o">=</span> <span class="p">{</span>
-                  <span class="ss">:natural_gas</span>   <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">lodging_natural_gas_intensity</span><span class="p">,</span>
-                  <span class="ss">:fuel_oil</span>      <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">lodging_fuel_oil_intensity</span><span class="p">,</span>
-                  <span class="ss">:electricity</span>   <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">lodging_electricity_intensity</span><span class="p">,</span>
-                  <span class="ss">:steam</span>         <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">lodging_steam_intensity</span><span class="p">,</span>
-                <span class="p">}</span>
-                <span class="n">intensities</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">compact</span><span class="o">.</span><span class="n">empty?</span> <span class="p">?</span> <span class="kp">nil</span> <span class="p">:</span> <span class="n">intensities</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">lodging_occupancy_rate</span>
             <span class="k">end</span>
             </pre></div>
       </td>
     </tr>
-    <tr id='section-31'>
+    <tr id='section-45'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-31">&#182;</a>
+          <a class="pilcrow" href="#section-45">&#182;</a>
         </div>
-        <p>Otherwise look up global average lodging fuel intensities:</p>
-
-<ul>
-<li>Natural gas intensity: <em>m<sup>3</sup> / room-night</em></li>
-<li>Fuel oil intensity: <em>l / room-night</em></li>
-<li>Electricity intensity: <em>kWh / room-night</em></li>
-<li>Steam intensity: <em>MJ / room-night</em></li>
-</ul>
+        <p>Otherwise use a global average.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span>
-                <span class="p">{</span>
-                  <span class="ss">:natural_gas</span>   <span class="o">=&gt;</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_natural_gas_intensity</span><span class="p">,</span>
-                  <span class="ss">:fuel_oil</span>      <span class="o">=&gt;</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_fuel_oil_intensity</span><span class="p">,</span>
-                  <span class="ss">:electricity</span>   <span class="o">=&gt;</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_electricity_intensity</span><span class="p">,</span>
-                  <span class="ss">:steam</span>         <span class="o">=&gt;</span> <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_steam_intensity</span><span class="p">,</span>
-                <span class="p">}</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;default&#39;</span><span class="p">,</span> <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span>
+              <span class="no">Country</span><span class="o">.</span><span class="n">fallback</span><span class="o">.</span><span class="n">lodging_occupancy_rate</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
       </td>
     </tr>
-    <tr id='section-Cohort'>
+    <tr id='section-Outdoor_pools'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-Cohort">&#182;</a>
+          <a class="pilcrow" href="#section-Outdoor_pools">&#182;</a>
         </div>
-        <h3>Cohort</h3>
+        <h3>Outdoor pools</h3>
 
-<p><em>A set of responses from the <a href="http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses">EIA Commercial Buildings Energy Consumption Survey</a> that represent buildings similar to the lodging property.</em></p>
+<p><em>The number of outdoor pools.</em></p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:lodging_properties_cohort</span> <span class="k">do</span></pre></div>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:outdoor_pools</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-33'>
+    <tr id='section-47'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-33">&#182;</a>
-        </div>
-        <p>If we know <code>census division</code>, assemble a cohort of CBECS responses:
-Start with all responses, and then select only the responses that match <code>census region</code>, <code>country lodging class</code>, and <code>census division</code>.
-If fewer than 8 responses match all of those characteristics, drop the last characteristic (initially <code>census division</code>) and try again.
-Continue until we have 8 or more responses or we&rsquo;ve dropped all the characteristics.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from census division and input&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:census_division</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="ss">:country_lodging_class</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">provided_characteristics</span> <span class="o">=</span> <span class="o">[[</span><span class="ss">:census_region_number</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:census_division</span><span class="o">].</span><span class="n">census_region_number</span><span class="o">]]</span>
-                <span class="n">provided_characteristics</span> <span class="o">&lt;&lt;</span> <span class="o">[</span><span class="ss">:detailed_activity</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country_lodging_class</span><span class="o">].</span><span class="n">cbecs_detailed_activity</span><span class="o">]</span> <span class="k">if</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country_lodging_class</span><span class="o">].</span><span class="n">present?</span>
-                <span class="n">provided_characteristics</span> <span class="o">&lt;&lt;</span> <span class="o">[</span><span class="ss">:census_division_number</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:census_division</span><span class="o">].</span><span class="n">number</span><span class="o">]</span>
-                
-                <span class="n">cohort</span> <span class="o">=</span> <span class="no">CommercialBuildingEnergyConsumptionSurveyResponse</span><span class="o">.</span><span class="n">lodging_records</span><span class="o">.</span><span class="n">strict_cohort</span><span class="p">(</span><span class="o">*</span><span class="n">provided_characteristics</span><span class="p">)</span>
-                <span class="n">cohort</span><span class="o">.</span><span class="n">any?</span> <span class="p">?</span> <span class="n">cohort</span> <span class="p">:</span> <span class="kp">nil</span>
-            <span class="k">end</span>
-          <span class="k">end</span>
-          </pre></div>
-      </td>
-    </tr>
-    <tr id='section-Property_construction_year'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-Property_construction_year">&#182;</a>
-        </div>
-        <h3>Property construction year</h3>
-
-<p><em>The year the lodging property was built.</em></p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:property_construction_year</span> <span class="k">do</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-35'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-35">&#182;</a>
+          <a class="pilcrow" href="#section-47">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -682,17 +791,253 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-36'>
+    <tr id='section-48'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-36">&#182;</a>
+          <a class="pilcrow" href="#section-48">&#182;</a>
         </div>
-        <p>Otherwise look up the <code>lodging property</code> construction year.</p>
+        <p>Otherwise look up the <code>property</code> number of outdoor pools, but set a ceiling of 5 outdoor pools.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from lodging property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:lodging_property</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:property</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:lodging_property</span><span class="o">].</span><span class="n">construction_year</span>
+                <span class="k">unless</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">pools_outdoor</span><span class="o">.</span><span class="n">nil?</span>
+                  <span class="o">[</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">pools_outdoor</span><span class="o">.</span><span class="n">to_f</span><span class="p">,</span> <span class="mi">5</span><span class="o">].</span><span class="n">min</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Indoor_pools'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Indoor_pools">&#182;</a>
+        </div>
+        <h3>Indoor pools</h3>
+
+<p><em>The number of indoor pools.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:indoor_pools</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-50'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-50">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-51'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-51">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>property</code> number of indoor pools, but set a ceiling of 5 indoor pools.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:property</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="k">unless</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">pools_indoor</span><span class="o">.</span><span class="n">nil?</span>
+                  <span class="o">[</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">pools_indoor</span><span class="o">.</span><span class="n">to_f</span><span class="p">,</span> <span class="mi">5</span><span class="o">].</span><span class="n">min</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Hot_tubs'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Hot_tubs">&#182;</a>
+        </div>
+        <h3>Hot tubs</h3>
+
+<p><em>The number of hot tubs.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:hot_tubs</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-53'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-53">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-54'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-54">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>property</code> number of hot tubs.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:property</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">hot_tubs</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Refrigerator_coverage'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Refrigerator_coverage">&#182;</a>
+        </div>
+        <h3>Refrigerator coverage</h3>
+
+<p><em>The percentage of property rooms that have refrigerators.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:refrigerator_coverage</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-56'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-56">&#182;</a>
+        </div>
+        <p>Use client input, if available.
+Otherwise take whichever is greater of the <code>property</code> refrigerator coverage and mini bar coverage.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:property</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="k">if</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">mini_bar_coverage</span> <span class="o">||</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">fridge_coverage</span>
+                  <span class="o">[</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">mini_bar_coverage</span><span class="o">.</span><span class="n">to_f</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">fridge_coverage</span><span class="o">.</span><span class="n">to_f</span><span class="o">].</span><span class="n">max</span>
+                <span class="k">end</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-A/C_coverage'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-A/C_coverage">&#182;</a>
+        </div>
+        <h3>A/C coverage</h3>
+
+<p><em>The percentage of property rooms that are air conditioned.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:ac_coverage</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-58'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-58">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-59'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-59">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>property</code> A/C coverage.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:property</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">ac_coverage</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Construction_year'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Construction_year">&#182;</a>
+        </div>
+        <h3>Construction year</h3>
+
+<p><em>The year the property was built.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:construction_year</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-61'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-61">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-62'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-62">&#182;</a>
+        </div>
+        <p>Otherwise look up the year the <code>property</code> was built.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:property</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">construction_year</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
+    <tr id='section-Floors'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Floors">&#182;</a>
+        </div>
+        <h3>Floors</h3>
+
+<p><em>The number of floors.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:floors</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-64'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-64">&#182;</a>
+        </div>
+        <p>Use client input, if available.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-65'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-65">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>property</code> number of floors.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:property</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">floors</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -705,16 +1050,16 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         </div>
         <h3>Property rooms</h3>
 
-<p><em>The number of guest rooms in the lodging property.</em></p>
+<p><em>The number of guest rooms in the property.</em></p>
       </td>
       <td class=code>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:property_rooms</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-38'>
+    <tr id='section-67'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-38">&#182;</a>
+          <a class="pilcrow" href="#section-67">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -722,161 +1067,30 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-39'>
+    <tr id='section-68'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-39">&#182;</a>
+          <a class="pilcrow" href="#section-68">&#182;</a>
         </div>
-        <p>Otherwise look up the <code>lodging property</code> number of rooms.</p>
+        <p>Otherwise look up the <code>property</code> number of rooms.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from lodging property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:lodging_property</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:property</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:lodging_property</span><span class="o">].</span><span class="n">lodging_rooms</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:property</span><span class="o">].</span><span class="n">lodging_rooms</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
       </td>
     </tr>
-    <tr id='section-Country_lodging_class'>
+    <tr id='section-Property'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-Country_lodging_class">&#182;</a>
+          <a class="pilcrow" href="#section-Property">&#182;</a>
         </div>
-        <h3>Country lodging class</h3>
-
-<p><em>The lodging&rsquo;s <a href="http://data.brighterplanet.com/country_lodging_classes">country-specific lodging class</a>.</em></p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:country_lodging_class</span> <span class="k">do</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-41'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-41">&#182;</a>
-        </div>
-        <p>Check whether the combination of <code>country</code> and <code>lodging class</code> matches a record in our database.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from country and lodging class&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:country</span><span class="p">,</span> <span class="ss">:lodging_class</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">CountryLodgingClass</span><span class="o">.</span><span class="n">find_by_country_iso_3166_code_and_lodging_class_name</span><span class="p">(</span><span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">iso_3166_code</span><span class="p">,</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:lodging_class</span><span class="o">].</span><span class="n">name</span><span class="p">)</span>
-            <span class="k">end</span>
-          <span class="k">end</span>
-          </pre></div>
-      </td>
-    </tr>
-    <tr id='section-Lodging_class'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-Lodging_class">&#182;</a>
-        </div>
-        <h3>Lodging class</h3>
-
-<p><em>The <a href="http://data.brighterplanet.com/lodging_classes">lodging&rsquo;s class</a>.</em></p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:lodging_class</span> <span class="k">do</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-43'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-43">&#182;</a>
-        </div>
-        <p>Use client input, if available.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            </pre></div>
-      </td>
-    </tr>
-    <tr id='section-44'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-44">&#182;</a>
-        </div>
-        <p>Otherwise look up the <code>lodging property</code> lodging class.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from lodging property&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:lodging_property</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:lodging_property</span><span class="o">].</span><span class="n">lodging_class</span>
-            <span class="k">end</span>
-          <span class="k">end</span>
-          </pre></div>
-      </td>
-    </tr>
-    <tr id='section-Lodging_property'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-Lodging_property">&#182;</a>
-        </div>
-        <h3>Lodging property</h3>
+        <h3>Property</h3>
 
 <p><em>The property where the stay occurred.</em></p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:lodging_property</span> <span class="k">do</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-46'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-46">&#182;</a>
-        </div>
-        <p>Use a custom matching algorithm to look up a lodging property based on user inputs.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s2">&quot;from custom matching algorithm&quot;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:lodging_property_name</span><span class="p">,</span> <span class="ss">:appreciates</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:zip_code</span><span class="p">,</span> <span class="ss">:city</span><span class="p">,</span> <span class="ss">:state</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">LodgingProperty</span><span class="o">.</span><span class="n">better_match</span> <span class="n">characteristics</span> <span class="k">if</span> <span class="no">LodgingProperty</span><span class="o">.</span><span class="n">respond_to?</span><span class="p">(</span><span class="ss">:better_match</span><span class="p">)</span>
-            <span class="k">end</span>
-<span class="cm">=begin</span>
-<span class="cm">            CAREFUL! there isn&#39;t a test for the custom algorithm quorum</span>
-<span class="cm">=end</span>
-            </pre></div>
-      </td>
-    </tr>
-    <tr id='section-47'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-47">&#182;</a>
-        </div>
-        <p>Otherwise check whether <code>lodging property name</code> matches a property in <code>zip code</code>.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s2">&quot;from lodging property name and zip code&quot;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:lodging_property_name</span><span class="p">,</span> <span class="ss">:zip_code</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">LodgingProperty</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:postcode</span> <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:zip_code</span><span class="o">].</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">find_by_name</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:lodging_property_name</span><span class="o">].</span><span class="n">value</span>
-            <span class="k">end</span>
-            </pre></div>
-      </td>
-    </tr>
-    <tr id='section-48'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-48">&#182;</a>
-        </div>
-        <p>Otherwise check whether <code>lodging property name</code> matches a property in <code>city</code> and <code>state</code>.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s2">&quot;from lodging property name, city, and state&quot;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:lodging_property_name</span><span class="p">,</span> <span class="ss">:city</span><span class="p">,</span> <span class="ss">:state</span><span class="o">]</span><span class="p">,</span>
-              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="no">LodgingProperty</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="ss">:city</span> <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:city</span><span class="o">].</span><span class="n">value</span><span class="p">,</span> <span class="ss">:locality</span> <span class="o">=&gt;</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:state</span><span class="o">].</span><span class="n">name</span><span class="p">)</span><span class="o">.</span><span class="n">find_by_name</span> <span class="n">characteristics</span><span class="o">[</span><span class="ss">:lodging_property_name</span><span class="o">].</span><span class="n">value</span>
-            <span class="k">end</span>
-          <span class="k">end</span>
-          </pre></div>
-      </td>
-    </tr>
-    <tr id='section-Lodging_property_name'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-Lodging_property_name">&#182;</a>
-        </div>
-        <h3>Lodging property name</h3>
-
-<p><em>The name of the property where the stay occurred.</em></p>
 
 <p>Use client input, if available</p>
       </td>
@@ -884,103 +1098,111 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         <div class='highlight'><pre>          </pre></div>
       </td>
     </tr>
-    <tr id='section-Climate_zone_number'>
+    <tr id='section-Heating_degree_days'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-Climate_zone_number">&#182;</a>
+          <a class="pilcrow" href="#section-Heating_degree_days">&#182;</a>
         </div>
-        <h3>Climate zone number</h3>
+        <h3>Heating degree days</h3>
 
-<p><em>The lodging property&rsquo;s <a href="http://www.eia.gov/emeu/cbecs/climate_zones.html">climate zone number</a>.</em></p>
+<p><em>The average number of annual heating degree days (base 18°C) at the lodging&rsquo;s location.</em></p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:climate_zone_number</span> <span class="k">do</span></pre></div>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:heating_degree_days</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-51'>
+    <tr id='section-71'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-51">&#182;</a>
+          <a class="pilcrow" href="#section-71">&#182;</a>
         </div>
-        <p>Look up the <code>climate division</code> climate zone number.</p>
+        <p>Use client input, if available</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-72'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-72">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>climate division</code> heating degree days.</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from climate division&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:climate_division</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:climate_division</span><span class="o">].</span><span class="n">climate_zone_number</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:climate_division</span><span class="o">].</span><span class="n">heating_degree_days</span>
             <span class="k">end</span>
             </pre></div>
       </td>
     </tr>
-    <tr id='section-52'>
+    <tr id='section-73'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-52">&#182;</a>
+          <a class="pilcrow" href="#section-73">&#182;</a>
         </div>
-        <p>Look up the <code>state</code> climate zone number.</p>
+        <p>Otherwise look up the <code>country</code> heating degree days.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from state&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:state</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from country&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:country</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:state</span><span class="o">].</span><span class="n">climate_zone_number</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">heating_degree_days</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
       </td>
     </tr>
-    <tr id='section-Climate_division'>
+    <tr id='section-Cooling_degree_days'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-Climate_division">&#182;</a>
+          <a class="pilcrow" href="#section-Cooling_degree_days">&#182;</a>
         </div>
-        <h3>Climate division</h3>
+        <h3>Cooling degree days</h3>
 
-<p><em>The lodging property&rsquo;s <a href="http://data.brighterplanet.com/climate_divisions">climate division</a>.</em></p>
+<p><em>The average number of annual cooling degree days (base 18°C) at the lodging&rsquo;s location.</em></p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:climate_division</span> <span class="k">do</span></pre></div>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:cooling_degree_days</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-54'>
+    <tr id='section-75'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-54">&#182;</a>
+          <a class="pilcrow" href="#section-75">&#182;</a>
         </div>
-        <p>Look up the <code>zip code</code> climate division.</p>
+        <p>Use client input, if available</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from zip code&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:zip_code</span><span class="p">,</span>
+        <div class='highlight'><pre>            </pre></div>
+      </td>
+    </tr>
+    <tr id='section-76'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-76">&#182;</a>
+        </div>
+        <p>Otherwise look up the <code>climate division</code> cooling degree days.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from climate division&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:climate_division</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:zip_code</span><span class="o">].</span><span class="n">climate_division</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:climate_division</span><span class="o">].</span><span class="n">cooling_degree_days</span>
             <span class="k">end</span>
-          <span class="k">end</span>
-          </pre></div>
+            </pre></div>
       </td>
     </tr>
-    <tr id='section-Census_division'>
+    <tr id='section-77'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-Census_division">&#182;</a>
+          <a class="pilcrow" href="#section-77">&#182;</a>
         </div>
-        <h3>Census division</h3>
-
-<p><em>The lodging property&rsquo;s <a href="http://data.brighterplanet.com/census_divisions">census division</a>.</em></p>
+        <p>Otherwise look up the <code>country</code> cooling degree days.</p>
       </td>
       <td class=code>
-        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:census_division</span> <span class="k">do</span></pre></div>
-      </td>
-    </tr>
-    <tr id='section-56'>
-      <td class=docs>
-        <div class="pilwrap">
-          <a class="pilcrow" href="#section-56">&#182;</a>
-        </div>
-        <p>Look up the <code>state</code> census division.</p>
-      </td>
-      <td class=code>
-        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from state&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:state</span><span class="p">,</span>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from country&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:country</span><span class="p">,</span>
               <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
-                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:state</span><span class="o">].</span><span class="n">census_division</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:country</span><span class="o">].</span><span class="n">cooling_degree_days</span>
             <span class="k">end</span>
           <span class="k">end</span>
           </pre></div>
@@ -993,16 +1215,16 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         </div>
         <h3>eGRID subregion</h3>
 
-<p><em>The lodging property&rsquo;s <a href="http://data.brighterplanet.com/egrid_subregions">eGRID subregion</a>.</em></p>
+<p><em>The <a href="http://data.brighterplanet.com/egrid_subregions">eGRID subregion</a>.</em></p>
       </td>
       <td class=code>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:egrid_subregion</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-58'>
+    <tr id='section-79'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-58">&#182;</a>
+          <a class="pilcrow" href="#section-79">&#182;</a>
         </div>
         <p>Look up the <code>zip code</code> eGRID subregion.</p>
       </td>
@@ -1022,16 +1244,16 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         </div>
         <h3>Country</h3>
 
-<p><em>The lodging property&rsquo;s <a href="http://data.brighterplanet.com/countries">country</a>.</em></p>
+<p><em>The <a href="http://data.brighterplanet.com/countries">country</a>.</em></p>
       </td>
       <td class=code>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:country</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-60'>
+    <tr id='section-81'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-60">&#182;</a>
+          <a class="pilcrow" href="#section-81">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -1039,12 +1261,12 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-61'>
+    <tr id='section-82'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-61">&#182;</a>
+          <a class="pilcrow" href="#section-82">&#182;</a>
         </div>
-        <p>If state is defined then the country is the United States.</p>
+        <p>Otherwise if state is defined then the country is the United States.</p>
       </td>
       <td class=code>
         <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from state&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:state</span><span class="p">,</span>
@@ -1062,16 +1284,16 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         </div>
         <h3>State</h3>
 
-<p><em>The lodging property&rsquo;s <a href="http://data.brighterplanet.com/states">US state</a>.</em></p>
+<p><em>The <a href="http://data.brighterplanet.com/states">US state</a>.</em></p>
       </td>
       <td class=code>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:state</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-63'>
+    <tr id='section-84'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-63">&#182;</a>
+          <a class="pilcrow" href="#section-84">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -1079,10 +1301,10 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-64'>
+    <tr id='section-85'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-64">&#182;</a>
+          <a class="pilcrow" href="#section-85">&#182;</a>
         </div>
         <p>Otherwise look up the <code>zip code</code> state.</p>
       </td>
@@ -1102,16 +1324,16 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         </div>
         <h3>City</h3>
 
-<p><em>The lodging property&rsquo;s city.</em></p>
+<p><em>The city.</em></p>
       </td>
       <td class=code>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:city</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-66'>
+    <tr id='section-87'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-66">&#182;</a>
+          <a class="pilcrow" href="#section-87">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -1119,10 +1341,10 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-67'>
+    <tr id='section-88'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-67">&#182;</a>
+          <a class="pilcrow" href="#section-88">&#182;</a>
         </div>
         <p>Otherwise look up the <code>zip code</code> description.</p>
       </td>
@@ -1135,6 +1357,35 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
           </pre></div>
       </td>
     </tr>
+    <tr id='section-Climate_division'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-Climate_division">&#182;</a>
+        </div>
+        <h3>Climate division</h3>
+
+<p><em>The <a href="http://data.brighterplanet.com/climate_divisions">US climate division</a>.</em></p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:climate_division</span> <span class="k">do</span></pre></div>
+      </td>
+    </tr>
+    <tr id='section-90'>
+      <td class=docs>
+        <div class="pilwrap">
+          <a class="pilcrow" href="#section-90">&#182;</a>
+        </div>
+        <p>Look up the <code>zip code</code> climate division.</p>
+      </td>
+      <td class=code>
+        <div class='highlight'><pre>            <span class="n">quorum</span> <span class="s1">&#39;from zip code&#39;</span><span class="p">,</span> <span class="ss">:needs</span> <span class="o">=&gt;</span> <span class="ss">:zip_code</span><span class="p">,</span>
+              <span class="ss">:complies</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:ghg_protocol_scope_3</span><span class="p">,</span> <span class="ss">:iso</span><span class="p">,</span> <span class="ss">:tcr</span><span class="o">]</span> <span class="k">do</span> <span class="o">|</span><span class="n">characteristics</span><span class="o">|</span>
+                <span class="n">characteristics</span><span class="o">[</span><span class="ss">:zip_code</span><span class="o">].</span><span class="n">climate_division</span>
+            <span class="k">end</span>
+          <span class="k">end</span>
+          </pre></div>
+      </td>
+    </tr>
     <tr id='section-Zip_code'>
       <td class=docs>
         <div class="pilwrap">
@@ -1142,7 +1393,7 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         </div>
         <h3>Zip code</h3>
 
-<p><em>The lodging property&rsquo;s <a href="http://data.brighterplanet.com/zip_codes">US zip code</a>.</em></p>
+<p><em>The <a href="http://data.brighterplanet.com/zip_codes">US zip code</a>.</em></p>
 
 <p>Use client input, if available.</p>
       </td>
@@ -1163,10 +1414,10 @@ Continue until we have 8 or more responses or we&rsquo;ve dropped all the charac
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:room_nights</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-70'>
+    <tr id='section-93'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-70">&#182;</a>
+          <a class="pilcrow" href="#section-93">&#182;</a>
         </div>
         <p>If <code>date</code> falls within <code>timeframe</code>, divide <code>duration</code> (<em>seconds</em>) by 86,400 (<em>seconds / night</em>) and multiply by <code>rooms</code> to give <em>room-nights</em>.
 Otherwise <code>room nights</code> is zero.</p>
@@ -1194,10 +1445,10 @@ Otherwise <code>room nights</code> is zero.</p>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:duration</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-72'>
+    <tr id='section-95'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-72">&#182;</a>
+          <a class="pilcrow" href="#section-95">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -1205,10 +1456,10 @@ Otherwise <code>room nights</code> is zero.</p>
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-73'>
+    <tr id='section-96'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-73">&#182;</a>
+          <a class="pilcrow" href="#section-96">&#182;</a>
         </div>
         <p>Otherwise use 86400 <em>seconds</em> (1 night).</p>
       </td>
@@ -1233,10 +1484,10 @@ Otherwise <code>room nights</code> is zero.</p>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:rooms</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-75'>
+    <tr id='section-98'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-75">&#182;</a>
+          <a class="pilcrow" href="#section-98">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -1244,10 +1495,10 @@ Otherwise <code>room nights</code> is zero.</p>
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-76'>
+    <tr id='section-99'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-76">&#182;</a>
+          <a class="pilcrow" href="#section-99">&#182;</a>
         </div>
         <p>Otherwise use 1 <em>room</em>.</p>
       </td>
@@ -1272,10 +1523,10 @@ Otherwise <code>room nights</code> is zero.</p>
         <div class='highlight'><pre>          <span class="n">committee</span> <span class="ss">:date</span> <span class="k">do</span></pre></div>
       </td>
     </tr>
-    <tr id='section-78'>
+    <tr id='section-101'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-78">&#182;</a>
+          <a class="pilcrow" href="#section-101">&#182;</a>
         </div>
         <p>Use client input, if available.</p>
       </td>
@@ -1283,10 +1534,10 @@ Otherwise <code>room nights</code> is zero.</p>
         <div class='highlight'><pre>            </pre></div>
       </td>
     </tr>
-    <tr id='section-79'>
+    <tr id='section-102'>
       <td class=docs>
         <div class="pilwrap">
-          <a class="pilcrow" href="#section-79">&#182;</a>
+          <a class="pilcrow" href="#section-102">&#182;</a>
         </div>
         <p>Otherwise use the first day of <code>timeframe</code>.</p>
 
