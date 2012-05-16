@@ -13,7 +13,9 @@ module BrighterPlanet
           has :lodging_class
           has :heating_degree_days
           has :cooling_degree_days
-          has :property
+          has :property do |prop|
+            prop.name
+          end
           has :property_rooms
           has :floors
           has :construction_year
