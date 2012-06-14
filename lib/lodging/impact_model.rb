@@ -505,7 +505,7 @@ module BrighterPlanet
           end
           
           #### Duration (*seconds*)
-          # *The stay's duration.*
+          # *The stay's duration. Use 24 hours for each night stayed. For example a two night stay would have a duration of 172800.*
           committee :duration do
             # Use client input, if available.
             
