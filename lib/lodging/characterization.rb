@@ -10,7 +10,6 @@ module BrighterPlanet
           has :city
           has :state
           has :country
-          has :lodging_class
           has :heating_degree_days
           has :cooling_degree_days
           has :property do |prop|

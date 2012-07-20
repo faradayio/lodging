@@ -9,7 +9,6 @@ module BrighterPlanet
         base.col :city
         base.col :state_postal_abbreviation
         base.col :country_iso_3166_code
-        base.col :lodging_class_name
         base.col :heating_degree_days, :type => :float
         base.col :cooling_degree_days, :type => :float
         base.col :property_northstar_id

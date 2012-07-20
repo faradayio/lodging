@@ -44,131 +44,128 @@ module BrighterPlanet
           #### Carbon (*kg CO<sub>2</sub>e*)
           # *The lodging's total anthropogenic greenhouse gas emissions during `timeframe`.*
           committee :carbon do
-            # Multiply `natural gas use` (*m<sup>3</sup>*) by natural gas' emission factor (*kg CO<sub>2</sub> / m<sup>3</sup>*) to give *kg CO<sub>2</sub>.*
-            # Multiply `fuel oil use` (*l*) by fuel oil's emission factor (*kg CO<sub>2</sub> / l*) to give *kg CO<sub>2</sub>.*
-            # Multiply `electricity use` (*kWh*) by `electricity emission factor` (*kg CO<sub>2</sub> / kWh*) to give *kg CO<sub>2</sub>.*
-            # Multiply `district heat use` (*MJ*) by district heat's emission factor` (*kg CO<sub>2</sub> / MJ*) to give *kg CO<sub>2</sub>.*
-            # Sum to give *kg CO<sub>2</sub>e.*
-            quorum 'from natural gas use, fuel oil use, electricity use, district heat use, and electricity emission factor', :needs => [:natural_gas_use, :fuel_oil_use, :electricity_use, :district_heat_use, :electricity_emission_factor],
+            # Sum `co2 emission` (*kg*), `ch4 emission` (*kg CO<sub>2</sub>e*) and `n2o emission` (*kg CO<sub>2</sub>e*) to give *kg CO<sub>2</sub>e*.
+            quorum 'from co2 emission, ch4 emission, and n2o emission', :needs => [:co2_emission, :ch4_emission, :n2o_emission],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:natural_gas_use] * Fuel.find_by_name('Pipeline Natural Gas').co2_emission_factor +
-                characteristics[:fuel_oil_use] * Fuel.find_by_name('Residual Fuel Oil No. 6').co2_emission_factor +
-                characteristics[:electricity_use] * characteristics[:electricity_emission_factor] +
-                characteristics[:district_heat_use] * Fuel.find_by_name('District Heat').co2_emission_factor
+                characteristics[:co2_emission] + characteristics[:ch4_emission] + characteristics[:n2o_emission]
             end
           end
           
-          #### Electricity emission factor (*kg CO<sub>2</sub>e / kWh*)
-          # *A greenhouse gas emission factor for electricity used by the lodging.*
-          committee :electricity_emission_factor do
-            # Multiply the `eGRID subregion` electricity emission factors by 1 minus the the subregion's eGRID region loss factor (to account for transmission and distribution losses) to give *kg CO<sub>2</sub>e / kWh*.
-            quorum 'from eGRID subregion', :needs => :egrid_subregion,
+          #### CO<sub>2</sub> emission (*kg*)
+          # *The lodging's CO<sub>2</sub> emissions during `timeframe`.*
+          committee :co2_emission do
+            # Multiply each `fuel use` (*MJ*) by its CO<sub>2</sub> emission factor (*kg / MJ*) to give *kg*.
+            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_mix],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:egrid_subregion].electricity_emission_factor / (1 - characteristics[:egrid_subregion].egrid_region.loss_factor)
-            end
-            
-            # Otherwise look up the `country` electricity emission factor (*kg CO<sub>2</sub>e / kWh*).
-            quorum 'from country', :needs => :country,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                if (emission_factor = characteristics[:country].electricity_emission_factor).present? and (loss_factor = characteristics[:country].electricity_loss_factor).present?
-                  emission_factor / (1 - loss_factor)
-                end
-            end
-            
-            # Otherwise use a global average electricity emission factor (*kg CO<sub>2</sub>e / kWh*).
-            quorum 'default',
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
-                Country.fallback.electricity_emission_factor / (1 - Country.fallback.electricity_loss_factor)
+                gas = Fuel.find('Pipeline Natural Gas')
+                oil = Fuel.find('Distillate Fuel Oil No. 2')
+                dh = Fuel.find('District Heat')
+                
+                (characteristics[:fuel_uses][:natural_gas]   / gas.energy_content * gas.co2_emission_factor) +
+                (characteristics[:fuel_uses][:fuel_oil]      / oil.energy_content * oil.co2_emission_factor) +
+                (characteristics[:fuel_uses][:district_heat] / dh.energy_content  * dh.co2_emission_factor) +
+                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_mix].co2_emission_factor)
             end
           end
           
-          #### Natural gas use (*m<sup>3</sup>*)
-          # *The lodging's natural gas use during `timeframe`.*
-          committee :natural_gas_use do
-            # Multiply `room nights` (*room-nights*) by `natural gas intensity` (*m<sup>3</sup> / occupied room-night*) to give *m<sup>3</sup>*.
+          #### CH<sub>4</sub> emission (*kg CO<sub>2</sub>e*)
+          # *The lodging's CH<sub>4</sub> emissions during `timeframe`.*
+          committee :ch4_emission do
+            # Multiply each `fuel use` (*MJ*) by its CH<sub>4</sub> emission factor (*kg CO<sub>2</sub>e / MJ*) to give *kg CO<sub>2</sub>e*.
+            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_mix],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                ch4_gwp = GreenhouseGas[:ch4].global_warming_potential
+                
+                gas_ef = 0.1.grams.to(:kilograms) / 1000.kbtus.to(:megajoules) * ch4_gwp
+                oil_ef = 0.6.grams.to(:kilograms) / 1000.kbtus.to(:megajoules) * ch4_gwp
+                dh_ef  = (((gas_ef / 0.817) + (oil_ef / 0.846)) / 2.0) / 0.95
+                
+                (characteristics[:fuel_uses][:natural_gas]   * gas_ef) +
+                (characteristics[:fuel_uses][:fuel_oil]      * oil_ef) +
+                (characteristics[:fuel_uses][:district_heat] * dh_ef) +
+                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_mix].ch4_emission_factor)
+            end
+          end
+          
+          #### N<sub>2</sub>O emission (*kg CO<sub>2</sub>e*)
+          # *The lodging's N<sub>2</sub>O emissions during `timeframe`.*
+          committee :n2o_emission do
+            # Multiply each `fuel use` (*MJ*) by its N<sub>2</sub>O emission factor (*kg CO<sub>2</sub>e / MJ*) to give *kg CO<sub>2</sub>e*.
+            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_mix],
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                n2o_gwp = GreenhouseGas[:n2o].global_warming_potential
+                
+                gas_ef = 0.1.grams.to(:kilograms) / 1000.kbtus.to(:megajoules) * n2o_gwp
+                oil_ef = 0.6.grams.to(:kilograms) / 1000.kbtus.to(:megajoules) * n2o_gwp
+                dh_ef  = (((gas_ef / 0.817) + (oil_ef / 0.846)) / 2.0) / 0.95
+                
+                (characteristics[:fuel_uses][:natural_gas]   * gas_ef) +
+                (characteristics[:fuel_uses][:fuel_oil]      * oil_ef) +
+                (characteristics[:fuel_uses][:district_heat] * dh_ef) +
+                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_mix].n2o_emission_factor)
+            end
+          end
+          
+          #### Energy (*MJ*)
+          # *The lodging's total energy use during `timeframe`.*
+          committee :energy do
+            # Add all the `fuel uses` (*MJ*) to give *MJ*.
+            quorum 'from fuel uses', :needs => :fuel_uses,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:fuel_uses].values.sum
+            end
+          end
+          
+          #### Fuel uses (*MJ*)
+          # *The lodging's use of each fuel during `timeframe`.*
+          committee :fuel_uses do
+            # Multiply each `adjusted fuel intensity` (*MJ / occupied room-night*) by `room nights` to give *MJ*.
             quorum 'from adjusted fuel intensities and room nights', :needs => [:adjusted_fuel_intensities, :room_nights],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:natural_gas]
+                intensities = characteristics[:adjusted_fuel_intensities]
+                {
+                  :natural_gas   => intensities[:natural_gas]   * characteristics[:room_nights],
+                  :fuel_oil      => intensities[:fuel_oil]      * characteristics[:room_nights],
+                  :electricity   => intensities[:electricity]   * characteristics[:room_nights],
+                  :district_heat => intensities[:district_heat] * characteristics[:room_nights]
+                }
             end
           end
           
-          #### Fuel oil use (*l*)
-          # *The lodging's fuel oil use during `timeframe`.*
-          committee :fuel_oil_use do
-            # Multiply `room nights` (*room-nights*) by `fuel oil intensity` (*l / occupied room-night*) to give *l*.
-            quorum 'from adjusted fuel intensities and room nights', :needs => [:adjusted_fuel_intensities, :room_nights],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:fuel_oil]
-            end
-          end
-          
-          #### Electricity use (*kWh*)
-          # *The lodging's electricity use during `timeframe`.*
-          committee :electricity_use do
-            # Multiply `room nights` (*room-nights*) by `electricity intensity` (*kWh / occupied room-night*) to give *kWh*.
-            quorum 'from adjusted fuel intensities and room nights', :needs => [:adjusted_fuel_intensities, :room_nights],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:electricity]
-            end
-          end
-          
-          #### District heat use (*MJ*)
-          # *The lodging's district heat use during `timeframe`.*
-          committee :district_heat_use do
-            # Multiply `room nights` (*room-nights*) by `district heat intensity` (*MJ / occupied room-night*) to give *MJ*.
-            quorum 'from adjusted fuel intensities and room nights', :needs => [:adjusted_fuel_intensities, :room_nights],
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:room_nights] * characteristics[:adjusted_fuel_intensities][:district_heat]
-            end
-          end
-          
-          #### Adjusted fuel intensities (*various*)
+          #### Adjusted fuel intensities (*MJ / occupied room-night*)
           # *The lodging's use per occupied room night of a variety of fuels, adjusted by number of pools, mini-fridges, etc.*
-          #
-          # - Natural gas intensity: *m<sup>3</sup> / occupied room-night*
-          # - Fuel oil intensity: *l / occupied room-night*
-          # - Electricity intensity: *kWh / occupied room-night*
-          # - District heat intensity: *MJ / occupied room-night*
           committee :adjusted_fuel_intensities do
             # Adjust `fuel intensities` based on any amenity adjustments:
             quorum 'from fuel intensities and amenity adjustments',
               :needs => :fuel_intensities, :appreciates => [:indoor_pool_adjustment, :outdoor_pool_adjustment, :refrigerator_adjustment, :hot_tub_adjustment],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                gas = Fuel.find_by_name('Pipeline Natural Gas')
-                oil = Fuel.find_by_name('Residual Fuel Oil No. 6')
+                intensities = characteristics[:fuel_intensities]
+                pool_adjustment = 0.0
                 
-                # Duplicate the current intensities so we don't overwrite them.
-                intensities = characteristics[:fuel_intensities].dup
-                
-                # TODO combine pool adjustments - so if we're below average in indoor but above in outdoor we don't accidentally subtract, get less than zero, discard some energy use, and then add energy back for outdoor pools
-                
-                # Cycle through each adjustment...
-                characteristics.each do |characteristic, value|
-                  unless characteristic == :fuel_intensities
-                    value.each do |fuel, adjustment|
-                      if fuel == :pool_energy
-                        # If the adjustment relates to pool energy, convert natural gas and fuel oil inensities from physical units to energy units.
-                        gas_energy = intensities[:natural_gas] * gas.energy_content
-                        oil_energy = intensities[:fuel_oil]    * oil.energy_content
-                        
-                        # Apply the adjustment to natural gas intensity.
-                        # If adjusted natural gas intensity reaches zero, apply any remaining adjustment to fuel oil intensity.
-                        # If adjusted fuel oil intensity also reaches zero, discard any remaining adjustment.
-                        if (gas_energy += adjustment) < 0.0
-                          if (oil_energy += gas_energy) < 0.0
-                            oil_energy = 0.0
-                          end
-                          gas_energy = 0
-                        end
-                        
-                        # Convert adjusted natural gas and fuel oil intensities from energy units back to physical units.
-                        intensities[:natural_gas] = gas_energy / gas.energy_content
-                        intensities[:fuel_oil]    = oil_energy / oil.energy_content
-                      # Otherwise apply the adjustment to the appropriate fuel intensity. If adjusted fuel intensity reaches zero, discard any remaining adjustment.
-                      elsif (intensities[fuel] += adjustment) < 0.0
-                        intensities[fuel] = 0.0
-                      end
+                # Combine any pool energy adjustments.
+                # Apply all other adjustments to the appropriate fuel intensity, but do not allow any adjusted fuel intensity to be less than zero.
+                characteristics.except(:fuel_intensities).each do |characteristic, adjustment|
+                  adjustment.each do |fuel, value|
+                    if fuel == :pool_energy
+                      pool_adjustment += value
+                    elsif (intensities[fuel] += value) < 0.0
+                      intensities[fuel] = 0.0
                     end
+                  end
+                end
+                
+                # Apply the combined pool energy adjustment to natural gas, fuel oil, and electricity intensities, in that order.
+                # If any adjusted intensity reaches zero, apply any remaining adjustment to the next fuel intensity.
+                # If adjusted electricity intensity reaches zero, discard any remaining adjustment.
+                if pool_adjustment.abs > 0.0
+                  if (intensities[:natural_gas] += pool_adjustment) < 0.0
+                    if (intensities[:fuel_oil] += intensities[:natural_gas]) < 0.0
+                      if (intensities[:electricity] += intensities[:fuel_oil]) < 0.0
+                        intensities[:electricity] = 0
+                      end
+                      intensities[:fuel_oil] = 0
+                    end
+                    intensities[:natural_gas] = 0
                   end
                 end
                 intensities
@@ -201,7 +198,7 @@ module BrighterPlanet
             end
           end
           
-          #### Hot tub adjustment (*kWh / occupied room-night*)
+          #### Hot tub adjustment (*MJ / occupied room-night*)
           # *Adjusts the electricity intensity based on the number of hot tubs.*
           committee :hot_tub_adjustment do
             # Calculate the difference between `hot tubs` and average hot tubs.
@@ -210,11 +207,11 @@ module BrighterPlanet
             quorum 'from hot tubs, property rooms, and occupancy rate', :needs => [:hot_tubs, :property_rooms, :occupancy_rate],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 difference = characteristics[:hot_tubs] - LodgingProperty.fallback.hot_tubs
-                { :electricity => difference * 6.3 / characteristics[:property_rooms] / characteristics[:occupancy_rate] }
+                { :electricity => difference * 6.3.kilowatt_hours.to(:megajoules) / characteristics[:property_rooms] / characteristics[:occupancy_rate] }
             end
           end
           
-          #### Refrigerator adjustment (*kWh / occupied room-night*)
+          #### Refrigerator adjustment (*MJ / occupied room-night*)
           # *Adjusts the electricity intensity based on refrigerator coverage.*
           committee :refrigerator_adjustment do
             # Calculate the difference between `refrigerator coverage` (*refrigerators / room*) and average refrigerator coverage (*refrigerators / room*).
@@ -223,29 +220,22 @@ module BrighterPlanet
             quorum 'from refrigerator coverage and occupancy rate', :needs => [:refrigerator_coverage, :occupancy_rate],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 difference = characteristics[:refrigerator_coverage] - LodgingProperty.fallback.fridge_coverage
-                { :electricity => (difference * 1.18 / characteristics[:occupancy_rate]) }
+                { :electricity => (difference * 1.18.kilowatt_hours.to(:megajoules) / characteristics[:occupancy_rate]) }
             end
           end
           
-          #### Fuel intensities (*various*)
+          #### Fuel intensities (*MJ / occupied room-night*)
           # *The lodging's use per occupied room night of a variety of fuels.*
-          #
-          # - Natural gas intensity: *m<sup>3</sup> / occupied room-night*
-          # - Fuel oil intensity: *l / occupied room-night*
-          # - Electricity intensity: *kWh / occupied room-night*
-          # - District heat intensity: *MJ / occupied room-night*
           committee :fuel_intensities do
             # If we know `heating degree days` and `cooling degree days`, calculate fuel intensities from [CBECS 2003](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) data using fuzzy inference and adjust the inferred values based on `occupancy rate`.
             quorum 'from degree days, occupancy rate, and user inputs', :needs => [:heating_degree_days, :cooling_degree_days, :occupancy_rate], :appreciates => [:property_rooms, :floors, :construction_year, :ac_coverage],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                inputs = characteristics.to_hash.inject({}) do |memo, (characteristic, value)|
+                inputs = characteristics.except(:occupancy_rate).to_hash.inject({}) do |memo, (characteristic, value)|
                   case characteristic
                   when :property_rooms
                     memo[:lodging_rooms] = value
                   when :ac_coverage
                     memo[:percent_cooled] = value
-                  when :occupancy_rate
-                    # Don't include `occupancy rate` in inputs to fuzzy inference
                   else
                     memo[characteristic] = value
                   end
@@ -264,12 +254,12 @@ module BrighterPlanet
             
             # Otherwise use global averages.
             quorum 'default',
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
                 intensities = {
-                  :natural_gas   => Country.fallback.lodging_natural_gas_intensity,
-                  :fuel_oil      => Country.fallback.lodging_fuel_oil_intensity,
-                  :electricity   => Country.fallback.lodging_electricity_intensity,
-                  :district_heat => Country.fallback.lodging_district_heat_intensity,
+                  :natural_gas =>   Country.fallback.lodging_natural_gas_intensity   / Country.fallback.lodging_occupancy_rate,
+                  :fuel_oil =>      Country.fallback.lodging_fuel_oil_intensity      / Country.fallback.lodging_occupancy_rate,
+                  :electricity =>   Country.fallback.lodging_electricity_intensity   / Country.fallback.lodging_occupancy_rate,
+                  :district_heat => Country.fallback.lodging_district_heat_intensity / Country.fallback.lodging_occupancy_rate
                 }
             end
           end
@@ -395,6 +385,34 @@ module BrighterPlanet
           #
           # Use client input, if available
           
+          #### Electricity mix
+          # *The lodging's locality-specific [electricity mix](http://data.brighterplanet.com/electricity_mixes).*
+          committee :electricity_mix do
+            # Use the `zip code` electricity mix.
+            quorum 'from zip code', :needs => :zip_code,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:zip_code].electricity_mix
+            end
+            
+            # Otherwise use the `state` electricity mix.
+            quorum 'from state', :needs => :state,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:state].electricity_mix
+            end
+            
+            # Otherwise use the `country` electricity mix.
+            quorum 'from country', :needs => :country,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:country].electricity_mix
+            end
+            
+            # Otherwise use a global average electricity mix.
+            quorum 'default',
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do
+                ElectricityMix.fallback
+            end
+          end
+          
           #### Heating degree days
           # *The average number of annual heating degree days (base 18°C) at the lodging's location.*
           committee :heating_degree_days do
@@ -428,16 +446,6 @@ module BrighterPlanet
             quorum 'from country', :needs => :country,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 characteristics[:country].cooling_degree_days
-            end
-          end
-          
-          #### eGRID subregion
-          # *The [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
-          committee :egrid_subregion do
-            # Look up the `zip code` eGRID subregion.
-            quorum 'from zip code', :needs => :zip_code,
-              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:zip_code].egrid_subregion
             end
           end
           

@@ -1,7 +1,7 @@
 room_nights committee shouldn't need to coerce user-input date
 
-consider not assuming all pool energy use is natural gas
-
 add area
 
 review and incorporate EnergyStar power profiler method
+
+move ch4 and n2o efs into earth
