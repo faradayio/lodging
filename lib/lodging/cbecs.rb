@@ -3,7 +3,7 @@ require 'fuzzy_infer'
 class CommercialBuildingEnergyConsumptionSurveyResponse < ActiveRecord::Base
   fuzzy_infer :target     => [:natural_gas_per_room_night, :fuel_oil_per_room_night, :electricity_per_room_night, :district_heat_per_room_night], # list of columns that this model is designed to infer
               :basis      => [:heating_degree_days, :cooling_degree_days, :lodging_rooms, :floors, :construction_year, :percent_cooled],          # list of columns that are believed to affect energy use (aka MU)
-              :sigma      => "(STDDEV_SAMP(:column)/5)+(ABS(AVG(:column)-:value)/3)",                                                                  # empirically determined formula (SQL!) that captures the desired sample size once all the weights are compiled, across the full range of possible mu values
+              :sigma      => "(STDDEV_SAMP(:column)/5)+(ABS(AVG(:column)-:value)/3)",                                                             # empirically determined formula (SQL!) that captures the desired sample size once all the weights are compiled, across the full range of possible mu values
               :membership => :energy_use_membership,                                                                                              # name of instance method to be called on kernel
               :weight     => :weighting                                                                                                           # (optional) a pre-existing row weighting, if any, provided by the dataset authors
   

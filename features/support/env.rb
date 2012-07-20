@@ -16,3 +16,4 @@ Sniff.init File.join(File.dirname(__FILE__), '..', '..'),
   :earth => [:hospitality, :fuel, :locality],
   :cucumber => true,
   :logger => 'log/test_log.txt'
+  # :logger => STDERR
