@@ -7,5 +7,3 @@ end
 source :rubygems
 
 gemspec :path => '.'
-
-gem 'earth', :git => 'git://github.com/brighterplanet/earth.git', :branch => 'electricity_mix'
