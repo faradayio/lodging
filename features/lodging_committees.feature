@@ -61,6 +61,12 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "from zip code"
     And the conclusion of the committee should have "postal_abbreviation" of "CA"
 
+  Scenario: Egrid subregion committee
+    Given a characteristic "zip_code.name" of "94122"
+    When the "egrid_subregion" committee reports
+    Then the committee should have used quorum "from zip code"
+    And the conclusion of the committee should have "abbreviation" of "CAMX"
+
   Scenario: Country committee
     Given a characteristic "state.postal_abbreviation" of "CA"
     When the "country" committee reports
@@ -93,16 +99,18 @@ Feature: Lodging Committee Calculations
     Given a characteristic "zip_code.name" of "<zip>"
     And a characteristic "state.postal_abbreviation" of "<state>"
     And a characteristic "country.iso_3166_code" of "<country>"
-    When the "electricity_mix" committee reports
+    When the "state" committee reports
+    And the "egrid_subregion" committee reports
+    And the "electricity_mix" committee reports
     Then the committee should have used quorum "<quorum>"
     And the conclusion of the committee should have "name" of "<mix>"
     Examples:
-      | zip   | state | country | mix                              | quorum        |
-      | 94122 |       |         | CAMX egrid subregion electricity | from zip code |
-      | 94133 |       |         | CA state electricity             | from zip code |
-      |       | CA    |         | CA state electricity             | from state    |
-      |       |       | US      | US national electricity          | from country  |
-      |       |       |         | fallback                         | default       |
+      | zip   | state | country | mix                              | quorum               |
+      | 94122 |       |         | CAMX egrid subregion electricity | from egrid subregion |
+      | 94133 |       |         | CA state electricity             | from state           |
+      |       | CA    |         | CA state electricity             | from state           |
+      |       |       | US      | US national electricity          | from country         |
+      |       |       |         | fallback                         | default              |
 
   Scenario: Floors committee
     Given a characteristic "property.northstar_id" of "1"

@@ -388,10 +388,10 @@ module BrighterPlanet
           #### Electricity mix
           # *The lodging's locality-specific [electricity mix](http://data.brighterplanet.com/electricity_mixes).*
           committee :electricity_mix do
-            # Use the `zip code` electricity mix.
-            quorum 'from zip code', :needs => :zip_code,
+            # Use the `egrid subregion` electricity mix.
+            quorum 'from egrid subregion', :needs => :egrid_subregion,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:zip_code].electricity_mix
+                characteristics[:egrid_subregion].electricity_mix
             end
             
             # Otherwise use the `state` electricity mix.
@@ -458,6 +458,16 @@ module BrighterPlanet
             quorum 'from state', :needs => :state,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 Country.united_states
+            end
+          end
+          
+          #### eGRID subregion
+          # *The [eGRID subregion](http://data.brighterplanet.com/egrid_subregions).*
+          committee :egrid_subregion do
+            # Look up the `zip code` eGRID subregion.
+            quorum 'from zip code', :needs => :zip_code,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:zip_code].egrid_subregion
             end
           end
           
