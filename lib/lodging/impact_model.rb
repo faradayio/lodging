@@ -139,7 +139,7 @@ module BrighterPlanet
             quorum 'from fuel intensities and amenity adjustments',
               :needs => :fuel_intensities, :appreciates => [:indoor_pool_adjustment, :outdoor_pool_adjustment, :refrigerator_adjustment, :hot_tub_adjustment],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                intensities = characteristics[:fuel_intensities]
+                intensities = characteristics[:fuel_intensities].dup
                 pool_adjustment = 0.0
                 
                 # Combine any pool energy adjustments.

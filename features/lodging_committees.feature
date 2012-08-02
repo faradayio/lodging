@@ -309,6 +309,16 @@ Feature: Lodging Committee Calculations
      |  0 |    0 |  0 |  0 |  19.28699 | 34.88689 |  99.07053 | 0.04637 |
      |  1 |    1 |  1 |  1 | 237.39229 | 34.88689 | 107.66253 | 0.04637 |
 
+  Scenario: Confirm adjusted fuel intensities do not overwrite fuel intensities
+    Given a hash characteristic "fuel_intensities" of "natural_gas => 100.0, fuel_oil => 100.0"
+    And a hash characteristic "indoor_pool_adjustment" of "pool_energy => -150.0"
+    When the "adjusted_fuel_intensities" committee reports
+    Then the committee should have used quorum "from fuel intensities and amenity adjustments"
+    And the conclusion of the committee should include a key of "natural_gas" and value "0.0"
+    And the conclusion of the committee should include a key of "fuel_oil" and value "50.0"
+    And the "fuel_intensities" committee should have key "natural_gas" with value "100.0"
+    And the "fuel_intensities" committee should have key "fuel_oil" with value "100.0"
+
   Scenario: Fuel uses committee
     Given a characteristic "room_nights" of "4"
     When the "fuel_intensities" committee reports
