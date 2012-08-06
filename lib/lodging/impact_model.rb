@@ -2,6 +2,12 @@
 # See LICENSE for details.
 # Contact Brighter Planet for dual-license arrangements.
 
+require 'earth/fuel/fuel'
+require 'earth/fuel/greenhouse_gas'
+require 'earth/hospitality/commercial_building_energy_consumption_survey_response'
+require 'earth/locality/country'
+require 'earth/locality/electricity_mix'
+
 ## Lodging impact model
 # This model is used by the [Brighter Planet](http://brighterplanet.com) [CM1 web service](http://carbon.brighterplanet.com) to calculate the impacts of a lodging (e.g. a hotel stay), such as energy use, greenhouse gas emissions, and water use.
 
