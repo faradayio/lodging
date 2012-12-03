@@ -236,17 +236,11 @@ module BrighterPlanet
             # If we know `heating degree days` and `cooling degree days`, calculate fuel intensities from [CBECS 2003](http://data.brighterplanet.com/commercial_building_energy_consumption_survey_responses) data using fuzzy inference and adjust the inferred values based on `occupancy rate`.
             quorum 'from degree days, occupancy rate, and user inputs', :needs => [:heating_degree_days, :cooling_degree_days, :occupancy_rate], :appreciates => [:property_rooms, :floors, :construction_year, :ac_coverage],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                inputs = characteristics.except(:occupancy_rate).to_hash.inject({}) do |memo, (characteristic, value)|
-                  case characteristic
-                  when :property_rooms
-                    memo[:lodging_rooms] = value
-                  when :ac_coverage
-                    memo[:percent_cooled] = value
-                  else
-                    memo[characteristic] = value
-                  end
-                  memo
-                end
+                inputs = characteristics.dup
+                inputs.delete :occupancy_rate
+                inputs[:lodging_rooms] = inputs.delete(:property_rooms)
+                inputs[:percent_cooled] = inputs.delete(:ac_coverage)
+                inputs.delete_if { |k, v| v.nil? }
                 
                 kernel = CommercialBuildingEnergyConsumptionSurveyResponse.new(inputs)
                 n, f, e, d = kernel.fuzzy_infer(:natural_gas_per_room_night, :fuel_oil_per_room_night, :electricity_per_room_night, :district_heat_per_room_night)
