@@ -112,6 +112,24 @@ Feature: Lodging Committee Calculations
       |       |       | US      | US national electricity          | from country         |
       |       |       |         | fallback                         | default              |
 
+  Scenario: Electricity n2o emission factor committee
+    When the "electricity_mix" committee reports
+    And the "electricity_n2o_emission_factor" committee reports
+    Then the committee should have used quorum "from electricity mix"
+    And the conclusion of the committee should be "0.00234"
+
+  Scenario: Electricity ch4 emission factor committee
+    When the "electricity_mix" committee reports
+    And the "electricity_ch4_emission_factor" committee reports
+    Then the committee should have used quorum "from electricity mix"
+    And the conclusion of the committee should be "0.00021"
+
+  Scenario: Electricity co2 emission factor committee
+    When the "electricity_mix" committee reports
+    And the "electricity_co2_emission_factor" committee reports
+    Then the committee should have used quorum "from electricity mix"
+    And the conclusion of the committee should be "0.62354"
+
   Scenario: Floors committee
     Given a characteristic "property.northstar_id" of "1"
     When the "floors" committee reports
@@ -342,6 +360,7 @@ Feature: Lodging Committee Calculations
   Scenario: N2O emission committee
     Given a characteristic "room_nights" of "4"
     When the "electricity_mix" committee reports
+    And the "electricity_n2o_emission_factor" committee reports
     And the "fuel_intensities" committee reports
     And the "adjusted_fuel_intensities" committee reports
     And the "fuel_uses" committee reports
@@ -352,6 +371,7 @@ Feature: Lodging Committee Calculations
   Scenario: CH4 emission committee
     Given a characteristic "room_nights" of "4"
     When the "electricity_mix" committee reports
+    And the "electricity_ch4_emission_factor" committee reports
     And the "fuel_intensities" committee reports
     And the "adjusted_fuel_intensities" committee reports
     And the "fuel_uses" committee reports
@@ -362,6 +382,7 @@ Feature: Lodging Committee Calculations
   Scenario: CO2 emission committee
     Given a characteristic "room_nights" of "4"
     When the "electricity_mix" committee reports
+    And the "electricity_co2_emission_factor" committee reports
     And the "fuel_intensities" committee reports
     And the "adjusted_fuel_intensities" committee reports
     And the "fuel_uses" committee reports

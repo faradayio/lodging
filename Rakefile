@@ -8,7 +8,7 @@ Sniff::RakeTasks.define_tasks
 namespace :lodging do
   namespace :db do
     task :env do
-      require_relative 'features/support/lodging_property'
+      require_relative 'lib/test_support/lodging_property'
     end
     task :migrate => :env do
       LodgingProperty.auto_upgrade!

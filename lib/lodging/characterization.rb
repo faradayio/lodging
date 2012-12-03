@@ -6,12 +6,17 @@ module BrighterPlanet
           has :date
           has :rooms
           has :duration, :measures => :time
+          has :room_nights
           has :zip_code
           has :city
           has :state
           has :country
           has :heating_degree_days
           has :cooling_degree_days
+          has :electricity_co2_emission_factor
+          has :electricity_ch4_emission_factor
+          has :electricity_n2o_emission_factor
+          has :occupancy_rate
           has :property do |prop|
             prop.name
           end

@@ -61,7 +61,7 @@ module BrighterPlanet
           # *The lodging's CO<sub>2</sub> emissions during `timeframe`.*
           committee :co2_emission do
             # Multiply each `fuel use` (*MJ*) by its CO<sub>2</sub> emission factor (*kg / MJ*) to give *kg*.
-            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_mix],
+            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_co2_emission_factor],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 gas = Fuel.find('Pipeline Natural Gas')
                 oil = Fuel.find('Distillate Fuel Oil No. 2')
@@ -70,7 +70,7 @@ module BrighterPlanet
                 (characteristics[:fuel_uses][:natural_gas]   / gas.energy_content * gas.co2_emission_factor) +
                 (characteristics[:fuel_uses][:fuel_oil]      / oil.energy_content * oil.co2_emission_factor) +
                 (characteristics[:fuel_uses][:district_heat] / dh.energy_content  * dh.co2_emission_factor) +
-                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_mix].co2_emission_factor)
+                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_co2_emission_factor])
             end
           end
           
@@ -78,7 +78,7 @@ module BrighterPlanet
           # *The lodging's CH<sub>4</sub> emissions during `timeframe`.*
           committee :ch4_emission do
             # Multiply each `fuel use` (*MJ*) by its CH<sub>4</sub> emission factor (*kg CO<sub>2</sub>e / MJ*) to give *kg CO<sub>2</sub>e*.
-            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_mix],
+            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_ch4_emission_factor],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 ch4_gwp = GreenhouseGas[:ch4].global_warming_potential
                 
@@ -89,7 +89,7 @@ module BrighterPlanet
                 (characteristics[:fuel_uses][:natural_gas]   * gas_ef) +
                 (characteristics[:fuel_uses][:fuel_oil]      * oil_ef) +
                 (characteristics[:fuel_uses][:district_heat] * dh_ef) +
-                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_mix].ch4_emission_factor)
+                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_ch4_emission_factor])
             end
           end
           
@@ -97,7 +97,7 @@ module BrighterPlanet
           # *The lodging's N<sub>2</sub>O emissions during `timeframe`.*
           committee :n2o_emission do
             # Multiply each `fuel use` (*MJ*) by its N<sub>2</sub>O emission factor (*kg CO<sub>2</sub>e / MJ*) to give *kg CO<sub>2</sub>e*.
-            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_mix],
+            quorum 'from fuel uses and electricity mix', :needs => [:fuel_uses, :electricity_n2o_emission_factor],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
                 n2o_gwp = GreenhouseGas[:n2o].global_warming_potential
                 
@@ -108,7 +108,7 @@ module BrighterPlanet
                 (characteristics[:fuel_uses][:natural_gas]   * gas_ef) +
                 (characteristics[:fuel_uses][:fuel_oil]      * oil_ef) +
                 (characteristics[:fuel_uses][:district_heat] * dh_ef) +
-                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_mix].n2o_emission_factor)
+                (characteristics[:fuel_uses][:electricity].megajoules.to(:kilowatt_hours) * characteristics[:electricity_n2o_emission_factor])
             end
           end
           
@@ -273,6 +273,8 @@ module BrighterPlanet
           #### Occupancy rate
           # *The percent of the proprety's rooms that are occupied on an average night.*
           committee :occupancy_rate do
+            # Use client input, if available.
+            
             # Look up the `country` average lodging occupancy rate.
             quorum 'from country', :needs => :country,
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
@@ -390,6 +392,42 @@ module BrighterPlanet
           # *The property where the stay occurred.*
           #
           # Use client input, if available
+          
+          #### Electricity CO<sub>2</sub> emission factor (*kg / kWh*)
+          # *The CO<sub>2</sub> emission factor of the lodging's electricity.
+          committee :electricity_co2_emission_factor do
+            # Use client input, if available
+            
+            # Otherwise use the `electricity mix` co2 emission factor.
+            quorum 'from electricity mix', :needs => :electricity_mix,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:electricity_mix].co2_emission_factor
+            end
+          end
+          
+          #### Electricity CH<sub>4</sub> emission factor (*kg CO<sub>2</sub>e/ kWh*)
+          # *The CH<sub>4</sub> emission factor of the lodging's electricity.
+          committee :electricity_ch4_emission_factor do
+            # Use client input, if available
+            
+            # Otherwise use the `electricity mix` ch4 emission factor.
+            quorum 'from electricity mix', :needs => :electricity_mix,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:electricity_mix].ch4_emission_factor
+            end
+          end
+          
+          #### Electricity N<sub>2</sub>O emission factor (*kg CO<sub>2</sub>e/ kWh*)
+          # *The N<sub>2</sub>O emission factor of the lodging's electricity.
+          committee :electricity_n2o_emission_factor do
+            # Use client input, if available
+            
+            # Otherwise use the `electricity mix` n2o emission factor.
+            quorum 'from electricity mix', :needs => :electricity_mix,
+              :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
+                characteristics[:electricity_mix].n2o_emission_factor
+            end
+          end
           
           #### Electricity mix
           # *The lodging's locality-specific [electricity mix](http://data.brighterplanet.com/electricity_mixes).*
@@ -519,7 +557,9 @@ module BrighterPlanet
           #### Room nights (*room-nights*)
           # *The stay's room-nights that occurred during `timeframe`.*
           committee :room_nights do
-            # If `date` falls within `timeframe`, divide `duration` (*seconds*) by 86,400 (*seconds / night*) and multiply by `rooms` to give *room-nights*.
+            # Use client input, if available.
+            
+            # Otherwise if `date` falls within `timeframe`, divide `duration` (*seconds*) by 86,400 (*seconds / night*) and multiply by `rooms` to give *room-nights*.
             # Otherwise `room nights` is zero.
             quorum 'from rooms, duration, date, and timeframe', :needs => [:rooms, :duration, :date],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics, timeframe|
