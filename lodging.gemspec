@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'earth', '~>1.1.0'
   s.add_runtime_dependency 'emitter', '~> 1.1.0'
   s.add_runtime_dependency 'fuzzy_infer'
+  s.add_development_dependency 'pry'
   s.add_development_dependency 'mysql2'
   s.add_development_dependency 'sniff', '~> 1.1.1'
 end
