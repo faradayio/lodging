@@ -432,10 +432,10 @@ module BrighterPlanet
                 characteristics[:egrid_subregion].electricity_mix
             end
             
-            # Otherwise use the `state` electricity mix.
-            quorum 'from state', :needs => :state,
+            # Otherwise if the user has not specified a country other than the US use the `state` electricity mix.
+            quorum 'from state and country', :needs => [:state, :country],
               :complies => [:ghg_protocol_scope_3, :iso, :tcr] do |characteristics|
-                characteristics[:state].electricity_mix
+                characteristics[:state].electricity_mix if characteristics[:country] == Country.united_states
             end
             
             # Otherwise use the `country` electricity mix.
