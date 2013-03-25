@@ -106,12 +106,12 @@ Feature: Lodging Committee Calculations
     Then the committee should have used quorum "<quorum>"
     And the conclusion of the committee should have "name" of "<mix>"
     Examples:
-      | zip   | state | country | mix                              | quorum               |
-      | 94122 |       |         | CAMX egrid subregion electricity | from egrid subregion |
+      | zip   | state | country | mix                              | quorum                 |
+      | 94122 |       |         | CAMX egrid subregion electricity | from egrid subregion   |
       | 94133 |       |         | CA state electricity             | from state and country |
       |       | CA    |         | CA state electricity             | from state and country |
-      |       |       | US      | US national electricity          | from country         |
-      |       |       |         | fallback                         | default              |
+      |       |       | US      | US national electricity          | from country           |
+      |       |       |         | fallback                         | default                |
 
   Scenario: Electricity n2o emission factor committee
     When the "electricity_mix" committee reports
