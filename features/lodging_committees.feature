@@ -100,6 +100,7 @@ Feature: Lodging Committee Calculations
     And a characteristic "state.postal_abbreviation" of "<state>"
     And a characteristic "country.iso_3166_code" of "<country>"
     When the "state" committee reports
+    And the "country" committee reports
     And the "egrid_subregion" committee reports
     And the "electricity_mix" committee reports
     Then the committee should have used quorum "<quorum>"
@@ -107,8 +108,8 @@ Feature: Lodging Committee Calculations
     Examples:
       | zip   | state | country | mix                              | quorum               |
       | 94122 |       |         | CAMX egrid subregion electricity | from egrid subregion |
-      | 94133 |       |         | CA state electricity             | from state           |
-      |       | CA    |         | CA state electricity             | from state           |
+      | 94133 |       |         | CA state electricity             | from state and country |
+      |       | CA    |         | CA state electricity             | from state and country |
       |       |       | US      | US national electricity          | from country         |
       |       |       |         | fallback                         | default              |
 
