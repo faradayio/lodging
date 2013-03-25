@@ -543,6 +543,11 @@ module BrighterPlanet
             end
           end
           
+          #### Postcode
+          # *The postcode (use only outside the US).*
+          #
+          # Use client input, if available.
+          
           #### Zip code
           # *The [US zip code](http://data.brighterplanet.com/zip_codes).*
           #

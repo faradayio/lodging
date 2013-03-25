@@ -8,6 +8,7 @@ module BrighterPlanet
           has :duration, :measures => :time
           has :room_nights
           has :zip_code
+          has :postcode
           has :city
           has :state
           has :country

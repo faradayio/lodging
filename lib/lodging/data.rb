@@ -7,6 +7,7 @@ module BrighterPlanet
         base.col :duration,                        :type => :integer
         base.col :room_nights,                     :type => :float
         base.col :zip_code_name
+        base.col :postcode
         base.col :city
         base.col :state_postal_abbreviation
         base.col :country_iso_3166_code
