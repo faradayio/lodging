@@ -1,0 +1,4 @@
+name,egrid_subregion_abbreviation,state_postal_abbreviation,country_iso_3166_code,co2_emission_factor,ch4_emission_factor,n2o_emission_factor,loss_factor
+CAMX egrid subregion electricity,CAMX,,,0.3,0.0003,0.00083,0.082
+CA state electricity,,CA,,0.3,0.0003,0.00085,0.082
+US national electricity,,,US,0.55,0.0003,0.0024,0.065

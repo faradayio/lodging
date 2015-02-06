@@ -1,5 +1,11 @@
 require 'emitter'
 
+require 'lodging/impact_model'
+require 'lodging/characterization'
+require 'lodging/data'
+require 'lodging/relationships'
+require 'lodging/summarization'
+
 module BrighterPlanet
   module Lodging
     extend BrighterPlanet::Emitter

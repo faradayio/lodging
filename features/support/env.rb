@@ -1,11 +1,7 @@
-require 'bundler'
-Bundler.setup
-
-require 'cucumber'
-require 'cucumber/formatter/unicode'
-
-require 'data_miner'
-DataMiner.logger = Logger.new(nil)
+require 'bundler/setup'
+require 'pry'
 
 require 'sniff'
-Sniff.init File.join(File.dirname(__FILE__), '..', '..'), :earth => [:hospitality, :fuel, :locality], :cucumber => true
+Sniff.init File.expand_path('../../..', __FILE__),
+  :cucumber => true,
+  :logger => false # change this to $stderr to see database activity
